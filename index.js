@@ -1,6 +1,6 @@
 'use strict';
 
-var transformer = require('./transformer')
+var transform = require('./transform/transform')
 
 
-module.exports = transformer
+module.exports = transform
