@@ -1,0 +1,8 @@
+{
+  "name": "reactloadify",
+  "version": "0.0.1",
+  "description": "Livereload React application",
+  "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
+  "main": "index.js",
+  "license": "MIT"
+}
