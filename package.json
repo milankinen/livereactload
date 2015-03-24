@@ -6,6 +6,9 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "browserify-transform-tools": "^1.3.3"
+    "browserify-transform-tools": "^1.3.3",
+    "ramda": "^0.13.0",
+    "through2": "^0.6.3",
+    "ws": "^0.7.1"
   }
 }
