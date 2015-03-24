@@ -12,10 +12,46 @@ module.exports = function(file) {
       var WebSocket = require('ws')
       var ws = new WebSocket('ws://127.0.0.1:4455/changes')
       ws.onmessage = function() {
-        console.log('update requested')
+        var src = getScriptURL()
+        console.log('update requested', src)
+        loadScript(src)
       }
 
       reactloadify.initialized = true
+
+
+      function loadScript(src) {
+        var numTries = 0
+        tryLoad()
+
+        function tryLoad() {
+          var script = document.createElement('script')
+          script.setAttribute('src', src);
+          script.addEventListener('error', function() {
+            console.log('error')
+            if (numTries < 10) {
+              numTries++
+              setTimeout(tryLoad, 300)
+            }
+          }, true)
+          document.getElementsByTagName('head')[0].appendChild(script)
+        }
+      }
+
+      function getScriptURL() {
+        try {
+          throw new Error()
+        }
+        catch(e) {
+          var stackLines = e.stack.split('\n')
+          for(var i = 0; i < stackLines.length; i++){
+            if (stackLines[i].match(/http[s]?:\/\//)) {
+              return stackLines[i].match(/((http[s]?:\/\/.+\/)([^\/]+\.js)):/)[1]
+            }
+          }
+          return ''
+        }
+      }
     })()
   }
 }
