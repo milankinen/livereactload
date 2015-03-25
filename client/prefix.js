@@ -1,13 +1,15 @@
+var loaded = false
 module.exports = function(file) {
   if (typeof window !== 'undefined') {
     (function() {
       'use strict';
 
       var reactloadify = window.__reactloadify = (window.__reactloadify || {})
-      if (reactloadify.initialized) {
+      if (reactloadify.makeHot) {
         // prefix must be added only once
         return
       }
+
 
       var WebSocket = require('ws')
       var ws = new WebSocket('ws://127.0.0.1:4455/changes')
@@ -17,8 +19,7 @@ module.exports = function(file) {
         loadScript(src)
       }
 
-      reactloadify.initialized = true
-
+      reactloadify.makeHot = require('react-hot-api')(function() { return  [] })
 
       function loadScript(src) {
         var numTries = 0
