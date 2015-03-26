@@ -1,7 +1,6 @@
-# reactloadify
+# livereactload
 
-Browserify transform for liverealoadable React development. Under 
-development...
+Browserify plugin for liverealoadable React development. **Under development...**
 
 ## Usage
 
