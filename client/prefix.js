@@ -15,7 +15,6 @@ module.exports = function(file) {
       var ws = new WebSocket('ws://127.0.0.1:4455/changes')
       ws.onmessage = function() {
         var src = getScriptURL()
-        console.log('update requested', src)
         loadScript(src)
       }
 

@@ -25,13 +25,13 @@ function Server() {
     console.log('listening on port 4455')
 
     server.on('connection', function(conn) {
-      console.log('new connection', conn.id)
+      console.log('New reload client connected')
     })
   }
 
   this.send = function(msg) {
     server.clients.forEach(function(client) {
-      console.log('Send to connections', msg)
+      console.log('Send reload request')
       client.send(msg)
     })
   }

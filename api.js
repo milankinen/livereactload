@@ -6,11 +6,11 @@ module.exports = {
       var reactloadify = window.__reactloadify
       if (!window.onload) {
         window.onload = function() {
-          console.log('winload')
+          console.log('*** Initial load ***')
           cb(reactloadify.state)
         }
       } else {
-        console.log('reload')
+        console.log('*** Reload ***')
         cb(reactloadify.state)
       }
     }
@@ -20,7 +20,6 @@ module.exports = {
     if (typeof window !== 'undefined') {
       var reactloadify = window.__reactloadify
       if (reactloadify) {
-        console.log('setstate', state)
         reactloadify.state = state
       }
     }
