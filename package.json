@@ -8,7 +8,13 @@
     "type": "git",
     "url": "git@github.com:milankinen/livereactload.git"
   },
-  "keywords": ["react", "reload", "real-time", "browserify", "plugin", "development"],
+  "keywords": [
+    "react",
+    "livereload",
+    "real-time",
+    "browserify-plugin",
+    "development"
+  ],
   "main": "index.js",
   "scripts": {
   },
