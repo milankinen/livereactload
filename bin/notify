@@ -1,0 +1,20 @@
+#!/usr/bin/env node
+
+if (process.argv[2] === '--help') {
+  printUsage()
+  return
+}
+
+if (process.argv[2] && !parseInt(process.argv[2])) {
+  printUsage()
+  return
+}
+
+var notify = require('../lib/server/notify')
+notify(process.argv[3], process.argv[2])
+process.exit(0)
+
+
+function printUsage() {
+  console.log('Usage: notify [notify-port] [host]')
+}
