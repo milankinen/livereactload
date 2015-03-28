@@ -1,7 +1,7 @@
 {
   "name": "livereactload",
   "version": "0.1.0",
-  "description": "Browserify plugin for livereloaded React development",
+  "description": "React live code editing with Browserify",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
   "bin": {
