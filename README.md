@@ -32,8 +32,7 @@ provides the following features:
 And because photo tells more than a thousand words, see the following video to see 
 LiveReactload in action:
 
-    TODO: video
-
+[![Video](https://dl.dropbox.com/s/gcnhv4rzvhq5kaw/livereactload-preview.png)](https://vimeo.com/123513496)
     
 
 ## Usage
