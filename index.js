@@ -1,11 +1,11 @@
 'use strict';
 
-var plugin     = require('./lib/browserify/plugin'),
+var transform  = require('./lib/browserify/transform'),
     listen     = require('./lib/server/listen'),
     notify     = require('./lib/server/notify'),
     gulpnofify = require('./lib/gulp/notify');
 
-module.exports = plugin;
+module.exports = transform;
 
 module.exports.listen = listen;
 module.exports.notify = notify;
