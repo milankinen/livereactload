@@ -22,7 +22,7 @@
   "scripts": {},
   "dependencies": {
     "cli-color": "0.3.3",
-    "livereactload-api": "0.2.0",
+    "livereactload-api": "0.2.1",
     "react-hot-api": "0.4.3",
     "through2": "0.6.3",
     "ws": "0.7.1"
