@@ -26,7 +26,7 @@ In this example, React component don't have any own state - they are just
 dummy components rendering whatever they are told to render. When events 
 occur, they modify the global state by using `items.js` global API.
  
-The `tems` object handles all the business logic with BaconJS streams and
+The `Items` object handles all the business logic with BaconJS streams and
 that stream will produce new values when the state changes. To store that
 state, we use `.setState` just before re-render (in `site.js`). 
 
