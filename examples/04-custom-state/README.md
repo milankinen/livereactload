@@ -1,13 +1,12 @@
 # Custom state propagation across reload events
 
-If you want to use different state handling pattern than React
-component (e.g. Flux stores) state then you also must handle 
-the state propagation manually. [LiveReactload API](https://www.npmjs.com/package/livereactload-api)
+If you want to use different state handling pattern (e.g. Flux stores)
+than React component state then you also must handle the state propagation 
+manually. [LiveReactload API](https://www.npmjs.com/package/livereactload-api)
 provides means to it: `.onLoad` and `.setState`.
 
-The idea for those method is to basically store the most recent 
-state with `setState` so that `onLoad` can use it during the next
-reload event.
+The basic idea is to store the most recent state with `setState` so 
+that `onLoad` can use it during the next reload event.
     
     lrApi.onLoad(function(state) {
       var initialModel = state || window.INITIAL_STATE_FROM_SERVER
@@ -34,6 +33,6 @@ state, we use `.setState` just before re-render (in `site.js`).
 `window.onload` handler has been replaced with `lrApi.onLoad` method so
 that reloading event can construct the proper stream from the latest state.
 
-Note that this loop enables the isomorphic application development, thus
-in this example the initial user interface is actually pre-rendered by the
+Note that this loop enables the isomorphic application development. In 
+this example the initial user interface is actually pre-rendered by the
 server (confirm it by yourself by disabling JavaScript from you browser)!

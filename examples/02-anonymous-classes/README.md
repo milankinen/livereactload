@@ -1,13 +1,13 @@
 # Private React components with LiveReactload
 
-This example demonstrates how to deal with anonymous React components (components
-that are not assigned to `module.exports`) so that you can use live code editing
+This example demonstrates how to deal with private React components (components
+that are not assigned to `module.exports`) so that you can use LiveReactload
 with them.
 
 ## Problem
 
 By default, LiveReactload scans the `module.exports` at the end of the each module
-and tries to search React components from that. You can either assign you component
+and tries to search React components from that. You can either assign your component
 directly 
 
     module.exports = <your-component>
@@ -21,12 +21,12 @@ or you can assign multiple components with object
     }
     
 Both approaches are fine and they are managed automatically by LiveReactload.
-However, there may be cases where you want to create a private Component that
+However, there may be cases where you want to create a private component that
 is not exposed with `module.exports`. 
 
 In this case, LiveReactload has no way to detect that component. This means that
-when the next reload event occurs, React does not recognize the new class, thus
-removing the previous one and replacing it with the new one => your state is lost.
+when the next reload event occurs, React does not recognize the new class, removes
+the previous one and replaces it with the new one => **your state is lost**.
 
 ## Solution
 

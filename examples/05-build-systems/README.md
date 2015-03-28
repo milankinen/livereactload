@@ -1,7 +1,7 @@
 # Build system integrations
 
-If you have an existing build system (e.g. Gulp or Grunt), you can use
-LiveReactload with those easily. This example demonstrates how to use
+If you have an existing build system (e.g. Gulp or Grunt), you can
+easily use LiveReactload with them. This example demonstrates how to use
 LiveReactload with Gulp. See `gulpfile.js` and `package.json` for
 more details.
 
@@ -23,16 +23,16 @@ a client connection automatically to this server.
     
 ### .notify([host = 'localhost'], [notify-port = 4474])
 
-Sends an notification that bundle has changed and reloading should occur.
-`.listen` starts also a HTTP server that listens these notify events so
-notifications are basically plain HTTP requests.
+Sends a notification that the bundle has changed and reloading should occur.
+Internally `.listen` starts a HTTP server that listens these notify events so
+notifications are basically just plain HTTP requests.
 
     lrload.notify()  // equals to bash command "curl http://localhost:4475"
 
 
 ### .gulpnotify([host = 'localhost'], [notify-port = 4474])
 
-Returns a `through2` stream that sends events from change events.
+Returns a `through2` stream that sends notifications from change events.
 
     watcher
       .bundle()
