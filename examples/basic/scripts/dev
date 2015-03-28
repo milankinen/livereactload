@@ -1,0 +1,5 @@
+#!/bin/bash
+
+node_modules/.bin/nodemon --ignore public/bundle.js &
+node_modules/.bin/watchify public/site.js -v -t reactify -o static/bundle.js &
+wait
