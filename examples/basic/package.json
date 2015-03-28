@@ -8,15 +8,14 @@
     "dev": "./scripts/dev"
   },
   "dependencies": {
-    "express": "^4.12.3",
-    "livereactload-api": "^0.1.0",
-    "react": "^0.13.1"
+    "express": "4.12.3",
+    "react": "0.13.1"
   },
   "devDependencies": {
     "browserify": "9.0.3",
     "livereactload": "0.1.0",
-    "nodemon": "^1.3.7",
-    "reactify": "^1.1.0",
+    "nodemon": "1.3.7",
+    "reactify": "1.1.0",
     "watchify": "2.6.2"
   }
 }

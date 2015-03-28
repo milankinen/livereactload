@@ -18,11 +18,12 @@ module.exports = React.createClass({
     this.setState({text: e.target.value, ok: !!e.target.value})
   },
 
+
   render: function() {
     return (
       <form onSubmit={this.handleSubmit}>
         <input onChange={this.onChange} value={this.state.text} />
-        <button disabled={!this.state.ok}>Add</button>
+        <button disabled={!this.state.ok}>Add item</button>
       </form>
     )
   }
