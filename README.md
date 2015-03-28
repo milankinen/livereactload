@@ -1,5 +1,7 @@
 # LiveReactload
 
+[![Join the chat at https://gitter.im/milankinen/livereactload](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Live code editing with Browserify and React.
 
 ## Motivation
