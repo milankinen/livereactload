@@ -8,6 +8,7 @@
     "dev": "./scripts/dev"
   },
   "dependencies": {
+    "babel": "^4.7.16",
     "baconjs": "^0.7.53",
     "express": "4.12.3",
     "livereactload-api": "0.2.0",
