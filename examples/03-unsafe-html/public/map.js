@@ -7,6 +7,11 @@ var React  = require('react'),
 module.exports = React.createClass({
 
   render: function() {
+    /*
+     * If "unsafe components" are coded properly (they manage their state
+     * based on React component lifecycle hooks), then LiveReactload can manage
+     * their reloading as well as VDOM components.
+     */
     return (
       <div style={{position: 'absolute', top: 150, width: 600, height: 500}}>
         <GMap>
