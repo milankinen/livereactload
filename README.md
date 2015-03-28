@@ -79,6 +79,7 @@ And finally just start watcher and begin coding:
    
 For build system integrations, please see [this example](examples/05-build-systems)
 
+
 ## How it works
 
 React programming model suits perfectly for live code editing: components are just
@@ -136,3 +137,23 @@ that are not exported with `module.exports`.
 [LiveReactload API](https://github.com/milankinen/livereactload-api). Please see
 the **[examples](examples)** to see how to use the API in different situations.
 
+
+## License
+
+MIT
+
+
+## Problems?
+
+Please create a [Github issue](issues) if something occurs
+
+Rember also Gitter chat:
+
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
+
+
+## Thanks
+
+  * **[Dan Abramov](https://github.com/gaearon)** - an amazing [React Hot API](https://github.com/gaearon/react-hot-api)
+    that is used for the basis of the state propagation mechanism 
+  * **[Hannu](https://github.com/heintsi)** - inspiring and sparring with this project 
