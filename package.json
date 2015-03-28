@@ -4,6 +4,9 @@
   "description": "Browserify plugin for livereloaded React development",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
+  "bin": {
+    "livereactload": "./bin/livereactload"
+  },
   "repository": {
     "type": "git",
     "url": "git@github.com:milankinen/livereactload.git"
