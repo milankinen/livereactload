@@ -1,60 +1,33 @@
-# livereactload
+# LiveReactload
 
 Browserify plugin for liverealoadable React development. **Under development...**
 
 ## Usage
 
-### Gulp configurations
+Install LiveReactload as development dependency
 
-    var rload = require('reactloadify')
+    npm install --save-dev livereactload
     
-    var bundler = browserify({
-      transform:    [ rload ],
-      ...
-    })
+
+Modify you watch file to use livereactload transform (for example `scripts/watch.sh`)
+
+    #!/bin/bash
     
-    gulp.task('jswatch', function() {
-      rload.listen()
-      var watcher  = watchify(bundler)
-      return watcher
-        .on('error', gutil.log)
-        .on('update', function() {
-            watcher
-              .bundle()
-              .on('error', notify.onError({ message: 'Error: <%= error.message %>', sound: false }))
-              .pipe(source(jsBundleFile))
-              ...
-              .pipe(gulp.dest(staticDirectory))
-              .pipe(rload.notify())
-          })
-          .bundle()
-          .pipe(source(jsBundleFile))
-          .pipe(gulp.dest(staticDirectory))
-    })
+    node_modules/.bin/nodemon --ignore public/bundle.js --watch &
+    
+    { { node_modules/.bin/watchify site.js -v -t babelify -t livereactload -o static/bundle.js 1>&2; } 2>&1 \
+      | while read result; do
+        echo "$result"
+        [[ "$result" =~ ^[0-9]+[[:space:]]bytes[[:space:]]written  ]] && node_modules/.bin/livereactload notify
+      done
+    } &
+    
+    node_modules/.bin/livereactload listen
+    wait
 
 
-### Site JS
+And finally just start watcher and begin coding:
 
-    
-    var React       = require('react'),
-        Bacon       = require('baconjs'),
-        Application = React.createFactory(require('./application'))
-    
-    var rload = require('reactloadify/api')
+    ./scripts/watch.sh 
     
     
-    rload.windowLoaded(function(state) {
-      var model = state || window.INITIAL_MODEL
-      var stream = Bacon.combineTemplate({
-        .. create state object using model ..
-      })
-    
-      stream.onValue(function(newModel) {
-        rload.setState(newModel)
-        render(newModel)
-      })
-    })
-    
-    function render(model) {
-      React.render(Application({model: model}), document.getElementById('app'))
-    }
