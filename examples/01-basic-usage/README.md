@@ -1,7 +1,7 @@
-# Basic LiveReactload example
+# Basic LiveReactload usage
 
-This project contains an example watch script that can be used for 
-code live editing. Script contents can be found from `scripts/dev`.
+This example demonstrates a watch script that can be used for 
+live code editing. Script's contents can be found from `scripts/dev`.
 Usage is simple, run the following command with your terminal:
 
     ./scripts/dev
