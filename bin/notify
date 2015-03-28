@@ -11,8 +11,9 @@ if (process.argv[2] && !parseInt(process.argv[2])) {
 }
 
 var notify = require('../lib/server/notify')
-notify(process.argv[3], process.argv[2])
-process.exit(0)
+notify(process.argv[3], process.argv[2], function() {
+  process.exit(0)
+})
 
 
 function printUsage() {
