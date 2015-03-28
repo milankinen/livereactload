@@ -21,7 +21,7 @@ a client connection automatically to this server.
     lrload.listen()  // listens in default ports
     
     
-### .notify([host = 'localhost'], [notify-port = 4474])
+### .notify([host = 'localhost'], [notify-port = 4475])
 
 Sends a notification that the bundle has changed and reloading should occur.
 Internally `.listen` starts a HTTP server that listens these notify events so
@@ -30,7 +30,7 @@ notifications are basically just plain HTTP requests.
     lrload.notify()  // equals to bash command "curl http://localhost:4475"
 
 
-### .gulpnotify([host = 'localhost'], [notify-port = 4474])
+### .gulpnotify([host = 'localhost'], [notify-port = 4475])
 
 Returns a `through2` stream that sends notifications from change events.
 
