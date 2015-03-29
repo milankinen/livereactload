@@ -2,6 +2,9 @@
 
 Live code editing with Browserify and React.
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
+
+
 ## Motivation
 
 There are many live reloading components for CSS (and its variants) but unfortunately
@@ -144,11 +147,7 @@ MIT
 
 ## Problems?
 
-Please create a [Github issue](issues) if something occurs
-
-Remember also Gitter chat:
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
+Please create a [Github issue](issues) if something occurs.
 
 
 ## Thanks
