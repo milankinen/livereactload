@@ -11,25 +11,25 @@ the puzzle.
 
 I did some Googling and managed to find [one similar implementation](https://github.com/gaearon/react-hot-loader) 
 for the Webpack. However, I'm a very satisfied Browserify user so I wanted one for it
-too. The results of this work can be found from this repository and npm.
+too. The results of this work can be found in this repository and npm.
 
 ## What is LiveReactload
 
 LiveReactload is a Browserify implementation similar to [LiveReload](http://livereload.com/) but
-for JavaScript instead. Ok, LiveReload actually supports the JavaScript loading **but** it
+for JavaScript instead. Ok, LiveReload actually supports JavaScript reloading **but** it
 reloads the **whole page** when the changes occur. If you have done something with the page,
-then **that state is lost** and you have to do the same operations again.
+then **the state is lost** and you have to do the same operations again.
 
-LiveReactload solves the **state propagation problem** between JavaScript reloads. It
+LiveReactload solves the **state propagation problem** over JavaScript reloads. It
 provides the following features:
 
-  * Automatic state propagation management for the React components as a Browserify transform
-  * Notification infrastructure for change events delegation
+  * Automatic state propagation management for React components as a Browserify transform
+  * Notification infrastructure for change event delegation
   * Automatic change event listening and bundle reloading (when the Browserify transform is enabled)
   * Custom state propagation by using **[LiveReactload API](https://github.com/milankinen/livereactload-api)**
   * Integration interfaces for build systems  
   
-And because photo tells more than a thousand words, see the following video to see 
+And because one photo tells more than a thousand words, see the following video to see 
 LiveReactload in action:
 
 [![Video](https://dl.dropbox.com/s/gcnhv4rzvhq5kaw/livereactload-preview.png)](https://vimeo.com/123513496)
@@ -57,7 +57,7 @@ commands to do it:
     
 
 Here is an example `bin/watch` script that you can use (presuming that `browserify` and 
-`watchify` has been installed locally) to watch your bundle changes:
+`watchify` have been installed locally) to watch your bundle changes:
 
     #!/bin/bash
     
@@ -72,7 +72,7 @@ Here is an example `bin/watch` script that you can use (presuming that `browseri
     wait
 
 
-And finally just start watcher and begin coding:
+And finally just start `watch` and begin coding:
 
     ./bin/watch
    
@@ -81,25 +81,25 @@ For build system integrations, please see [this example](examples/05-build-syste
 
 ## How it works
 
-React programming model suits perfectly for live code editing: components are just
-stupid ones that render what they are told to render and the DOM changes are handled
-with VirtualDOM diff. This (hopefully) prevents developers to **hide the state** inside
+The React programming model suits perfectly live code editing: components are just
+stupid ones that render the data they are told to render and the DOM changes are handled
+with VirtualDOM diff. This (hopefully) prevents developers from **hiding the state** inside
 the application. 
 
-Because the state is managed by react components and those components are exported
+If the state is managed by React components and those components are exported
 via `module.exports`, it is possible to weave those components with a logic that
 enables state propagation: when the bundle is reloaded, the new implementation 
 replaces the old prototypes but not the actual state.
 
 More detailed explanation about the idea coming later...
 
-So basically if you code your React applications using its best practices, then
+So basically if you code your React application using its best practices, then
 **you can use this reloading component without any modifications to your code!**.
 
 
-## When it doesn't work?
+## When does it not work?
 
-Well... if you hide your state inside the modules then the reloading will loses
+Well... if you hide your state inside the modules then the reloading will lose
 the state. For example the following code will **not** work:
 
     // counter.js
@@ -129,7 +129,7 @@ the state. For example the following code will **not** work:
       }
     })
 
-The second problem arises when you have "private" components inside your modules
+A second problem arises when you have "private" components inside your modules
 that are not exported with `module.exports`. 
 
 **However**, both of those challenges can be solved by using 
@@ -146,7 +146,7 @@ MIT
 
 Please create a [Github issue](issues) if something occurs
 
-Rember also Gitter chat:
+Remember also Gitter chat:
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
 
@@ -154,5 +154,5 @@ Rember also Gitter chat:
 ## Thanks
 
   * **[Dan Abramov](https://github.com/gaearon)** - an amazing [React Hot API](https://github.com/gaearon/react-hot-api)
-    that is used for the basis of the state propagation mechanism 
+    that was used for the basis of the state propagation mechanism 
   * **[Hannu](https://github.com/heintsi)** - inspiring and sparring with this project 
