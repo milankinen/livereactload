@@ -46,7 +46,11 @@ Install LiveReactload as development dependency
     npm install --save-dev livereactload
     
 LiveReactload package is a standard Browserify transform so it can be used like any other
-transformation (e.g. `reactify`, `uglifyify`, ...).
+transformation (e.g. `reactify`, `uglifyify`, ...). 
+
+**ATTENTION**: if you are using `react-bootstrap` or any other module that uses React as a
+peer dependency, then you must define LiveReactload as a global transform (use `-g` instead 
+of `-t`).
 
 However, just adding the transformation is not enough. It will give your codebase a capability
 to reload itself but the codebase itself does not know about code changes. That's why LiveReactload
@@ -65,7 +69,7 @@ Here is an example `bin/watch` script that you can use (presuming that `browseri
 
     #!/bin/bash
     
-    { { node_modules/.bin/watchify site.js -v -t babelify -t livereactload -o static/bundle.js 1>&2; } 2>&1 \
+    { { node_modules/.bin/watchify site.js -v -t babelify -g livereactload -o static/bundle.js 1>&2; } 2>&1 \
       | while read result; do
         echo "$result"
         [[ "$result" =~ ^[0-9]+[[:space:]]bytes[[:space:]]written  ]] && node_modules/.bin/livereactload notify
