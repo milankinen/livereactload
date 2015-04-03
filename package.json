@@ -27,5 +27,7 @@
     "through2": "0.6.3",
     "ws": "0.7.1"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "fs-extra": "^0.18.0"
+  }
 }
