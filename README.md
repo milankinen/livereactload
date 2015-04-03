@@ -43,8 +43,10 @@ LiveReactload in action:
 
 Install LiveReactload as development dependency
 
-    npm install --save-dev livereactload
-    
+```bash
+npm install --save-dev livereactload
+```
+
 LiveReactload package is a standard Browserify transform so it can be used like any other
 transformation (e.g. `reactify`, `uglifyify`, ...). 
 
@@ -57,33 +59,37 @@ to reload itself but the codebase itself does not know about code changes. That'
 must be integrated to your watch system (e.g. watchify). LiveReactload provides the following
 commands to do it:
 
-    # starts a server tht listens for change events and delegates them to the browser
-    node_modules/.bin/livereactload listen
-    
-    # sends a change event notification to the listening server
-    node_modules/.bin/livereactload notify
-    
+```bash
+# starts a server tht listens for change events and delegates them to the browser
+node_modules/.bin/livereactload listen
+
+# sends a change event notification to the listening server
+node_modules/.bin/livereactload notify
+```    
 
 Here is an example `bin/watch` script that you can use (presuming that `browserify` and 
 `watchify` have been installed locally) to watch your bundle changes:
 
-    #!/bin/bash
-    
-    { { node_modules/.bin/watchify site.js -v -t babelify -g livereactload -o static/bundle.js 1>&2; } 2>&1 \
-      | while read result; do
-        echo "$result"
-        [[ "$result" =~ ^[0-9]+[[:space:]]bytes[[:space:]]written  ]] && node_modules/.bin/livereactload notify
-      done
-    } &
-    
-    node_modules/.bin/livereactload listen
-    wait
+```bash
+#!/bin/bash
 
+{ { node_modules/.bin/watchify site.js -v -t babelify -g livereactload -o static/bundle.js 1>&2; } 2>&1 \
+  | while read result; do
+    echo "$result"
+    [[ "$result" =~ ^[0-9]+[[:space:]]bytes[[:space:]]written  ]] && node_modules/.bin/livereactload notify
+  done
+} &
+
+node_modules/.bin/livereactload listen
+wait
+```
 
 And finally just start `watch` and begin coding:
 
-    ./bin/watch
-   
+```bash
+./bin/watch
+```
+
 For build system integrations, please see [this example](examples/05-build-systems)
 
 
@@ -110,32 +116,34 @@ So basically if you code your React application using its best practices, then
 Well... if you hide your state inside the modules then the reloading will lose
 the state. For example the following code will **not** work:
 
-    // counter.js
-    var React = require('react')
-    
-    var totalClicks = 0
-    
-    module.exports = React.createClass({
-    
-      getInitialState: function() {
-        return {clickCount: totalClicks}
-      },
-    
-      handleClick: function() {
-        totalClicks += 1
-        this.setState({clickCount: totalClicks})
-      },
-    
-    
-      render: function() {
-        return (
-          <div>
-            <button onClick={this.handleClick}>Increment</button>
-            <div>{this.state.clickCount}</div>
-          </div>
-        )
-      }
-    })
+```javascript
+// counter.js
+var React = require('react')
+
+var totalClicks = 0
+
+module.exports = React.createClass({
+
+  getInitialState: function() {
+    return {clickCount: totalClicks}
+  },
+
+  handleClick: function() {
+    totalClicks += 1
+    this.setState({clickCount: totalClicks})
+  },
+
+
+  render: function() {
+    return (
+      <div>
+        <button onClick={this.handleClick}>Increment</button>
+        <div>{this.state.clickCount}</div>
+      </div>
+    )
+  }
+})
+```
 
 A second problem arises when you have "private" components inside your modules
 that are not exported with `module.exports`. 
