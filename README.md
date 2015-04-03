@@ -86,6 +86,10 @@ And finally just start `watch` and begin coding:
    
 For build system integrations, please see [this example](examples/05-build-systems)
 
+**NOTE:** remember to disable your browser caching when using live reloading.
+LiveReactload has a cache prevention mechanism but it is possible that your
+browser may ignore it.
+
 
 ## How it works
 
