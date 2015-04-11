@@ -10,7 +10,7 @@ let path    = require('path'),
     debug   = require('debug')('test')
 
 
-let testedReactVersions = [/*'0.12.2',*/ '0.13.1'],
+let testedReactVersions = [ '0.12.2', '0.13.1' ],
     playgroundFolder    = path.resolve(__dirname, '../.playground')
 
 
@@ -49,6 +49,7 @@ module.exports = (testName, example, cb) => {
     testedReactVersions.map((version) => {
       it('supports LiveReactload with React version ' + version, (done) => {
         setupReact(version)
+        resetPlaygroundPublicFolder(example)
         cb(new TestHelpers, done)
       })
     })
@@ -116,6 +117,14 @@ function setupReact(version) {
   let reactDir = path.resolve(playgroundFolder, 'node_modules/react')
   fse.removeSync(reactDir)
   exec('npm install react@' + version)
+}
+
+function resetPlaygroundPublicFolder(example) {
+  let playgroundPublicDir = path.resolve(playgroundFolder, 'public'),
+      examplePublicDir    = path.resolve(__dirname, '../../examples/', example, 'public')
+
+  fse.removeSync(playgroundPublicDir)
+  fse.copySync(examplePublicDir, playgroundPublicDir)
 }
 
 
