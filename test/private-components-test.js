@@ -1,6 +1,5 @@
 
-let expect    = require('chai').expect,
-    webdriver = require('webdriverio'),
+let webdriver = require('webdriverio'),
     testCase  = require('./util/livereactload-test-case')
 
 let {expectHtmlFrom, toContainText} = require('./util/expect')
