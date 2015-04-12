@@ -14,7 +14,7 @@
   },
   "devDependencies": {
     "browserify": "9.0.3",
-    "livereactload": "file:../../",
+    "livereactload": "latest",
     "nodemon": "1.3.7",
     "reactify": "1.1.0",
     "watchify": "2.6.2"
