@@ -162,9 +162,10 @@ the **[examples](examples)** to see how to use the API in different situations.
 MIT
 
 
-## Problems?
+## Contributing
 
-Please create a [Github issue](issues) if something occurs.
+Please create a [Github issue](issues) if problems occur. Pull request are also welcome
+and they can be created to the `development` branch. 
 
 
 ## Thanks

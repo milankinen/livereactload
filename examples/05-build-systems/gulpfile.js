@@ -3,7 +3,6 @@
 var gulp       = require('gulp'),
     gutil      = require('gulp-util'),
     nodemon    = require('gulp-nodemon'),
-    sourcemaps = require('gulp-sourcemaps'),
     source     = require('vinyl-source-stream'),
     buffer     = require('vinyl-buffer'),
     browserify = require('browserify'),

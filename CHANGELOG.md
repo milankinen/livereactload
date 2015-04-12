@@ -1,5 +1,13 @@
 # LiveReactload version changelog
 
+## 0.4.0
+
+* Fix "Something went wrong with LiveReactload initialization" when reloading transiend LiveReactload dependencies #18 #25
+* Add smoke tests that can be run with `npm test` (firefox and bash required) #15
+* Tested React 0.12.2 support
+* Fix broken Firefox reloading (bundle url detection)
+
+
 ## 0.3.0
 
 * Fix crash when trying to require JSON documents
