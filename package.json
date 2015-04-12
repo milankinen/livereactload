@@ -20,8 +20,8 @@
   ],
   "main": "index.js",
   "scripts": {
-    "test": "npm run mocha",
-    "mocha": "node_modules/.bin/mocha --timeout 120000 --compilers js:babel/register test/*.js"
+    "test": "npm run mocha -- test/*.js",
+    "mocha": "node_modules/.bin/mocha --timeout 120000 --compilers js:babel/register"
   },
   "dependencies": {
     "cli-color": "0.3.3",
