@@ -26,16 +26,11 @@ module.exports = (testName, example, cb) => {
     before(() => {
       debug('initialize playground with "%s"', example)
       initPlayground(example)
-      backendServerProc  = spawn('node server.js')
       liveReactloadProc  = spawn('node_modules/.bin/livereactload listen')
       seleniumServerProc = spawn('java -jar selenium-server-standalone-2.45.0.jar', __dirname)
     })
 
     after(() => {
-      if (backendServerProc) {
-        backendServerProc.kill()
-        backendServerProc = null
-      }
       if (liveReactloadProc) {
         liveReactloadProc.kill()
         liveReactloadProc = null
@@ -46,10 +41,18 @@ module.exports = (testName, example, cb) => {
       }
     })
 
+    afterEach(() => {
+      if (backendServerProc) {
+        backendServerProc.kill()
+        backendServerProc = null
+      }
+    })
+
     testedReactVersions.map((version) => {
       it('supports LiveReactload with React version ' + version, (done) => {
         setupReact(version)
         resetPlaygroundPublicFolder(example)
+        backendServerProc = spawn('node server.js')
         cb(new TestHelpers, done)
       })
     })
@@ -66,6 +69,7 @@ function TestHelpers() {
     let preProcess = opts.preProcess || '-t reactify',
         myFlag     = opts.isGlobal === false ? '-t' : '-g'
 
+    fse.removeSync(path.resolve(playgroundFolder, 'static/bundle.js'))
     exec(util.format('node_modules/.bin/browserify %s %s livereactload site.js >> static/bundle.js', preProcess, myFlag))
   }
 
@@ -131,7 +135,7 @@ function resetPlaygroundPublicFolder(example) {
 function exec(cmd) {
   try {
     debug('exec command "%s"', cmd)
-    let exitCode = sh.run('cd "' + playgroundFolder + '"; ' + cmd)
+    let exitCode = sh.run('cd "' + playgroundFolder + '" && ' + cmd)
     if (exitCode !== 0) {
       throwInitError('Non-zero exit code from command "' + cmd + '": ' + exitCode)
     }
@@ -144,7 +148,7 @@ function exec(cmd) {
 
 function spawn(cmd, cwd = playgroundFolder) {
   debug('spawn async process with command "%s"', cmd)
-  var command = cmd.split(' ')[0],
+  let command = cmd.split(' ')[0],
       args    = cmd.split(' ').slice(1)
 
   return proc.spawn(command, args, {cwd})
