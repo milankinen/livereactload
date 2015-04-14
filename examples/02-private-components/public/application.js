@@ -41,28 +41,6 @@ var Input = React.createClass({
   }
 })
 
-/*
- * Try to comment out these lines, type some value to the input field (don't press the
- * "Add item" button). Then make some modifications. Your value disappears!
- *
- * This happens because LiveReactload does not know about these classes (they are
- * not exposed by global module.exports), thus they are entirely re-created during
- * the reload event.
- *
- * With API method .expose(cls, uniqueId) you can expose these anonymous classes
- * so that LiveReact will be aware of them and can save the previous state during
- * reload events.
- *
- * If LiveReactload transformation is disabled, then this method does nothing. So
- * it can be left to the production code safely. Recommended usage is (since state
- * and immutability is desired):
- *
- *    var List = lrapi.expose(React.createClass({...}))
- */
-List = lrapi.expose(List, 'some_unique_id_for_example_List')
-Input = lrapi.expose(Input, 'some_unique_id_for_example_Input')
-
-
 module.exports = React.createClass({
 
   getInitialState: function() {

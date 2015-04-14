@@ -7,10 +7,14 @@ var React       = require('react'),
     items       = require('./public/items')
 
 
-lrapi.onLoad(function(state) {
-  var initial = state || window.INITIAL_MODEL
+
+window.onload = function() {
+  initApp(window.INITIAL_MODEL)
+}
+
+function initApp(model) {
   var modelStream = Bacon.combineTemplate({
-    items: items._items(initial.items || []),
+    items: items._items(model.items || []),
     editedItem: items._editedItem()
   })
 
@@ -18,5 +22,10 @@ lrapi.onLoad(function(state) {
     lrapi.setState(model)
     React.render(<Application {...model} />, document.getElementById('app'))
   })
-})
+}
 
+
+// live reloading
+lrapi.onReload(function() {
+  initApp(lrapi.getState() || window.INITIAL_MODEL)
+})
