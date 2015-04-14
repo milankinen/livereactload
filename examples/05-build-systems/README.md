@@ -12,6 +12,18 @@ more details.
 
 In addition, `var lrload = require('livereactload')` has the following methods:
 
+
+### .monitor(bundleFilePath, [{displayNotification: <boolean>}])
+
+Starts monitoring the given bundle file changes and sends a reloading 
+event every time when change occurs. **This is the preferred method
+to use!** If (optional) `displayNotification` is set to `true`, then
+a desktop notification is sent every time when bundle file changes.
+`node-notifier` module is used for notifications.
+
+    lrload.monitor('static/bundle.js', {displayNotification: true})
+
+
 ### .listen([reload-event-port = 4474], [notify-event-port = 4475])
 
 Starts a WebSocket server that sends reload events to the clients. If 
