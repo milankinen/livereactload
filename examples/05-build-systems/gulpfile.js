@@ -25,7 +25,7 @@ var bundler = browserify({
 
 gulp.task('jswatch', function() {
   // start listening reload notifications
-  lrload.listen()
+  lrload.monitor('static/bundle.js', {displayNotification: true})
 
   // start JS file watching and rebundling with watchify
   var watcher = watchify(bundler)
@@ -42,7 +42,6 @@ gulp.task('jswatch', function() {
       .pipe(source('bundle.js'))
       .pipe(buffer())
       .pipe(gulp.dest('static'))
-      .pipe(lrload.gulpnotify())
   }
 })
 
