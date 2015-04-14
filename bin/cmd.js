@@ -3,6 +3,8 @@ var yargs = require('yargs')
 var rootYargs = yargs
   .usage('Usage: $0 <command> [options]')
   .command('listen', 'Starts LiveReactload server that listen for notifications and sends reload events to the clients')
+  .command('notify', 'Sends a notification to the LiveReactload server that bundle has changed and livereloading should occur')
+  .command('monitor', 'Starts monitoring the given bundle file changes and sends a reloading event every time when change occurs')
   .demand(1)
 
 
