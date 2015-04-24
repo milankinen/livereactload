@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "express": "4.12.3",
-    "livereactload-api": "latest",
     "react": "0.13.1"
   },
   "devDependencies": {
