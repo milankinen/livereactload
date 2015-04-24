@@ -15,7 +15,7 @@ let testedReactVersions = [ '0.12.2', '0.13.2' ],
 
 
 
-module.exports = (testName, example, cb) => {
+module.exports = (testName, example, cb, testedVersions) => {
 
   describe(testName, () => {
 
@@ -48,7 +48,8 @@ module.exports = (testName, example, cb) => {
       }
     })
 
-    testedReactVersions.map((version) => {
+    let versionsToTest = testedVersions || testedReactVersions
+    versionsToTest.map((version) => {
       it('supports LiveReactload with React version ' + version, (done) => {
         setupReact(version)
         resetPlaygroundPublicFolder(example)
