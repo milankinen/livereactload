@@ -57,14 +57,12 @@ of `-t`).
 However, just adding the transformation is not enough. It will give your codebase a capability
 to reload itself but the codebase itself does not know about code changes. That's why LiveReactload
 must be integrated to your watch system (e.g. watchify). LiveReactload provides the following
-commands to do it:
+command to do it:
 
 ```bash
-# starts a server tht listens for change events and delegates them to the browser
-node_modules/.bin/livereactload listen
-
-# sends a change event notification to the listening server
-node_modules/.bin/livereactload notify
+# starts monitoring the given bundle file changes and sends a reloading event every time when change occurs
+# if you give optional -n flag, then you'll receive desktop notifications every time when livereloading occurs
+node_modules/.bin/livereactload monitor -n <your-bundle-file>
 ```    
 
 Here is an example `bin/watch` script that you can use (presuming that `browserify` and 
@@ -73,14 +71,8 @@ Here is an example `bin/watch` script that you can use (presuming that `browseri
 ```bash
 #!/bin/bash
 
-{ { node_modules/.bin/watchify site.js -v -t babelify -g livereactload -o static/bundle.js 1>&2; } 2>&1 \
-  | while read result; do
-    echo "$result"
-    [[ "$result" =~ ^[0-9]+[[:space:]]bytes[[:space:]]written  ]] && node_modules/.bin/livereactload notify
-  done
-} &
-
-node_modules/.bin/livereactload listen
+node_modules/.bin/watchify site.js -v -t reactify -g livereactload -o static/bundle.js &
+node_modules/.bin/livereactload monitor -n static/bundle.js &
 wait
 ```
 

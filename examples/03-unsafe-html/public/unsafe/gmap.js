@@ -1,8 +1,7 @@
-var React = require('react'),
-    rlapi = require('livereactload-api')
+var React = require('react')
 
 
-var Map = rlapi.expose(React.createClass({
+var Map = React.createClass({
   componentDidMount: function() {
     var mapOptions = {
       center: {lat: 60.2058215, lng: 24.8819948},
@@ -18,7 +17,7 @@ var Map = rlapi.expose(React.createClass({
   render: function() {
     return <div className="map" style={{position: 'absolute', height: '100%', width: '100%'}} />
   }
-}), 'Map')
+})
 
 
 module.exports = React.createClass({

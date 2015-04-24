@@ -9,7 +9,7 @@ var app = express()
 app.get('/', function(req, res) {
   res.send('<!DOCTYPE html>'
   + '<html>'
-  + '<head><title>LiveReactload basic example</title></head>'
+  + '<head><title>LiveReactload unsafe HTML examples</title></head>'
   + '<body>'
   +   '<div id="app"></div>'
   +   '<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=' + GOOGLE_MAP_API_KEY + '"></script>'

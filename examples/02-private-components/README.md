@@ -1,65 +1,21 @@
 # Private React components with LiveReactload
 
-This example demonstrates how to deal with private React components (components
-that are not assigned to `module.exports`) so that you can use LiveReactload
-with them.
+In LiveReactload version `0.5.0`, automatic detection of private React
+classes was introduced. This means that if you create your React classes
+with `React.createClass` method, then they are automatically detected
+by LiveReactload. No `livereactload-api` needed anymore!
 
-## Problem
+Note that LiveReactload does not support automatic private class exposing of
+ES6 classes so only exported ES6 classes are live reloadable. If you want
+to enable live reloading of your private ES6, you must use `expose` method from
+[LiveReactload API](https://www.npmjs.com/package/livereactload-api).
 
-By default, LiveReactload scans the `module.exports` at the end of the each module
-and tries to search React components from that. You can either assign your component
-directly 
+```javascript
+var lrAPI = require('livereactload-api')
 
-    module.exports = <your-component>
-    
-or you can assign multiple components with object
+class MyClass extends React.Component {
+  ...
+}
 
-    module.exports = {
-      FirstComponent: <your-1st-component>,
-      SecondComponent: <your-2nd-component>,
-      ...
-    }
-    
-Both approaches are fine and they are managed automatically by LiveReactload.
-However, there may be cases where you want to create a private component that
-is not exposed with `module.exports`. 
-
-In this case, LiveReactload has no way to detect that component. This means that
-when the next reload event occurs, React does not recognize the new class, removes
-the previous one and replaces it with the new one => **your state is lost**.
-
-## Solution
-
-**[LiveReactload API](https://www.npmjs.com/package/livereactload-api)** has a helper
-function `.expose` that provides a way to expose private classes to LiveReactload. 
-After using that method, React can manage also private class state propagations 
-correctly.
-    
-First you must install API package with
-    
-    npm install --save livereactload-api
-    
-### .expose(cls, id)
-    
-    var List = lrApi.expose(React.createClass({...}), 'PrivateList')
-    
-    module.exports = React.createClass({
-      render: function() {
-        return (
-          <div>
-            <List items={this.props.items} />
-          </div>
-        )
-      }
-    })
-
-Note that id is mandatory and it **must be unique**. You can for example use 
-`__dirname` to ensure uniqueness.
-
-If LiveReactload transformer is not set, then this method does nothing.
-
-
-## In action
-
-To see custom exposing (or lacking of it) in action, open `public/application.js`
-and add comments to expose lines - you'll see what happens to the input fields.
+MyClass = lrAPI.expose(MyClass, 'MyClass')
+```

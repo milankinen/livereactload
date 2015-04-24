@@ -18,7 +18,7 @@ var app = express()
 app.get('/', function(req, res) {
   res.send('<!DOCTYPE html>'
   + '<html>'
-  + '<head><title>LiveReactload basic example</title></head>'
+  + '<head><title>LiveReactload custom state example</title></head>'
   + '<body>'
   + '  <script>window.INITIAL_MODEL = ' + JSON.stringify(initialModel) + ';</script>'
   + '  <div id="app">' + render(initialModel) + '</div>'
