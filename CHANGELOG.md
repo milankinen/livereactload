@@ -1,5 +1,12 @@
 # LiveReactload version changelog
 
+## 0.5.0
+
+* Add better monitoring support for bundle changes
+* Add automatic React inner class detection
+* Add ES6 class example
+
+
 ## 0.4.0
 
 * Fix "Something went wrong with LiveReactload initialization" when reloading transiend LiveReactload dependencies #18 #25
