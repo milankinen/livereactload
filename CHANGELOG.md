@@ -1,6 +1,12 @@
 # LiveReactload version changelog
 
-## 0.5.0
+## 0.5.2
+
+* Fix live reloading of `PureRenderMixin` components
+* Make transform options optional (for Grunt)
+
+
+## 0.5.1
 
 * Add better monitoring support for bundle changes
 * Add automatic React inner class detection
