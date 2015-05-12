@@ -1,9 +1,10 @@
 
-var React = require('react'),
-    items = require('./items')
+var React           = require('react'),
+    PureRenderMixin = require('react/addons').addons.PureRenderMixin,
+    items           = require('./items')
 
 module.exports = React.createClass({
-
+  mixins: [PureRenderMixin],
 
   handleSubmit: function(e) {
     e.preventDefault()
