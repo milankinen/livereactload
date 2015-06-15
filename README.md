@@ -88,6 +88,21 @@ For build system integrations, please see [this example](examples/05-build-syste
 LiveReactload has a cache prevention mechanism but it is possible that your
 browser may ignore it.
 
+### Configuration options
+
+LiveReactload transform can be configured by using Browserify transform options.
+Configurable options are
+
+* `preventCache` : boolean whether cache prevention should be enabled or not (default: `true`)
+* `reloadPort`   : reloading event port number that is being listened to (default: `4474`) 
+* `hostname`     : reloading agent hostname that is being listened to (default: `localhost`)
+
+Example usage:
+
+```bash
+node_modules/.bin/watchify site.js -v -t reactify -g [ livereactload --hostname 192.168.1.4 --preventCache false ] -o static/bundle.js
+```
+
 
 ## How it works
 
