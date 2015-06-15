@@ -14,6 +14,11 @@
   "devDependencies": {
     "babelify": "^5.0.4",
     "browserify": "9.0.3",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.8.0",
+    "grunt-concurrent": "^1.0.1",
+    "grunt-nodemon": "^0.4.0",
+    "grunt-shell-spawn": "^0.3.8",
     "gulp": "^3.8.11",
     "gulp-cli": "^0.2.0",
     "gulp-nodemon": "^2.0.2",
