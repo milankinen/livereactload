@@ -6,7 +6,7 @@ let path    = require('path'),
     extend  = require('extend'),
     fse     = require('fs-extra'),
     proc    = require('child_process'),
-    sh      = require('execSync'),
+    sh      = require('shelljs').exec,
     debug   = require('debug')('test')
 
 
@@ -136,7 +136,7 @@ function resetPlaygroundPublicFolder(example) {
 function exec(cmd) {
   try {
     debug('exec command "%s"', cmd)
-    let exitCode = sh.run('cd "' + playgroundFolder + '" && ' + cmd)
+    let exitCode = sh('cd "' + playgroundFolder + '" && ' + cmd).code
     if (exitCode !== 0) {
       throwInitError('Non-zero exit code from command "' + cmd + '": ' + exitCode)
     }
