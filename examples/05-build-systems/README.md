@@ -2,8 +2,8 @@
 
 If you have an existing build system (e.g. Gulp or Grunt), you can
 easily use LiveReactload with them. This example demonstrates how to use
-LiveReactload with Gulp. See `gulpfile.js` and `package.json` for
-more details.
+LiveReactload with Gulp and Grunt. See `gulpfile.js`, `Gruntfile.js` and 
+`package.json` for more details.
 
 
 ## API
