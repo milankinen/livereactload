@@ -30,6 +30,7 @@
     "livereactload-api": "0.5.1",
     "node-notifier": "4.2.1",
     "react-hot-api": "0.4.4",
+    "syntax-error": "1.1.4",
     "through2": "2.0.0",
     "ws": "0.7.2",
     "yargs": "3.11.0"
