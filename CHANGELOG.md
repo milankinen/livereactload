@@ -1,5 +1,15 @@
 # LiveReactload version changelog
 
+## 0.6.0
+
+* Add Grunt integration example #28
+* Add support for local file:/// bundles #38
+* Add config option to prevent cache busting #39
+* Prevent multiple reload event sending at once #42
+* Fix `SyntaxError` while reloading big bundles #35
+* Update dependency versions
+
+
 ## 0.5.2
 
 * Fix live reloading of `PureRenderMixin` components
