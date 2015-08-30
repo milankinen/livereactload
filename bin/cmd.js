@@ -48,13 +48,11 @@ if (cmd === 'listen') {
 } else if (cmd === 'monitor') {
 
   var monitorYargs = yargs
-    .usage('Usage: $0 monitor [--help|-h] [--notify-port|-p <port>] [--target-hostname|-t <hostname>] [--reload-port|-r <port>] [--show-notification|-n] <bundle-path>')
+    .usage('Usage: $0 monitor [--help|-h] [--notify-port|-p <port>] [--reload-port|-r <port>] [--show-notification|-n] <bundle-path>')
     .example('$0 monitor public/bundle.js')
     .boolean(['n', 'h'])
     .alias('h', 'help')
     .describe('h', 'Display help')
-    .alias('t', 'target-hostname')
-    .describe('t', 'Hostname of the WebSocket clients where reloading events will be sent (default: localhost)')
     .alias('r', 'reload-port')
     .describe('r', 'Reloading port that listens new WebSocket clients (browsers)')
     .alias('p', 'notify-port')
@@ -69,7 +67,6 @@ if (cmd === 'listen') {
   } else {
     require('../lib/server/monitor')(monitor._[1], {
       displayNotification: !!monitor.n,
-      hostname: monitor.t,
       port: monitor.r,
       notifyPort: monitor.p
     })
