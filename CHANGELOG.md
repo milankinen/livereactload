@@ -1,5 +1,12 @@
 # LiveReactload version changelog
 
+## 0.7.0
+
+* Upgrade `react-hot-api` version (solves #54)
+* Drop React 0.12.x support (due to new `react-hot-api` version)
+* Add notify port and reload port CLI options to `monitor` command 
+
+
 ## 0.6.0
 
 * Add Grunt integration example #28
