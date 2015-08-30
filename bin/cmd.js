@@ -48,11 +48,17 @@ if (cmd === 'listen') {
 } else if (cmd === 'monitor') {
 
   var monitorYargs = yargs
-    .usage('Usage: $0 monitor [--help|-h] [--show-notification|-n] <bundle-path>')
+    .usage('Usage: $0 monitor [--help|-h] [--reload-port|-rp] [--hostname|-hn] [--show-notification|-n] <bundle-path>')
     .example('$0 monitor public/bundle.js')
     .boolean(['n', 'h'])
     .alias('h', 'help')
     .describe('h', 'Display help')
+    .alias('a', 'hostname')
+    .describe('a', 'hostname')
+    .alias('r', 'reload-port')
+    .describe('r', 'Reloading port that listens new WebSocket clients (browsers)')
+    .alias('y', 'notify-port')
+    .describe('y', 'Notification HTTP port (see "listen" command) that triggers reloading event')
     .alias('n', 'show-notification')
     .describe('n', 'Display a desktop notification every time when bundle changes')
     .epilogue('Starts monitoring the given bundle file changes and sends a reloading event every time when change occurs')
@@ -61,7 +67,7 @@ if (cmd === 'listen') {
   if (monitor.h || monitor._.length < 2) {
     monitorYargs.showHelp()
   } else {
-    require('../lib/server/monitor')(monitor._[1], {displayNotification: !!monitor.n})
+    require('../lib/server/monitor')(monitor._[1], {displayNotification: !!monitor.n, port: monitor.r, notifyPort: monitor.y, hostname: monitor.a})
   }
 
 } else {
