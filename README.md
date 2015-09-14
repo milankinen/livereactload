@@ -5,6 +5,11 @@ Live code editing with Browserify and React.
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
 [![npm version](https://badge.fury.io/js/livereactload.svg)](http://badge.fury.io/js/livereactload)
 
+## Starter kits
+
+- [examples](examples), for grunt/gulp see this [example](examples/05-build-systems)
+- [react-starter-kit](https://github.com/gaearon/react-hot-boilerplate) (babel, es6 modules)
+
 
 ## Motivation
 
@@ -83,8 +88,6 @@ And finally just start `watch` and begin coding:
 ```bash
 ./bin/watch
 ```
-
-For build system integrations, please see [this example](examples/05-build-systems)
 
 **NOTE:** remember to disable your browser caching when using live reloading.
 LiveReactload has a cache prevention mechanism but it is possible that your
