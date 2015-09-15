@@ -4,9 +4,6 @@
   "description": "Live code editing with Browserify and React",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
-  "bin": {
-    "livereactload": "./bin/livereactload"
-  },
   "repository": {
     "type": "git",
     "url": "git@github.com:milankinen/livereactload.git"
@@ -20,7 +17,9 @@
   ],
   "main": "index.js",
   "scripts": {
+    "prepublish": "npm run dist",
     "test": "npm run mocha -- test/*.js",
+    "dist": "babel src --source-maps inline --modules umd --out-dir lib",
     "mocha": "mocha --timeout 120000 --compilers js:babel/register"
   },
   "dependencies": {
