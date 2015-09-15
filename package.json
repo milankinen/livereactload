@@ -1,6 +1,6 @@
 {
   "name": "livereactload",
-  "version": "0.7.0",
+  "version": "2.0.0-alpha1",
   "description": "Live code editing with Browserify and React",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
@@ -24,24 +24,18 @@
     "mocha": "mocha --timeout 120000 --compilers js:babel/register"
   },
   "dependencies": {
-    "chokidar": "1.0.3",
     "cli-color": "1.0.0",
-    "deep-extend": "0.4.0",
-    "livereactload-api": "0.5.1",
-    "node-notifier": "4.2.1",
-    "react-hot-api": "0.5.0-alpha-3",
-    "syntax-error": "1.1.4",
+    "node-notifier": "4.2.3",
     "through2": "2.0.0",
-    "ws": "0.7.2",
-    "yargs": "3.11.0"
+    "ws": "0.8.0"
   },
   "devDependencies": {
-    "babel": "5.5.8",
+    "babel": "5.8.23",
     "debug": "2.2.0",
-    "extend": "2.0.1",
-    "fs-extra": "0.19.0",
-    "mocha": "2.2.5",
-    "shelljs": "0.5.1",
-    "webdriverio": "2.4.5"
+    "extend": "3.0.0",
+    "fs-extra": "0.24.0",
+    "mocha": "2.3.2",
+    "shelljs": "0.5.3",
+    "webdriverio": "3.2.3"
   }
 }
