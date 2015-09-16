@@ -14,7 +14,7 @@ export default function applyPatch(scope$$, patch) {
       if (active) {
         // TODO how to handle new modules?
         const {require, module, exports, hash} = scope$$.modules[file]
-        console.log(" > Patch ::", file)
+        console.log(" > Patch module    ::", file)
         try {
           const __reload = new Function("require", "module", "exports", src)
           __reload(require, module, exports)
@@ -35,7 +35,7 @@ export default function applyPatch(scope$$, patch) {
         preventPropagation(parents)
       }
     })
-    info("Patch complete")
+    info("Patching complete")
   } catch (e) {
     if (!e.aborted) {
       console.error(e)

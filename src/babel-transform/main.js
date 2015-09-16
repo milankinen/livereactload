@@ -19,7 +19,7 @@ export default function babelPluginLiveReactload({filename, components, imports,
       proxies[id] = proxy
       return proxy.get()
     } else {
-      console.log("  > Patch component :: ", displayName || uniqueId)
+      console.log(" > Patch component :: ", displayName || uniqueId)
       const proxy = proxies[id]
       const instances = proxy.update(Component)
       setTimeout(() => instances.forEach(forceUpdate), 0)
