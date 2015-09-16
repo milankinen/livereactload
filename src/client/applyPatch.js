@@ -1,4 +1,4 @@
-const {info} = require("./console")
+const {info, warn} = require("./console")
 
 const {isPlainObj, values} = require("../common")
 
@@ -9,23 +9,38 @@ export default function applyPatch(scope$$, patch) {
   patch.forEach(p => p.active = numChildren(p) || 1)
 
   info("Apply patch")
-  patch.forEach(({src, file, parents, active}) => {
-    if (active) {
-      // TODO how to handle new modules?
-      const {require, module, exports} = scope$$.modules[file]
-      const __reload = new Function("require", "module", "exports", src)
-      console.log(" > Patch ::", file)
-      __reload(require, module, exports)
+  try {
+    patch.forEach(({src, file, parents, active}) => {
+      if (active) {
+        // TODO how to handle new modules?
+        const {require, module, exports, hash} = scope$$.modules[file]
+        console.log(" > Patch ::", file)
+        try {
+          const __reload = new Function("require", "module", "exports", src)
+          __reload(require, module, exports)
+        } catch (e) {
+          console.error(e)
+          warn("Abort patching")
+          // we must recover hash to previous because module wasn't loaded completely
+          // => there is old implementation still running (at least partially)
+          scope$$.modules[file].hash = hash
+          throw {aborted: true}
+        }
 
-      if (isStoppable(module, React)) {
+        if (isStoppable(module, React)) {
+          preventPropagation(parents)
+        }
+      } else {
+        // this will prevent propagation to ancestor files
         preventPropagation(parents)
       }
-    } else {
-      // this will prevent propagation to ancestor files
-      preventPropagation(parents)
+    })
+    info("Patch complete")
+  } catch (e) {
+    if (!e.aborted) {
+      console.error(e)
     }
-  })
-  info("Patch complete")
+  }
 
   function preventPropagation(parents) {
     parents.forEach(p => {
