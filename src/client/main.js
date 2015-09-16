@@ -31,9 +31,11 @@ function startWebSocketClient($scope) {
         "  -- ", event
       )
 
-      if (event.type === "diff") {
+      if (event.type === "change") {
         const diff = resolveDiff($scope, event.data)
-        ws.send(JSON.stringify({type: "diff-resolved", data: {diff}}))
+        if (diff) {
+          ws.send(JSON.stringify({type: "diff", data: diff}))
+        }
       } else if (event.type === "patch") {
         applyPatch($scope, event.data)
       }

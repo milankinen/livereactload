@@ -1,34 +1,45 @@
 
-const {sortBy, pairs} = require("../common")
+const {sortBy, pairs, values} = require("../common")
 
-export default function makePatch(client, {diff = []}) {
-  const {__modules: modules} = client
-  const scores = {}
+export default function makePatch(modules, diff = []) {
+  if (diff.length) {
 
-  if (modules && diff.length > 0) {
-    diff.forEach(scoreDependencyTree)
+    // resolve reverse dependencies so that we can calculate
+    // weights for correct reloading order
+    const reverseDependencies = {}
+    values(modules).forEach(({file, deps}) => {
+      deps.forEach(dep => {
+        reverseDependencies[dep] = [file, ...(reverseDependencies[dep] || [])]
+      })
+    })
+
+    // idea behind weighting: each file has initial weight = 1
+    // each file gets also the sum of its dependency weights
+    // finally files are sorted by weight => smaller ones must
+    // be reloaded before their dependants (bigger weights)
+    const weights = {}
+    diff.forEach(d => addWeightsStartingFrom(d, weights, reverseDependencies))
+
     const patch =
-      sortBy(pairs(scores), ([_, score]) => score)
+      sortBy(pairs(weights), ([_, weight]) => weight)
         .map(([file]) => modules[file])
-        .filter(mod => !!mod)
-        .map(({file, src, deps, hash}) => ({file, src, deps, hash}))
+        .filter(module => !!module)
+
     return patch
   }
 
-  function scoreDependencyTree(file) {
+  function addWeightsStartingFrom(file, weights, reverseDependencies) {
     const visited = {}
-    scoreRecursive(file, 1)
-    function scoreRecursive(file, score) {
+    weightRecur(file, 1)
+    function weightRecur(file, w) {
       if (visited[file]) {
+        // prevent circular dependency stack overflow
         return
       }
+      const dependants = reverseDependencies[file] || []
       visited[file] = true
-      scores[file] = (scores[file] || 0) + score
-
-      const dependants = modules[file].dependants || []
-      dependants.forEach(function (d) {
-        scoreRecursive(d, scores[file] + 1)
-      })
+      weights[file] = (weights[file] || 0) + w
+      dependants.forEach(d => weightRecur(d, weights[file] + 1))
     }
   }
 }
