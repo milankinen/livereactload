@@ -17,8 +17,8 @@ export default function injectClientTransform(file) {
 
 function makeInjectedSource(src, file, hash) {
   const injected =
-    `require("livereactload/client")(function(require, module, exports) { ` +
-      src +
-    `}, require, module, exports, ${JSON.stringify(hash)}, ${JSON.stringify(file)});`
+    "require = require(\"livereactload/client\")" +
+    `(require, module, exports, ${JSON.stringify(hash)}, ${JSON.stringify(file)});` +
+    src
   return injected
 }

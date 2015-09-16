@@ -6,7 +6,7 @@ const startClient = require("./startClient"),
       getScope    = require("../getScope")
 
 
-export default function client(initFn, require, module, exports, hash, file) {
+export default function client(require, module, exports, hash, file) {
   const scope$$ = getScope()
   scope$$.modules[file] = {file, require, module, exports, hash: extractHash(hash)}
   startClient(scope$$, {
@@ -22,6 +22,6 @@ export default function client(initFn, require, module, exports, hash, file) {
     }
   })
 
-  // this actually evaluates the module
-  initFn(require, module, exports)
+  // TODO: override require to support new modules
+  return require
 }
