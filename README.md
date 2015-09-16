@@ -68,8 +68,7 @@ if the file already exists:
   "extra": {
     "react-transform": [{
       "target": "livereactload/babel-transform",
-      "imports": ["react"],
-      "locals": ["module"]
+      "imports": ["react"]
     }]
   }
 }
