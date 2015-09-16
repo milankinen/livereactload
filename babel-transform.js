@@ -1,2 +1,2 @@
 
-module.exports = require("./lib/babel-plugin/main.js")
+module.exports = require("./lib/babel-transform/main.js")
