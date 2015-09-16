@@ -1,23 +1,25 @@
 {
   "name": "livereactload-basic-usage-example",
-  "version": "0.0.1",
+  "version": "2.0.0",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js",
-    "dev": "./scripts/dev"
+    "start": "babel-node server.js",
+    "watch": "npm run watch:server & npm run watch:bundle & wait",
+    "watch:server": "nodemon --exec babel-node --ignore bundle.js -- server.js",
+    "watch:bundle": "watchify site.js -t babelify -p livereactload -o bundle.js"
   },
   "dependencies": {
-    "babel-plugin-react-transform": "^1.0.3",
+    "babel": "5.8.23",
     "express": "4.13.3",
     "react": "0.13.3"
   },
   "devDependencies": {
+    "babel-plugin-react-transform": "1.0.4",
     "babelify": "6.3.0",
-    "browserify": "11.0.1",
-    "livereactload": "file:../..",
-    "nodemon": "1.4.1",
-    "react-proxy": "^1.0.0",
+    "livereactload": "2.0.0-alpha1",
+    "nodemon": "1.5.1",
+    "react-proxy": "1.0.0",
     "watchify": "3.4.0"
   }
 }

@@ -1,5 +1,0 @@
-#!/bin/bash
-
-node_modules/.bin/nodemon server.js &
-node_modules/.bin/watchify site.js -v -t babelify -p livereactload -o static/bundle.js &
-wait

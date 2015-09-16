@@ -1,11 +1,16 @@
-# Basic LiveReactload usage
+# Basic LiveReactload 2.x usage
 
-This example demonstrates a watch script that can be used for 
-live code editing. Script's contents can be found from `scripts/dev`.
-Usage is simple, run the following command with your terminal:
+This example demonstrates the minimal live reloading configuration.
 
-    ./scripts/dev
+* `package.json` contains `watchify` script
+* `.babelrc` contains Babel transformation setup 
+* Application code is in `src` folder
 
-Then navigate to `http://localhost:3000` and start editing files
-from `public` folder - changes should be propagated immediately
-to the page.
+You can start run this example by typing
+
+    npm i 
+    npm run watch
+    open http://localhost:3000   # OS X only
+    
+After the server is started, you can edit source files from `src` and 
+changes should be reloaded as they occur. 

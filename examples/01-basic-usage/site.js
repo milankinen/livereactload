@@ -1,7 +1,4 @@
+const React = require("react"),
+      App   = require("./src/app")
 
-var React       = require('react'),
-    Application = require('./public/application')
-
-window.onload = function() {
-  React.render(<Application />, document.getElementById('app'))
-}
+React.render(<App />, document.getElementById("app"))
