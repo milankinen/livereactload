@@ -17,7 +17,7 @@ export default React.createClass({
     function tick() {
       const {step, interval} = self.props
       self.setState({
-        value: self.state.value + step,
+        value: this.state.value + step,
         interval: setTimeout(tick, interval)
       })
     }
