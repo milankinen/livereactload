@@ -7,5 +7,5 @@ export function log(msg, ...data) {
     "::",
     clc.cyan(msg)
   )
-  data.forEach(d => console.log(clc.green("  >"), clc.yellow(d)))
+  data.forEach(d => console.log(clc.yellow("  >"), clc.yellow(d)))
 }

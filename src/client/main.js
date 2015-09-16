@@ -1,46 +1,27 @@
-const WebSocket   = require("ws"),
+const startClient = require("./startClient"),
       resolveDiff = require("./resolveDiff"),
-      applyPatch  = require("./applyPatch")
+      applyPatch  = require("./applyPatch"),
+      {info}      = require("./console"),
+      extractHash = require("../extractHash"),
+      getScope    = require("../getScope")
 
-export default function client(callback, require, module, exports, initialHash, filename) {
-  const $scope = window.__lrload$$ = window.__lrload$$ || {hashes: {}, moduleInfo: {}}
-  storeHash($scope, filename, initialHash)
-  storeModuleInfo($scope, filename, {require, module, exports})
-  startWebSocketClient($scope)
-  callback(require, module, exports)
-}
 
-function storeHash($scope, filename, hash) {
-  $scope.hashes[filename] = hash.replace("__lrhash$$:", "")
-}
-
-function storeModuleInfo($scope, filename, info) {
-  $scope.moduleInfo[filename] = info
-}
-
-function startWebSocketClient($scope) {
-  if (!$scope.ws) {
-    const ws = new WebSocket("ws://localhost:4455")
-    ws.onopen = () => {
-      console.log("LiveReactload :: WebSocket client listening for changes...")
-    }
-    ws.onmessage = msg => {
-      const event = JSON.parse(msg.data)
-      console.log(
-        "LiveReactload :: New Event\n",
-        "  -- ", event
-      )
-
-      if (event.type === "change") {
-        const diff = resolveDiff($scope, event.data)
-        if (diff) {
-          ws.send(JSON.stringify({type: "diff", data: diff}))
-        }
-      } else if (event.type === "patch") {
-        applyPatch($scope, event.data)
+export default function client(initFn, require, module, exports, hash, file) {
+  const scope$$ = getScope()
+  scope$$.modules[file] = {file, require, module, exports, hash: extractHash(hash)}
+  startClient(scope$$, {
+    change(msg) {
+      info("Bundle changed")
+      const diff = resolveDiff(scope$$, msg.data)
+      if (diff) {
+        return {type: "diff", data: diff}
       }
+    },
+    patch(msg) {
+      applyPatch(scope$$, msg.data)
     }
+  })
 
-    $scope.ws = ws
-  }
+  // this actually evaluates the module
+  initFn(require, module, exports)
 }

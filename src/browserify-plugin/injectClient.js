@@ -5,7 +5,7 @@ export default function injectClientTransform(file) {
   return through.obj(
     function transform(src, enc, next) {
       const source = src.toString(),
-            hash   = "__lrhash$$:" + makeHash(source)
+            hash   = "{{__lrhash$$:" + makeHash(source) + "}}"
 
       next(null, makeInjectedSource(source, file, hash))
     },

@@ -1,7 +1,8 @@
 const through       = require("through2"),
       {resolve}     = require("path"),
       {startServer} = require("./reloadServer"),
-      injectClient  = require("./injectClient")
+      injectClient  = require("./injectClient"),
+      extractHash   = require("../extractHash")
 
 const {values} = require("../common")
 
@@ -53,9 +54,4 @@ function isGlobalModule(moduleFilename) {
   // assuming that livereload package is in global mdule directory (node_modules)
   // and this file is in ./lib/babel-plugin folder
   return moduleFilename.indexOf(resolve(__dirname, '../../..')) !== -1
-}
-
-function extractHash(src) {
-  const match = /"__lrhash\$\$:([0-9a-z]+)"/g.exec(src)
-  return match && match[1]
 }

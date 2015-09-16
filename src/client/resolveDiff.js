@@ -1,8 +1,10 @@
 
-const {pairs} = require("../common")
+const {pairs, values} = require("../common")
 
-export default function resolveDiff($scope, hashes) {
-  const {hashes: prevHashes} = $scope
+export default function resolveDiff(scope$$, hashes) {
+  const prevHashes =
+    values(scope$$.modules).reduce((h, {file, hash}) => ({...h, [file]: hash}), {})
+
   const diff =
     pairs(hashes)
       .filter(([file, hash]) => prevHashes[file] !== hash)
