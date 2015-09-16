@@ -6,10 +6,9 @@ This example demonstrates the minimal live reloading configuration.
 * `.babelrc` contains Babel transformation setup 
 * Application code is in `src` folder
 
-You can start run this example by typing
+You can run this example by typing
 
-    npm i 
-    npm run watch
+    npm i && npm run watch
     open http://localhost:3000   # OS X only
     
 After the server is started, you can edit source files from `src` and 
