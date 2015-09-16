@@ -16,3 +16,7 @@ export function sortBy(arr, comp) {
     comp(a) < comp(b) ? -1 : (comp(a) > comp(b) ? 1 : 0)
   ))
 }
+
+export function isPlainObj(o) {
+  return typeof o == 'object' && o.constructor == Object;
+}

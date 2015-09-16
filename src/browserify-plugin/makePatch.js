@@ -6,10 +6,10 @@ export default function makePatch(modules, diff = []) {
 
     // resolve reverse dependencies so that we can calculate
     // weights for correct reloading order
-    const reverseDependencies = {}
+    const parents = {}
     values(modules).forEach(({file, deps}) => {
       deps.forEach(dep => {
-        reverseDependencies[dep] = [file, ...(reverseDependencies[dep] || [])]
+        parents[dep] = [file, ...(parents[dep] || [])]
       })
     })
 
@@ -18,17 +18,18 @@ export default function makePatch(modules, diff = []) {
     // finally files are sorted by weight => smaller ones must
     // be reloaded before their dependants (bigger weights)
     const weights = {}
-    diff.forEach(d => addWeightsStartingFrom(d, weights, reverseDependencies))
+    diff.forEach(d => addWeightsStartingFrom(d, weights, parents))
 
     const patch =
       sortBy(pairs(weights), ([_, weight]) => weight)
         .map(([file]) => modules[file])
         .filter(module => !!module)
+        .map(module => ({...module, parents: parents[module.file] || []}))
 
     return patch
   }
 
-  function addWeightsStartingFrom(file, weights, reverseDependencies) {
+  function addWeightsStartingFrom(file, weights, parents) {
     const visited = {}
     weightRecur(file, 1)
     function weightRecur(file, w) {
@@ -36,7 +37,7 @@ export default function makePatch(modules, diff = []) {
         // prevent circular dependency stack overflow
         return
       }
-      const dependants = reverseDependencies[file] || []
+      const dependants = parents[file] || []
       visited[file] = true
       weights[file] = (weights[file] || 0) + w
       dependants.forEach(d => weightRecur(d, weights[file] + 1))
