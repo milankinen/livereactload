@@ -17,7 +17,7 @@
   "devDependencies": {
     "babel-plugin-react-transform": "1.0.4",
     "babelify": "6.3.0",
-    "livereactload": "2.0.0-alpha1",
+    "livereactload": "2.0.0-alpha2",
     "nodemon": "1.5.1",
     "react-proxy": "1.0.0",
     "watchify": "3.4.0"
