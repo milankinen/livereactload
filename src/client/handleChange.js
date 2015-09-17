@@ -17,17 +17,23 @@ export default function handleChanges(scope$$, {modules: newModules, fileMap: ne
 
   const patch = modulesToReload.map(mod => ({
     id: mod.id,
+    changed: mod.changed,
     file: mod.file,
     source: mod.source,
-    reloadReqs: modulesToReload.filter(({parents}) => parents.find(p => p === mod.id)).length || 1,
     parents: mod.parents.map(Number),
-    isNew: typeof exports[mod.file] === "undefined"
+    isNew: mod.isNew
   }))
+
+  const propagationGuards = {}
+  patch.forEach(({id, changed, parents}) => {
+    propagationGuards[id] = (propagationGuards[id] || 0) + (changed ? 1 : 0)
+    parents.forEach(p => propagationGuards[p] = (propagationGuards[p] || 0) + 1)
+  })
 
   info("Apply patch")
   try {
     patch.forEach(({id, source, file, parents, reloadReqs, isNew}) => {
-      if (reloadReqs) {
+      if (propagationGuards[id] > 0) {
         if (isNew) {
           console.log(" > Add new module  ::", file)
         } else {
@@ -66,7 +72,7 @@ export default function handleChanges(scope$$, {modules: newModules, fileMap: ne
     parents.forEach(p => {
       const parent = patch.find(({id}) => id === p)
       if (parent) {
-        parent.reloadReqs--
+        propagationGuards[parent.id]--
       }
     })
   }

@@ -2,7 +2,7 @@
 const {keys, values, extend, sortBy, pairs} = require("../common")
 
 export function patchMetaData(scope$$, newModules, newFileMap) {
-  const {modules, fileMap} = scope$$
+  const {modules, fileMap, exports} = scope$$
 
   keys(newModules).forEach(file => {
     if (modules[file]) {
@@ -11,13 +11,24 @@ export function patchMetaData(scope$$, newModules, newFileMap) {
       modules[file] = newModules[file]
     }
   })
+  keys(modules).forEach(file => {
+    if (!newModules[file]) {
+      delete exports[file]
+      delete modules[file]
+    }
+  })
   extend(fileMap, newFileMap)
+  keys(fileMap).forEach(file => {
+    if (!newFileMap[file]) {
+      delete fileMap[file]
+    }
+  })
 }
 
 
 export function diff(modules, newModules, newFileMap) {
   const changedModules =
-    values(newModules).filter(hasChanged)
+    values(newModules).filter(hasModuleChanged)
 
   // resolve reverse dependencies so that we can calculate
   // weights for correct reloading order
@@ -41,13 +52,22 @@ export function diff(modules, newModules, newFileMap) {
   // finally files are sorted by weight => smaller ones must
   // be reloaded before their dependants (bigger weights)
   const weights = {}
-  changedModules.forEach(({id}) => addWeightsStartingFrom(id, weights, parents))
+  const hasChanged = {}
+  changedModules.forEach(({id}) => {
+    hasChanged[id] = true
+    addWeightsStartingFrom(id, weights, parents)
+  })
 
   const modulesToReload =
     sortBy(pairs(weights), ([_, weight]) => weight)
       .map(([id]) => newModules[newFileMap[id]])
       .filter(module => !!module)
-      .map(module => ({...module, parents: parents[module.id] || []}))
+      .map(module => ({
+        ...module,
+        changed: !!hasChanged[module.id],
+        parents: parents[module.id] || [],
+        isNew: !modules[newFileMap[module.id]]
+      }))
 
   return modulesToReload
 
@@ -67,7 +87,7 @@ export function diff(modules, newModules, newFileMap) {
     }
   }
 
-  function hasChanged({file, hash}) {
+  function hasModuleChanged({file, hash}) {
     return !modules[file] || modules[file].hash !== hash
   }
 }
