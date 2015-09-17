@@ -4,24 +4,20 @@ const {Server}  = require("ws"),
 
 const {pairs} = require("../common")
 
-export function startServer({port}, cache) {
-  let modules = {}
+export function startServer({port}) {
   const wss = new Server({port})
 
   log("Reload server up and listening...")
 
   const server = {
-    notifyReload() {
-      modules = cache.modules
-      const hashes = pairs(modules).reduce((acc, [file, {hash}]) => ({...acc, [file]: hash}), {})
-
+    notifyReload({modules, fileMap}) {
       if (wss.clients.length) {
         log("Notify clients about bundle change...")
       }
       wss.clients.forEach(client => {
         client.send(JSON.stringify({
           type: "change",
-          data: hashes
+          data: {modules, fileMap}
         }))
       })
     }
@@ -29,17 +25,6 @@ export function startServer({port}, cache) {
 
   wss.on("connection", client => {
     log("New client connected")
-
-    client.on("message", data => {
-      const msg = JSON.parse(data)
-      if (msg.type === "diff") {
-        const patch = makePatch(modules, msg.data)
-        if (patch) {
-          log("Found changes to reload", ...msg.data)
-          client.send(JSON.stringify({type: "patch", data: patch}))
-        }
-      }
-    })
   })
 
   return server

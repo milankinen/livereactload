@@ -1,52 +1,106 @@
 const through       = require("through2"),
-      {resolve}     = require("path"),
       {startServer} = require("./reloadServer"),
-      injectClient  = require("./injectClient"),
-      extractHash   = require("../extractHash")
+      makeHash      = require("./makeHash")
 
+const {readFileSync} = require("fs")
+const {resolve, dirname, basename} = require("path")
 const {values} = require("../common")
 
 
-export default function LiveReactloadPlugin(b, opts) {
-  // server and cache are alive as long as watchify is running
-  const cache  = {},
-        server = startServer({port: 4455}, cache)
+export default function LiveReactloadPlugin(b, opts = {}) {
+  // server is alive as long as watchify is running
+  const server = startServer({port: 4455})
+  const requireOverride = readFileSync(resolve(__dirname, "../requireOverride.js")).toString()
 
-  b.transform(injectClient)
   b.on("reset", addHooks)
   addHooks()
 
   function addHooks() {
-    // this cache object is preserved over single bundling
-    // pipeline so when next bundling occurs, this cache
-    // object is thrown away
-    cache.modules = {}
+    // these cache object are preserved over single bundling
+    // pipeline so when next bundling occurs, these cache
+    // objects are thrown away
+    const modules = {},
+          fileMap = {}
 
-    b.pipeline.get("syntax").push(through.obj(
-      function transform(module, enc, next) {
-        if (!isGlobalModule(module.file)) {
-          // if hash is not found, then this is probably browserify's shim module
-          // => no point to cache it
-          const hash = extractHash(module.source)
-          if (hash) {
-            // update module meta data in cache
-            const m = getModule(module.file)
-            m.src = module.source
-            m.hash = hash
-            m.deps = values(module.deps).filter(d => !isGlobalModule(d))
-          }
+    let originalEntry = ""
+
+    // task of this hook is to override the default entry so that
+    // the new entry
+    b.pipeline.get("record").push(through.obj(
+      function transform(row, enc, next) {
+        const {entry, file} = row
+        if (entry) {
+          originalEntry = file
+          next(null)
+        } else {
+          next(null, row)
         }
-        next(null, module)
       },
       function flush(next) {
-        server.notifyReload()
+        const origFilename = basename(originalEntry),
+              origDirname  = dirname(originalEntry)
+
+        const newEntryPath = resolve(origDirname, "___livereactload_entry.js")
+        const newEntrySource =
+          `var require =
+            ${requireOverride};
+
+           window.__livereactload$$ = {
+             require: require,
+             modules: modules,
+             exports: {},
+             proxies: {},
+             fileMap: fileMap
+           };
+           require("livereactload/client").call();
+           require(${JSON.stringify("./" + origFilename)});`
+
+        this.push({
+          entry: true,
+          expose: false,
+          file: newEntryPath,
+          id: newEntryPath,
+          source: newEntrySource,
+          order: 0
+        })
         next()
       }
     ))
 
-    function getModule(file) {
-      return (cache.modules[file] = cache.modules[file] || { file, src: "", hash: null, deps: [] })
-    }
+    b.pipeline.get("label").push(through.obj(
+      function transform(row, enc, next) {
+        const {id, file, source, deps, entry} = row
+        fileMap[id] = file
+        modules[entry ? "$entry$" : file] = {
+          id,
+          file,
+          source,
+          deps,
+          hash: makeHash(source)
+        }
+        next(null, row)
+      },
+      function flush(next) {
+        next()
+      }
+    ))
+
+    b.pipeline.get("wrap").push(through.obj(
+      function transform(row, enc, next) {
+        next(null)
+      },
+      function flush(next) {
+        const bundleSrc =
+          `(function() {
+             var modules = ${JSON.stringify(modules, null, 2)};
+             var fileMap = ${JSON.stringify(fileMap, null, 2)};
+             ${modules["$entry$"].source};
+           })();`
+        this.push(new Buffer(bundleSrc, "utf8"))
+        server.notifyReload({modules, fileMap})
+        next()
+      }
+    ))
   }
 }
 

@@ -1,5 +1,4 @@
 const {getForceUpdate, createProxy} = require("react-proxy")
-const getScope = require("../getScope")
 
 export default function babelPluginLiveReactload({filename, components, imports, locals}) {
   const [React] = imports
@@ -7,7 +6,7 @@ export default function babelPluginLiveReactload({filename, components, imports,
 
   return function applyProxy(Component, uniqueId) {
     const {displayName, isInFunction = false} = components[uniqueId]
-    const {proxies} = getScope()
+    const {proxies} = window.__livereactload$$
 
     if (isInFunction) {
       return Component

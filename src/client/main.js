@@ -1,27 +1,15 @@
-const startClient = require("./startClient"),
-      resolveDiff = require("./resolveDiff"),
-      applyPatch  = require("./applyPatch"),
-      {info}      = require("./console"),
-      extractHash = require("../extractHash"),
-      getScope    = require("../getScope")
+const startClient  = require("./startClient"),
+      handleChange = require("./handleChange"),
+      {info}       = require("./console")
 
-
-export default function client(require, module, exports, hash, file) {
-  const scope$$ = getScope()
-  scope$$.modules[file] = {file, require, module, exports, hash: extractHash(hash)}
+export default function client() {
+  const scope$$ = window.__livereactload$$
   startClient(scope$$, {
     change(msg) {
       info("Bundle changed")
-      const diff = resolveDiff(scope$$, msg.data)
-      if (diff) {
-        return {type: "diff", data: diff}
-      }
+      handleChange(scope$$, msg.data)
     },
     patch(msg) {
-      applyPatch(scope$$, msg.data)
     }
   })
-
-  // TODO: override require to support new modules
-  return require
 }

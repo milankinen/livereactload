@@ -19,7 +19,7 @@
   "scripts": {
     "prepublish": "npm run dist",
     "test": "npm run mocha -- test/*.js",
-    "dist": "babel src --source-maps inline --modules umd --out-dir lib",
+    "dist": "babel src --source-maps inline --blacklist strict src/requireOverride.js --out-dir lib",
     "mocha": "mocha --timeout 120000 --compilers js:babel/register"
   },
   "dependencies": {

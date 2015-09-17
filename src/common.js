@@ -17,6 +17,18 @@ export function sortBy(arr, comp) {
   ))
 }
 
+export function extend(dest, ...objs) {
+  objs.forEach(obj => {
+    const o = obj || {}
+    keys(o).forEach(k => {
+      if (o.hasOwnProperty(k)) {
+        dest[k] = o[k]
+      }
+    })
+  })
+  return dest
+}
+
 export function isPlainObj(o) {
   return typeof o == 'object' && o.constructor == Object;
 }
