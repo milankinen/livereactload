@@ -20,7 +20,7 @@ export default function handleChanges(scope$$, {modules: newModules, fileMap: ne
     file: mod.file,
     source: mod.source,
     reloadReqs: modulesToReload.filter(({parents}) => parents.find(p => p === mod.id)).length || 1,
-    parents: mod.parents,
+    parents: mod.parents.map(Number),
     isNew: typeof exports[mod.file] === "undefined"
   }))
 
@@ -47,7 +47,7 @@ export default function handleChanges(scope$$, {modules: newModules, fileMap: ne
           throw {aborted: true}
         }
 
-        if (isStoppable(_module, React)) {
+        if (!isNew && isStoppable(_module, React)) {
           preventPropagation(parents)
         }
       } else {

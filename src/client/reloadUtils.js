@@ -21,11 +21,19 @@ export function diff(modules, newModules, newFileMap) {
 
   // resolve reverse dependencies so that we can calculate
   // weights for correct reloading order
-  const parents = {}
-  values(newModules).forEach(({id, deps}) => {
-    keys(deps).forEach(dep => {
-      parents[dep] = [id, ...(parents[dep] || [])]
+  const dependencies = {}
+  function resolveDeps(mod) {
+    const deps = values(mod.deps)
+    dependencies[mod.id] = deps
+    deps.forEach(d => {
+      if (!dependencies[d]) resolveDeps(newModules[newFileMap[d]])
     })
+  }
+  resolveDeps(newModules["$entry$"])
+
+  const parents = {}
+  pairs(dependencies).forEach(([id, deps]) => {
+    deps.forEach(d => parents[d] = [id, ...(parents[d] || [])])
   })
 
   // idea behind weighting: each file has initial weight = 1
@@ -44,18 +52,18 @@ export function diff(modules, newModules, newFileMap) {
   return modulesToReload
 
 
-  function addWeightsStartingFrom(file, weights, parents) {
+  function addWeightsStartingFrom(id, weights, parents) {
     const visited = {}
-    weightRecur(file, 1)
-    function weightRecur(file, w) {
-      if (visited[file]) {
+    weightRecur(id, 1)
+    function weightRecur(id, w) {
+      if (visited[id]) {
         // prevent circular dependency stack overflow
         return
       }
-      const dependants = parents[file] || []
-      visited[file] = true
-      weights[file] = (weights[file] || 0) + w
-      dependants.forEach(d => weightRecur(d, weights[file] + 1))
+      const dependants = parents[id] || []
+      visited[id] = true
+      weights[id] = (weights[id] || 0) + w
+      dependants.forEach(d => weightRecur(d, weights[id] + 1))
     }
   }
 
