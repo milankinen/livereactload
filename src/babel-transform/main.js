@@ -6,9 +6,9 @@ export default function babelPluginLiveReactload({filename, components, imports,
 
   return function applyProxy(Component, uniqueId) {
     const {displayName, isInFunction = false} = components[uniqueId]
-    const {proxies} = window.__livereactload$$
+    const proxies = getProxies()
 
-    if (isInFunction) {
+    if (!proxies || isInFunction) {
       return Component
     }
 
@@ -24,5 +24,15 @@ export default function babelPluginLiveReactload({filename, components, imports,
       setTimeout(() => instances.forEach(forceUpdate), 0)
       return proxy.get()
     }
+  }
+}
+
+function getProxies() {
+  try {
+    if (typeof window !== "undefined") {
+      return window.__lrproxies$$ = window.__lrproxies$$ || {}
+    } else {
+    }
+  } catch (ignore) {
   }
 }

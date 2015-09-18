@@ -49,7 +49,6 @@ export default function LiveReactloadPlugin(b, opts = {}) {
              require: require,
              modules: modules,
              exports: {},
-             proxies: {},
              fileMap: fileMap
            };
            require("livereactload/client").call();
