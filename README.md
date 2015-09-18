@@ -47,7 +47,7 @@ LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x`
 Install React proxying components and LiveReactload
 
 ```bash
-npm i --save-dev watchify babelify livereactload react-proxy babel-plugin-react-transform
+npm i --save-dev watchify babelify livereactload@2.0.0-alpha2 react-proxy babel-plugin-react-transform
 ```
 
 Add LiveReactload as a Browserify plugin to `watchify`. For example:
