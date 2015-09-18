@@ -2,8 +2,8 @@
 
 This example demonstrates the minimal live reloading configuration.
 
-* `package.json` contains `watchify` script
-* `.babelrc` contains Babel transformation setup 
+* `package.json` contains `watchify` script and `bundle:prod` for production bundle creation
+* `.babelrc` contains Babel transformation setup for development environment
 * Application code is in `src` folder
 
 You can run this example by typing
@@ -13,3 +13,5 @@ You can run this example by typing
     
 After the server is started, you can edit source files from `src` and 
 changes should be reloaded as they occur. 
+
+And extra: **universal server side rendering** in `server.js` 

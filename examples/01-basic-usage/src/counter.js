@@ -1,14 +1,13 @@
-const React = require("react")
+const React     = require("react"),
+      {blueish} = require("./styles")
 
 
-const myStyle = {
-  "color": "blue"
-}
+export default class Counter extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {value: props.initialValue || 0}
+  }
 
-export default React.createClass({
-  getInitialState() {
-    return {value: 0}
-  },
 
   componentDidMount() {
     const self = this
@@ -21,15 +20,15 @@ export default React.createClass({
         interval: setTimeout(tick, interval)
       })
     }
-  },
+  }
 
   componentWillUnmount() {
     clearTimeout(this.state.interval)
-  },
+  }
 
   render() {
     return (
-      <h1 style={myStyle}>{this.state.value}</h1>
+      <h1 style={blueish}>{this.state.value}</h1>
     )
   }
-})
+}

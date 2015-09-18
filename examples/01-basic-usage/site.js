@@ -1,4 +1,6 @@
 const React = require("react"),
       App   = require("./src/app")
 
-React.render(<App />, document.getElementById("app"))
+const initialModel = window.INITIAL_MODEL
+
+React.render(<App {...initialModel} />, document.getElementById("app"))

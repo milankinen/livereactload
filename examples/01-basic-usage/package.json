@@ -5,19 +5,23 @@
   "license": "MIT",
   "scripts": {
     "start": "babel-node server.js",
+    "bundle:prod": "NODE_ENV=production browserify site.js -t babelify -g envify -g uglifyify > bundle.js",
     "watch": "npm run watch:server & npm run watch:bundle & wait",
     "watch:server": "nodemon --exec babel-node --ignore bundle.js -- server.js",
-    "watch:bundle": "watchify site.js -t babelify -p livereactload -o bundle.js"
+    "watch:bundle": "watchify site.js -v -t babelify -g envify -p livereactload -o bundle.js"
   },
   "dependencies": {
     "babel": "5.8.23",
+    "babelify": "6.3.0",
+    "browserify": "11.1.0",
+    "envify": "3.4.0",
     "express": "4.13.3",
-    "react": "0.13.3"
+    "react": "0.13.3",
+    "uglifyify": "3.0.1"
   },
   "devDependencies": {
     "babel-plugin-react-transform": "1.0.4",
-    "babelify": "6.3.0",
-    "livereactload": "2.0.0-alpha2",
+    "livereactload": "file:../..",
     "nodemon": "1.5.1",
     "react-proxy": "1.0.0",
     "watchify": "3.4.0"
