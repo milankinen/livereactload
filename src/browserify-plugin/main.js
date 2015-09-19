@@ -49,6 +49,7 @@ export default function LiveReactloadPlugin(b, opts = {}) {
              require: require,
              modules: modules,
              exports: {},
+             reloaders: {},
              initModules: initModules
            };
 
