@@ -16,13 +16,13 @@ export default function LiveReactloadPlugin(b, opts = {}) {
   addHooks()
 
   function addHooks() {
-    // these cache object are preserved over single bundling
-    // pipeline so when next bundling occurs, these cache
-    // objects are thrown away
-    const modules = {},
-          fileMap = {}
+    // this cache object is preserved over single bundling
+    // pipeline so when next bundling occurs, this cache
+    // object is thrown away
+    const modules = {}
 
     let originalEntry = ""
+    let entryId = -1
 
     // task of this hook is to override the default entry so that
     // the new entry
@@ -49,10 +49,31 @@ export default function LiveReactloadPlugin(b, opts = {}) {
              require: require,
              modules: modules,
              exports: {},
-             fileMap: fileMap
+             initModules: initModules
            };
-           require("livereactload/client").call();
-           require(${JSON.stringify("./" + origFilename)});`
+
+           initModules();
+
+           function initModules() {
+             var allExports = window.__livereactload$$.exports;
+             var modules    = window.__livereactload$$.modules;
+             // initialize Browserify compatibility
+             Object.keys(modules).forEach(function(id) {
+               modules[id][0] = (function(require, module, exports) {
+                 if (typeof allExports[id] !== "undefined") {
+                   module.exports = allExports[id].exports;
+                 } else {
+                   var __init = new Function("require", "module", "exports", modules[id].source);
+                   var _require = (function() { return require.apply(require, Array.prototype.slice.call(arguments).concat(id)); });
+                   __init(_require, module, exports, arguments[3], arguments[4], arguments[5], arguments[6]);
+                 }
+               })
+               modules[id][1] = modules[id].deps;
+             })
+           }
+
+           require("livereactload/client", entryId$$).call();
+           require(${JSON.stringify("./" + origFilename)}, entryId$$);`
 
         this.push({
           entry: true,
@@ -69,12 +90,15 @@ export default function LiveReactloadPlugin(b, opts = {}) {
     b.pipeline.get("label").push(through.obj(
       function transform(row, enc, next) {
         const {id, file, source, deps, entry} = row
-        fileMap[id] = file
-        modules[entry ? "$entry$" : file] = {
+        if (entry) {
+          entryId = id
+        }
+        modules[id] = {
           id,
           file,
           source,
           deps,
+          entry,
           hash: makeHash(source)
         }
         next(null, row)
@@ -90,13 +114,11 @@ export default function LiveReactloadPlugin(b, opts = {}) {
       },
       function flush(next) {
         const bundleSrc =
-          `(function() {
-             var modules = ${JSON.stringify(modules, null, 2)};
-             var fileMap = ${JSON.stringify(fileMap, null, 2)};
-             ${modules["$entry$"].source};
-           })();`
+          `(function(modules, entryId$$) {
+             ${modules[entryId].source};
+           })(${JSON.stringify(modules, null, 2)}, ${entryId});`
         this.push(new Buffer(bundleSrc, "utf8"))
-        server.notifyReload({modules, fileMap})
+        server.notifyReload({modules, entryId})
         next()
       }
     ))

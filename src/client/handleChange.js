@@ -1,14 +1,12 @@
-const React = require("react")
-
 const {diff, patchMetaData} = require("./reloadUtils")
 const {info, warn} = require("./console")
 const {isPlainObj, values} = require("../common")
 
-export default function handleChanges(scope$$, {modules: newModules, fileMap: newFileMap}) {
-  const {modules, exports, require: __require} = scope$$
+export default function handleChanges(scope$$, {modules: newModules, entryId: newEntryId}) {
+  const {modules, require: __require} = scope$$
 
-  const modulesToReload = diff(modules, newModules, newFileMap)
-  patchMetaData(scope$$, newModules, newFileMap)
+  const modulesToReload = diff(modules, newModules, newEntryId)
+  patchMetaData(scope$$, newModules)
 
   if (modulesToReload.length === 0) {
     info("Nothing to patch")
@@ -40,20 +38,19 @@ export default function handleChanges(scope$$, {modules: newModules, fileMap: ne
           console.log(" > Patch module    ::", file)
         }
 
-        const _export  = !isNew ? exports[file] : {}
-        const _module  = {exports: _export}
-        const _require = (...args) => __require(...args, id)
         try {
-          const __reload = new Function("require", "module", "exports", source)
-          __reload(_require, _module, _export)
-          exports[file] = _module.exports
+          // ATTENTION: must use scope object because it has been mutated during "pathMetaData"
+          // first delete previous exports from the batched module
+          delete scope$$.exports[id]
+          // the reload those exports
+          __require.__byId(id)
         } catch (e) {
           console.error(e)
           warn("Abort patching")
           throw {aborted: true}
         }
 
-        if (!isNew && isStoppable(_module, React)) {
+        if (!isNew && isStoppable(scope$$.exports[id] || {})) {
           preventPropagation(parents)
         }
       } else {
@@ -78,11 +75,11 @@ export default function handleChanges(scope$$, {modules: newModules, fileMap: ne
   }
 }
 
-function isStoppable(module, React) {
-  if (module instanceof React.Component) {
-    return isProxied(module)
-  } else if (isPlainObj(module)) {
-    return !!values(module).find(isProxied)
+function isStoppable({exports}) {
+  if (isProxied(exports)) {
+    return true
+  } else if (isPlainObj(exports)) {
+    return !!values(exports).find(isProxied)
   }
   return false
 }

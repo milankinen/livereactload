@@ -1,34 +1,35 @@
 
 const {keys, values, extend, sortBy, pairs} = require("../common")
 
-export function patchMetaData(scope$$, newModules, newFileMap) {
-  const {modules, fileMap, exports} = scope$$
+export function patchMetaData(scope$$, newModules) {
+  const {modules, exports} = scope$$
 
-  keys(newModules).forEach(file => {
-    if (modules[file]) {
-      extend(modules[file], newModules[file])
-    } else {
-      modules[file] = newModules[file]
+  const oldModulesByFile = {}
+  values(modules).forEach(mod => oldModulesByFile[mod.file] = mod)
+
+  const rearrangedExports = {}
+  keys(newModules).forEach(id => {
+    const oldModule = oldModulesByFile[newModules[id].file]
+    if (oldModule) {
+      rearrangedExports[id] = exports[oldModule.id]
     }
   })
-  keys(modules).forEach(file => {
-    if (!newModules[file]) {
-      delete exports[file]
-      delete modules[file]
-    }
-  })
-  extend(fileMap, newFileMap)
-  keys(fileMap).forEach(file => {
-    if (!newFileMap[file]) {
-      delete fileMap[file]
-    }
-  })
+
+  scope$$.exports = rearrangedExports
+  scope$$.modules = newModules
+  scope$$.initModules()
 }
 
 
-export function diff(modules, newModules, newFileMap) {
+export function diff(modules, newModules, newEntryId) {
+  const oldModulesByFile = {}
+  values(modules).forEach(mod => oldModulesByFile[mod.file] = mod)
+
   const changedModules =
-    values(newModules).filter(hasModuleChanged)
+    values(newModules).filter(({entry, file, hash}) => {
+      return !oldModulesByFile[file] || oldModulesByFile[file].hash !== hash
+    })
+
 
   // resolve reverse dependencies so that we can calculate
   // weights for correct reloading order
@@ -37,10 +38,10 @@ export function diff(modules, newModules, newFileMap) {
     const deps = values(mod.deps)
     dependencies[mod.id] = deps
     deps.forEach(d => {
-      if (!dependencies[d]) resolveDeps(newModules[newFileMap[d]])
+      if (!dependencies[d]) resolveDeps(newModules[d])
     })
   }
-  resolveDeps(newModules["$entry$"])
+  resolveDeps(newModules[newEntryId])
 
   const parents = {}
   pairs(dependencies).forEach(([id, deps]) => {
@@ -60,13 +61,13 @@ export function diff(modules, newModules, newFileMap) {
 
   const modulesToReload =
     sortBy(pairs(weights), ([_, weight]) => weight)
-      .map(([id]) => newModules[newFileMap[id]])
-      .filter(module => !!module)
+      .map(([id]) => newModules[id])
+      .filter(module => !!module && !module.entry)
       .map(module => ({
         ...module,
         changed: !!hasChanged[module.id],
         parents: parents[module.id] || [],
-        isNew: !modules[newFileMap[module.id]]
+        isNew: !oldModulesByFile[module.file]
       }))
 
   return modulesToReload
@@ -85,9 +86,5 @@ export function diff(modules, newModules, newFileMap) {
       weights[id] = (weights[id] || 0) + w
       dependants.forEach(d => weightRecur(d, weights[id] + 1))
     }
-  }
-
-  function hasModuleChanged({file, hash}) {
-    return !modules[file] || modules[file].hash !== hash
   }
 }

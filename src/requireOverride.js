@@ -1,30 +1,29 @@
 (function() {
+  require.__byId = __byId
   return require
 
   function require(name) {
+    const scope$$ = window.__livereactload$$
+    const myId = arguments.length > 1 ? arguments[arguments.length - 1] : null
+    return __byId(moduleKey(scope$$, myId, name))
+  }
+
+  function __byId(id) {
     const oldRequire = typeof window.require === "function" ? window.require : null
     const scope$$ = window.__livereactload$$
-    const {modules, exports} = scope$$
+    const _module = scope$$.modules[id]
 
-    const myId = arguments.length > 1 ? arguments[arguments.length - 1] : null
-    const key = moduleKey(scope$$, myId, name)
-
-    const _module = modules[key],
-          _export = exports[key]
-
-    if (_export) {
-      // already cached
-      return _export
-    } else if (_module) {
-      // not yet cached, must evaluate first
-      const ___init = new Function("require", "module", "exports", _module.source)
-      const _newExports = {},
-            _newModule  = {exports: _newExports},
-            _require    = (function(...args) { return require(...[...args, _module.id])})
-      // evaluate module and cache exports
-      ___init(_require, _newModule, _newExports)
-      exports[key] = _newModule.exports
-      return _newModule.exports
+    if (_module) {
+      const exports = {}
+      const mod = {exports}
+      // TODO: there should be still one argument to pass.. figure out which is it
+      _module[0].apply(this, [require, mod, exports, _module[0], scope$$.modules, scope$$.exports])
+      if (scope$$.exports[_module.id]) {
+        scope$$.exports[_module.id].exports = mod.exports
+      } else {
+        scope$$.exports[_module.id] = mod
+      }
+      return mod.exports
     } else if (oldRequire) {
       return oldRequire(...arguments)
     } else {
@@ -33,15 +32,9 @@
       throw e
     }
   }
-  function moduleKey({modules, fileMap}, callerId, name) {
-    if (callerId === null) {
-      // ___livereactload_entry.js requiring the "real" entry file
-      const {deps} = modules["$entry$"]
-      return fileMap[deps[name]]
-    } else {
-      // normal requires
-      const {deps = {}} = modules[fileMap[callerId]] || {}
-      return fileMap[deps[name]]
-    }
+
+  function moduleKey({modules}, callerId, name) {
+    const {deps = {}} = modules[callerId] || {}
+    return deps[name]
   }
 })()

@@ -10,14 +10,14 @@ export function startServer({port}) {
   log("Reload server up and listening...")
 
   const server = {
-    notifyReload({modules, fileMap}) {
+    notifyReload(metadata) {
       if (wss.clients.length) {
         log("Notify clients about bundle change...")
       }
       wss.clients.forEach(client => {
         client.send(JSON.stringify({
           type: "change",
-          data: {modules, fileMap}
+          data: metadata
         }))
       })
     }
