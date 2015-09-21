@@ -1,6 +1,5 @@
-const {Server}  = require("ws"),
-      {log}     = require("./console"),
-      makePatch = require("./makePatch")
+const {Server} = require("ws"),
+      {log}    = require("./console")
 
 const {pairs} = require("../common")
 
