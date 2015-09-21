@@ -82,6 +82,7 @@ export default function LiveReactloadPlugin(b, opts = {}) {
           file: newEntryPath,
           id: newEntryPath,
           source: newEntrySource,
+          nomap: true,
           order: 0
         })
         next()
