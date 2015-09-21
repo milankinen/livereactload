@@ -117,7 +117,7 @@ export default function LiveReactloadPlugin(b, opts = {}) {
         const bundleSrc =
           `(function(modules, entryId$$) {
              ${modules[entryId].source};
-           })(${JSON.stringify(modules, null, 2)}, ${entryId});`
+           })(${JSON.stringify(modules, null, 2)}, ${JSON.stringify(entryId)});`
         this.push(new Buffer(bundleSrc, "utf8"))
         server.notifyReload({modules, entryId})
         next()
