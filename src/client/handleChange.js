@@ -30,7 +30,7 @@ export default function handleChanges(scope$$, {modules: newModules, entryId: ne
 
   info("Apply patch")
   try {
-    patch.forEach(({id, source, file, parents, reloadReqs, isNew}) => {
+    patch.forEach(({id, file, parents, isNew}) => {
       if (propagationGuards[id] > 0) {
         if (isNew) {
           console.log(" > Add new module  ::", file)
