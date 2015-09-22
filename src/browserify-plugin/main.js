@@ -9,7 +9,7 @@ const {values} = require("../common")
 
 export default function LiveReactloadPlugin(b, opts = {}) {
   // server is alive as long as watchify is running
-  const server = startServer({port: 4455})
+  const server = opts.server !== false ? startServer({port: 4455}) : null
   const requireOverride = readFileSync(resolve(__dirname, "../requireOverride.js")).toString()
 
   b.on("reset", addHooks)
@@ -120,7 +120,9 @@ export default function LiveReactloadPlugin(b, opts = {}) {
              ${modules[entryId].source};
            })(${JSON.stringify(modules, null, 2)}, ${JSON.stringify(entryId)});`
         this.push(new Buffer(bundleSrc, "utf8"))
-        server.notifyReload({modules, entryId})
+        if (server) {
+          server.notifyReload({modules, entryId})
+        }
         next()
       }
     ))
