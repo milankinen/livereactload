@@ -1,6 +1,6 @@
-# LiveReactload
+# LiveReactload 2.x
 
-Live code editing with Browserify and React. **VERSION 2.0.0 ALPHA RELEASED**
+Live code editing with Browserify and React.
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
 [![npm version](https://badge.fury.io/js/livereactload.svg)](http://badge.fury.io/js/livereactload)
@@ -8,77 +8,118 @@ Live code editing with Browserify and React. **VERSION 2.0.0 ALPHA RELEASED**
 
 ## Motivation
 
-There are many live reloading components for CSS (and its variants) but unfortunately
-JavaScript didn't have such tools yet. After I played a little bit with React, I realised
-that its architecture and programming principles are a perfect match that could solve
-the puzzle.
+Hot reloading is de facto in today's front-end development but unfortunately
+there wasn't any decent implementation for Browserify yet. This is shame because
+(in my opinion) Browserify is the best bundling tool at the moment.
+
+Hence the goal of this project is to bring the hot reloading functionality
+to Browserify by honoring its principles: simplicity and modularity.
 
 
-## What is LiveReactload
+## How it works?
 
-LiveReactload is a Browserify implementation similar to [LiveReload](http://livereload.com/) but
-for JavaScript instead. Ok, LiveReload actually supports JavaScript reloading **but** it
-reloads the **whole page** when the changes occur. If you have done something with the page,
-then **the state is lost** and you have to do the same operations again.
+LiveReactload can be used as a normal Browserify plugin. When applied to the bundle,
+it modifies the Browserify bundling pipeline so that the created bundle becomes
+"hot-reloadable".
 
-LiveReactload solves the **state propagation problem** over JavaScript reloads. It
-provides the following features:
+  * LiveReactload starts the reloading server which watches the bundle changes
+  and sends the changed contents to the browser via WebSocket.
+  * When the changes arrive to the browser, LiveReactload client (included automatically
+  in the bundle) analyzes the changes and reloads the changed modules
 
-  * Automatic state propagation management for React components as a Browserify plugin
-  * Notification infrastructure for change event delegation
-  * Automatic change event listening and bundle reloading (when the Browserify plugin is enabled)
-  * Integration interfaces for build systems  
-  
-And because one photo tells more than a thousand words, see the following video to see 
+Starting from version `2.0.0` LiveReactload utilizes [Dan Abramov](https://github.com/gaearon)'s
+[babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform) and
+[react-proxy](https://github.com/gaearon/react-proxy), which means that hot-reloading
+capabilities are same as in Webpack.
+
+And because one photo tells more than a thousand words, see the following video to see
 LiveReactload in action:
 
-[![Video](https://dl.dropbox.com/s/gcnhv4rzvhq5kaw/livereactload-preview.png)](https://vimeo.com/123513496)
-    
+[![Demo](https://dl.dropbox.com/s/gcnhv4rzvhq5kaw/livereactload-preview.png)](https://vimeo.com/123513496)
+
 ### Other implementations
 
-TODO: links to Webpack HRM etc etc
+If you are a Webpack user, you probably want to check
+**[react-transform-boilerplate](https://github.com/gaearon/react-transform-boilerplate)**.
 
-## Requirements
-
-LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x`
 
 ## Usage
 
-Install React proxying components and LiveReactload
+### Pre-requirements
 
-```bash
-npm i --save-dev watchify babelify livereactload@2.0.0-alpha2 react-proxy babel-plugin-react-transform
+LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x` in order to
+work.
+
+### Installation
+
+Install pre-requirements (if not already exist)
+
+```sh
+npm i --save react
+npm i --save-dev watchify babelify
 ```
 
-Add LiveReactload as a Browserify plugin to `watchify`. For example:
+Install React proxying components and LiveReactload
 
-```bash
-node_modules/.bin/watchify site.js -t babelify -p livereactload -o static/bundle.js
+```sh
+npm i --save-dev livereactload react-proxy babel-plugin-react-transform
 ```
 
 Create `.babelrc` file into project's root directory (or add `react-transform` extra
 if the file already exists:
 
-```javascript 
+```javascript
 {
-  "stage": 0,
-  "plugins": [
-    "react-transform"
-  ],
-  "extra": {
-    "react-transform": [{
-      "target": "livereactload/babel-transform",
-      "imports": ["react"]
-    }]
+  "env": {
+    "development": {
+      "plugins": [
+        "react-transform"
+      ],
+      "extra": {
+        "react-transform": [{
+          "target": "livereactload/babel-transform",
+          "imports": ["react"]
+        }]
+      }
+    }
   }
 }
 ```
 
-**That's it!** Now just start (live) coding.
+And finally use LiveReactload as a Browserify plugin with `watchify`. For example:
+
+```bash
+node_modules/.bin/watchify site.js -t babelify -p livereactload -o static/bundle.js
+```
+
+**That's it!** Now just start (live) coding! For more detailed example, please see
+**[the basic usage example](examples/01-basic-usage)**.
+
+### Reacting to reload events
+
+Ideally your client code should be completely unaware of the reloading. However,
+some libraries like `redux` require a little hack for hot-reloading. That's why
+LiveReactload provides `module.onReload(<callback>)` hook.
+
+By using this hook, you can add your own custom functionality that is
+executed in the browser only when the module reload occurs:
+
+```javascript
+if (module.onReload) {
+  module.onReload(() => {
+    ... do something ...
+  });
+}
+```
+
+For more details, please see **[the redux example](exaples/02-redux)**.
 
 ### How about build systems?
 
-TODO: build system integrations
+LiveReactload is build system agnostic. It means that you can use LiveReactload with
+all build systems having Browserify and Watchify support. Please see
+**[build systems example](examples/03-build-systems)** for more information.
+
 
 ## When does it not work?
 
@@ -87,23 +128,23 @@ the state. For example the following code will **not** work:
 
 ```javascript
 // counter.js
-var React = require('react')
+const React = require('react')
 
-var totalClicks = 0
+const totalClicks = 0
 
-module.exports = React.createClass({
+export default React.createClass({
 
-  getInitialState: function() {
+  getInitialState() {
     return {clickCount: totalClicks}
   },
 
-  handleClick: function() {
+  handleClick() {
     totalClicks += 1
     this.setState({clickCount: totalClicks})
   },
 
 
-  render: function() {
+  render() {
     return (
       <div>
         <button onClick={this.handleClick}>Increment</button>
@@ -122,10 +163,4 @@ MIT
 ## Contributing
 
 Please create a [Github issue](issues) if problems occur. Pull request are also welcome
-and they can be created to the `development` branch. 
-
-
-## Thanks
-
-  * **[Dan Abramov](https://github.com/gaearon)** 
-  * **[Hannu](https://github.com/heintsi)**
+and they can be created to the `development` branch.
