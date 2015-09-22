@@ -1,6 +1,6 @@
 const {diff, patchMetaData} = require("./reloadUtils")
 const {info, warn} = require("./console")
-const {isPlainObj, values} = require("../common")
+const {isPlainObj, values, find} = require("../common")
 
 export default function handleChanges(scope$$, {modules: newModules, entryId: newEntryId}) {
   const {modules, require: __require} = scope$$
@@ -67,7 +67,7 @@ export default function handleChanges(scope$$, {modules: newModules, entryId: ne
 
   function preventPropagation(parents) {
     parents.forEach(p => {
-      const parent = patch.find(({id}) => id === p)
+      const parent = find(patch, ({id}) => id === p)
       if (parent) {
         propagationGuards[parent.id]--
       }
@@ -79,7 +79,7 @@ function isStoppable({exports}) {
   if (isProxied(exports)) {
     return true
   } else if (isPlainObj(exports)) {
-    return !!values(exports).find(isProxied)
+    return !!find(values(exports), isProxied)
   }
   return false
 }

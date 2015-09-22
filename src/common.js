@@ -29,6 +29,11 @@ export function extend(dest, ...objs) {
   return dest
 }
 
+export function find(arr, predicate) {
+  const results = (arr || []).filter(predicate)
+  return results.length ? results[0] : undefined
+}
+
 export function isPlainObj(o) {
   return typeof o == 'object' && o.constructor == Object;
 }
