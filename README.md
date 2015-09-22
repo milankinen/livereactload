@@ -4,7 +4,7 @@ Live code editing with Browserify and React. **VERSION 2.0.0 ALPHA RELEASED**
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
 [![npm version](https://badge.fury.io/js/livereactload.svg)](http://badge.fury.io/js/livereactload)
-
+[![Build Status](https://travis-ci.org/milankinen/livereactload.svg)](https://travis-ci.org/milankinen/livereactload)
 
 ## Motivation
 
