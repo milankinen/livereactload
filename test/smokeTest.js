@@ -7,7 +7,7 @@ const server = startServer()
 const browser = Browser.create()
 
 test("tsers", assert => {
-  await(5000)
+  await(10000)
     .then(() => (
       browser.visit("http://localhost:3077/")
         .then(() => await(500))
