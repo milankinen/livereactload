@@ -5,5 +5,7 @@ node_js:
   - "0.10"
   - "iojs-v1.0.4"
   - "4.0.0"
+before_script:
+  - npm install -g npm
 script:
   - npm test
