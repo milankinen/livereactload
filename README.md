@@ -8,8 +8,8 @@ Live code editing with Browserify and React.
 
 ## Motivation
 
-Hot reloading is de facto in today's front-end development but unfortunately
-there wasn't any decent implementation for Browserify yet. This is shame because
+Hot reloading is de facto in today's front-end scene but unfortunately
+there isn't any decent implementation for Browserify yet. This is shame because
 (in my opinion) Browserify is the best bundling tool at the moment.
 
 Hence the goal of this project is to bring the hot reloading functionality
@@ -99,7 +99,7 @@ node_modules/.bin/watchify site.js -t babelify -p livereactload -o static/bundle
 
 Ideally your client code should be completely unaware of the reloading. However,
 some libraries like `redux` require a little hack for hot-reloading. That's why
-LiveReactload provides `module.onReload(<callback>)` hook.
+LiveReactload provides `module.onReload(..)` hook.
 
 By using this hook, you can add your own custom functionality that is
 executed in the browser only when the module reload occurs:
