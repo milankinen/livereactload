@@ -158,6 +158,34 @@ export default React.createClass({
 })
 ```
 
+## Configuration options
+
+You can configure the LiveReactload Browserify plugin by passing some options
+to it (`-p [ livereatload <options...> ]`, see Browserify docs for more information
+about config format).
+
+### Available options
+
+LiveReactload supports the following configuration options
+
+#### `--no-server` 
+
+Prevents reload server startup. If you are using LiveReactload plugin with Browserify 
+(instead of watchify), you may want to enable this so that the process won't hang after
+bundling. This is not set by default.
+
+#### `--port <number>` 
+
+Starts reload server to the given port and configures the bundle's client to 
+connect to the server using this port. Default value is `4474`
+
+#### `--host <hostname>`
+
+Configures the reload client to use the given hostname when connecting to the
+reload server. You may need this if you are running the bundle in an another device. 
+Default value is `localhost`
+
+
 ## License
 
 MIT
