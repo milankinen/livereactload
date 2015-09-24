@@ -1,127 +1,127 @@
-# LiveReactload
+# LiveReactload 2.x
 
 Live code editing with Browserify and React.
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
 [![npm version](https://badge.fury.io/js/livereactload.svg)](http://badge.fury.io/js/livereactload)
-
+[![Build Status](https://travis-ci.org/milankinen/livereactload.svg)](https://travis-ci.org/milankinen/livereactload)
 
 ## Motivation
 
-There are many live reloading components for CSS (and its variants) but unfortunately
-JavaScript didn't have such tools yet. After I played a little bit with React, I realised
-that its architecture and programming principles are a perfect match that could solve
-the puzzle.
+Hot reloading is de facto in today's front-end scene but unfortunately
+there isn't any decent implementation for Browserify yet. This is shame because
+(in my opinion) Browserify is the best bundling tool at the moment.
 
-I did some Googling and managed to find [one similar implementation](https://github.com/gaearon/react-hot-loader) 
-for the Webpack. However, I'm a very satisfied Browserify user so I wanted one for it
-too. The results of this work can be found in this repository and npm.
+Hence the goal of this project is to bring the hot reloading functionality
+to Browserify by honoring its principles: simplicity and modularity.
 
-## What is LiveReactload
 
-LiveReactload is a Browserify implementation similar to [LiveReload](http://livereload.com/) but
-for JavaScript instead. Ok, LiveReload actually supports JavaScript reloading **but** it
-reloads the **whole page** when the changes occur. If you have done something with the page,
-then **the state is lost** and you have to do the same operations again.
+## How it works?
 
-LiveReactload solves the **state propagation problem** over JavaScript reloads. It
-provides the following features:
+LiveReactload can be used as a normal Browserify plugin. When applied to the bundle,
+it modifies the Browserify bundling pipeline so that the created bundle becomes
+"hot-reloadable".
 
-  * Automatic state propagation management for React components as a Browserify transform
-  * Notification infrastructure for change event delegation
-  * Automatic change event listening and bundle reloading (when the Browserify transform is enabled)
-  * Custom state propagation by using **[LiveReactload API](https://github.com/milankinen/livereactload-api)**
-  * Integration interfaces for build systems  
-  
-And because one photo tells more than a thousand words, see the following video to see 
+  * LiveReactload starts the reloading server which watches the bundle changes
+  and sends the changed contents to the browser via WebSocket.
+  * When the changes arrive to the browser, LiveReactload client (included automatically
+  in the bundle) analyzes the changes and reloads the changed modules
+
+Starting from version `2.0.0` LiveReactload utilizes [Dan Abramov](https://github.com/gaearon)'s
+[babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform) and
+[react-proxy](https://github.com/gaearon/react-proxy), which means that hot-reloading
+capabilities are same as in Webpack.
+
+And because one photo tells more than a thousand words, see the following video to see
 LiveReactload in action:
 
-[![Video](https://dl.dropbox.com/s/gcnhv4rzvhq5kaw/livereactload-preview.png)](https://vimeo.com/123513496)
-    
+[![Demo](https://dl.dropbox.com/s/gcnhv4rzvhq5kaw/livereactload-preview.png)](https://vimeo.com/123513496)
+
+### Other implementations
+
+If you are a Webpack user, you probably want to check
+**[react-transform-boilerplate](https://github.com/gaearon/react-transform-boilerplate)**.
+
 
 ## Usage
 
-Install LiveReactload as development dependency
+### Pre-requirements
 
-```bash
-npm install --save-dev livereactload
+LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x` in order to
+work.
+
+### Installation
+
+Install pre-requirements (if not already exist)
+
+```sh
+npm i --save react
+npm i --save-dev watchify babelify
 ```
 
-LiveReactload package is a standard Browserify transform so it can be used like any other
-transformation (e.g. `reactify`, `uglifyify`, ...). 
+Install React proxying components and LiveReactload
 
-LiveReactload supports React versions 0.13.x and upwards. 
-
-**ATTENTION**: if you are using `react-bootstrap` or any other module that uses React as a
-peer dependency, then you must define LiveReactload as a global transform (use `-g` instead 
-of `-t`).
-
-However, just adding the transformation is not enough. It will give your codebase a capability
-to reload itself but the codebase itself does not know about code changes. That's why LiveReactload
-must be integrated to your watch system (e.g. watchify). LiveReactload provides the following
-command to do it:
-
-```bash
-# starts monitoring the given bundle file changes and sends a reloading event every time when change occurs
-# if you give optional -n flag, then you'll receive desktop notifications every time when livereloading occurs
-node_modules/.bin/livereactload monitor -n <your-bundle-file>
-```    
-
-Here is an example `bin/watch` script that you can use (presuming that `browserify` and 
-`watchify` have been installed locally) to watch your bundle changes:
-
-```bash
-#!/bin/bash
-
-node_modules/.bin/watchify site.js -v -t reactify -g livereactload -o static/bundle.js &
-node_modules/.bin/livereactload monitor -n static/bundle.js &
-wait
+```sh
+npm i --save-dev livereactload react-proxy babel-plugin-react-transform
 ```
 
-And finally just start `watch` and begin coding:
+Create `.babelrc` file into project's root directory (or add `react-transform` extra
+if the file already exists). More information about `.babelrc` format and options
+can be found from [babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform).
 
-```bash
-./bin/watch
+```javascript
+{
+  "env": {
+    "development": {
+      "plugins": [
+        "react-transform"
+      ],
+      "extra": {
+        "react-transform": {
+          "transforms": [{
+            "transform": "livereactload/babel-transform",
+            "imports": ["react"]
+          }]
+        }
+      }
+    }
+  }
+}
 ```
 
-For build system integrations, please see [this example](examples/05-build-systems)
-
-**NOTE:** remember to disable your browser caching when using live reloading.
-LiveReactload has a cache prevention mechanism but it is possible that your
-browser may ignore it.
-
-### Configuration options
-
-LiveReactload transform can be configured by using Browserify transform options.
-Configurable options are
-
-* `preventCache` : boolean whether cache prevention should be enabled or not (default: `true`)
-* `reloadPort`   : reloading event port number that is being listened to (default: `4474`) 
-* `hostname`     : reloading agent hostname that is being listened to (default: `localhost`)
-
-Example usage:
+And finally use LiveReactload as a Browserify plugin with `watchify`. For example:
 
 ```bash
-node_modules/.bin/watchify site.js -v -t reactify -g [ livereactload --hostname 192.168.1.4 --preventCache false ] -o static/bundle.js
+node_modules/.bin/watchify site.js -t babelify -p livereactload -o static/bundle.js
 ```
 
+**That's it!** Now just start (live) coding! For more detailed example, please see
+**[the basic usage example](examples/01-basic-usage)**.
 
-## How it works
+### Reacting to reload events
 
-The React programming model suits perfectly live code editing: components are just
-stupid ones that render the data they are told to render and the DOM changes are handled
-with VirtualDOM diff. This (hopefully) prevents developers from **hiding the state** inside
-the application. 
+Ideally your client code should be completely unaware of the reloading. However,
+some libraries like `redux` require a little hack for hot-reloading. That's why
+LiveReactload provides `module.onReload(..)` hook.
 
-If the state is managed by React components and those components are exported
-via `module.exports`, it is possible to weave those components with a logic that
-enables state propagation: when the bundle is reloaded, the new implementation 
-replaces the old prototypes but not the actual state.
+By using this hook, you can add your own custom functionality that is
+executed in the browser only when the module reload occurs:
 
-More detailed explanation about the idea coming later...
+```javascript
+if (module.onReload) {
+  module.onReload(() => {
+    ... do something ...
+  });
+}
+```
 
-So basically if you code your React application using its best practices, then
-**you can use this reloading component without any modifications to your code!**.
+For more details, please see **[the redux example](exaples/02-redux)**.
+
+### How about build systems?
+
+LiveReactload is build system agnostic. It means that you can use LiveReactload with
+all build systems having Browserify and Watchify support. Please see
+**[build systems example](examples/03-build-systems)** for more information.
 
 
 ## When does it not work?
@@ -131,23 +131,23 @@ the state. For example the following code will **not** work:
 
 ```javascript
 // counter.js
-var React = require('react')
+const React = require('react')
 
-var totalClicks = 0
+let totalClicks = 0
 
-module.exports = React.createClass({
+export default React.createClass({
 
-  getInitialState: function() {
+  getInitialState() {
     return {clickCount: totalClicks}
   },
 
-  handleClick: function() {
+  handleClick() {
     totalClicks += 1
     this.setState({clickCount: totalClicks})
   },
 
 
-  render: function() {
+  render() {
     return (
       <div>
         <button onClick={this.handleClick}>Increment</button>
@@ -158,12 +158,32 @@ module.exports = React.createClass({
 })
 ```
 
-A second problem arises when you have "private" components inside your modules
-that are not exported with `module.exports`. 
+## Configuration options
 
-**However**, both of those challenges can be solved by using 
-[LiveReactload API](https://github.com/milankinen/livereactload-api). Please see
-the **[examples](examples)** to see how to use the API in different situations.
+You can configure the LiveReactload Browserify plugin by passing some options
+to it (`-p [ livereatload <options...> ]`, see Browserify docs for more information
+about config format).
+
+### Available options
+
+LiveReactload supports the following configuration options
+
+#### `--no-server` 
+
+Prevents reload server startup. If you are using LiveReactload plugin with Browserify 
+(instead of watchify), you may want to enable this so that the process won't hang after
+bundling. This is not set by default.
+
+#### `--port <number>` 
+
+Starts reload server to the given port and configures the bundle's client to 
+connect to the server using this port. Default value is `4474`
+
+#### `--host <hostname>`
+
+Configures the reload client to use the given hostname when connecting to the
+reload server. You may need this if you are running the bundle in an another device. 
+Default value is `localhost`
 
 
 ## License
@@ -174,11 +194,4 @@ MIT
 ## Contributing
 
 Please create a [Github issue](issues) if problems occur. Pull request are also welcome
-and they can be created to the `development` branch. 
-
-
-## Thanks
-
-  * **[Dan Abramov](https://github.com/gaearon)** - an amazing [React Hot API](https://github.com/gaearon/react-hot-api)
-    that was used for the basis of the state propagation mechanism 
-  * **[Hannu](https://github.com/heintsi)** - inspiring and sparring with this project 
+and they can be created to the `development` branch.

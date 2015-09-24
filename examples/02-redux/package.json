@@ -1,11 +1,11 @@
 {
-  "name": "livereactload-basic-usage-example",
+  "name": "livereactload-flux-with-redux-example",
   "version": "2.0.0",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
   "scripts": {
     "start": "babel-node server.js",
-    "bundle:prod": "NODE_ENV=production browserify site.js -t babelify -g envify -g uglifyify > bundle.js",
+    "bundle:prod": "browserify site.js -t babelify -g envify -o bundle.js",
     "watch": "npm run watch:server & npm run watch:bundle & wait",
     "watch:server": "nodemon --exec babel-node --ignore bundle.js -- server.js",
     "watch:bundle": "watchify site.js -v -t babelify -g envify -p livereactload -o bundle.js"
@@ -17,6 +17,9 @@
     "envify": "3.4.0",
     "express": "4.13.3",
     "react": "0.13.3",
+    "react-redux": "3.0.0",
+    "redux": "3.0.0",
+    "redux-thunk": "1.0.0",
     "uglifyify": "3.0.1"
   },
   "devDependencies": {

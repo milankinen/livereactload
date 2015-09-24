@@ -1,5 +1,8 @@
 .DS_Store
 .idea
 *.log
+npm-debug*
 node_modules
-test/.playground
+lib
+.bundle
+bundle*

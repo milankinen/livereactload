@@ -1,5 +1,11 @@
 # LiveReactload version changelog
 
+## 2.x.x
+
+**Everything rewritten**. Please 2.x.x release notes from
+**[Github releases](https://github.com/milankinen/livereactload/releases)**.
+
+
 ## 0.7.0
 
 * Upgrade `react-hot-api` version (solves #54)

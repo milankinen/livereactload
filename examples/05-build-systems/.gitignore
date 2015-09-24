@@ -1,6 +1,0 @@
-.DS_Store
-.idea
-*.log
-node_modules
-static/bundle.*
-static/.bundle*
