@@ -1,6 +1,6 @@
 {
   "name": "livereactload",
-  "version": "2.0.0-rc1",
+  "version": "2.0.0",
   "description": "Live code editing with Browserify and React",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",

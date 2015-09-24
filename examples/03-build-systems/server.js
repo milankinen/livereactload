@@ -5,7 +5,7 @@ app.get("/", function (req, res) {
   res.send("<!DOCTYPE html>" +
   "<html>" +
     "<head>" +
-      "<title>2.x basic usage</title>" +
+      "<title>2.x build systems</title>" +
     "</head>" +
     "<body>" +
       "<div id='app'></div>" +
