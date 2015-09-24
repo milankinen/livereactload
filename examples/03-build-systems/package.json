@@ -8,13 +8,13 @@
   },
   "dependencies": {
     "babelify": "6.3.0",
-    "browserify": "11.1.0",
+    "browserify": "11.2.0",
     "envify": "3.4.0",
     "express": "4.13.3",
     "react": "0.13.3"
   },
   "devDependencies": {
-    "babel-plugin-react-transform": "1.0.4",
+    "babel-plugin-react-transform": "1.1.1",
     "grunt": "0.4.5",
     "grunt-browserify": "4.0.1",
     "grunt-concurrent": "2.0.3",
@@ -23,8 +23,8 @@
     "gulp-nodemon": "2.0.4",
     "gulp-util": "3.0.6",
     "livereactload": "2.0.0-rc1",
-    "nodemon": "1.5.1",
-    "react-proxy": "1.0.0",
+    "nodemon": "1.7.0",
+    "react-proxy": "1.1.0",
     "vinyl-buffer": "1.0.0",
     "vinyl-source-stream": "1.1.0",
     "watchify": "3.4.0"
