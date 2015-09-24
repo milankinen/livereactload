@@ -133,7 +133,7 @@ the state. For example the following code will **not** work:
 // counter.js
 const React = require('react')
 
-const totalClicks = 0
+let totalClicks = 0
 
 export default React.createClass({
 
