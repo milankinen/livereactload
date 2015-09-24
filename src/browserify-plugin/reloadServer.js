@@ -6,7 +6,7 @@ const {pairs} = require("../common")
 export function startServer({port}) {
   const wss = new Server({port})
 
-  log("Reload server up and listening...")
+  log("Reload server up and listening in port " + port + "...")
 
   const server = {
     notifyReload(metadata) {
