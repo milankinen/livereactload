@@ -66,7 +66,8 @@ npm i --save-dev livereactload react-proxy babel-plugin-react-transform
 ```
 
 Create `.babelrc` file into project's root directory (or add `react-transform` extra
-if the file already exists:
+if the file already exists). More information about `.babelrc` format and options
+can be found from [babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform).
 
 ```javascript
 {
@@ -76,10 +77,12 @@ if the file already exists:
         "react-transform"
       ],
       "extra": {
-        "react-transform": [{
-          "target": "livereactload/babel-transform",
-          "imports": ["react"]
-        }]
+        "react-transform": {
+          "transforms": [{
+            "transform": "livereactload/babel-transform",
+            "imports": ["react"]
+          }]
+        }
       }
     }
   }
