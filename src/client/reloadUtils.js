@@ -36,10 +36,9 @@ export function diff(modules, newModules, newEntryId) {
   const dependencies = {}
   function resolveDeps(mod) {
     const deps = values(mod.deps)
-    if (!deps) return;
     dependencies[mod.id] = deps
     deps.forEach(d => {
-      if (!dependencies[d]) resolveDeps(newModules[d])
+      if (!dependencies[d] && newModules[d]) resolveDeps(newModules[d])
     })
   }
   resolveDeps(newModules[newEntryId])
