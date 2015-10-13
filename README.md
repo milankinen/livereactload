@@ -115,7 +115,7 @@ if (module.onReload) {
 }
 ```
 
-For more details, please see **[the redux example](exaples/02-redux)**.
+For more details, please see **[the redux example](examples/02-redux)**.
 
 ### How about build systems?
 
