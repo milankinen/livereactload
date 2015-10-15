@@ -14,7 +14,8 @@
     const _module = scope$$.modules[id]
 
     if (_module) {
-      const exports = {}
+      scope$$.exports[_module.id] = scope$$.exports[_module.id] || {}
+      const exports = scope$$.exports[_module.id]
       const mod = {
         exports,
         onReload(fn) {
@@ -25,11 +26,8 @@
       const oldReloader = scope$$.reloaders[_module.file]
       delete scope$$.reloaders[_module.file]
       _module[0].apply(this, [require, mod, exports, _module[0], scope$$.modules, scope$$.exports])
-      if (scope$$.exports[_module.id]) {
-        scope$$.exports[_module.id].exports = mod.exports
-      } else {
-        scope$$.exports[_module.id] = mod
-      }
+      scope$$.exports[_module.id] = mod.exports
+
       if (isReload && typeof oldReloader === "function") {
         oldReloader.call()
       }

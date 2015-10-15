@@ -1,4 +1,6 @@
 const React = require("react"),
       App   = require("./.src/app")
 
-React.render(<App />, document.getElementById("app"))
+const {render} = require("react-dom")
+
+render(<App />, document.getElementById("app"))

@@ -12,6 +12,7 @@ export function patchMetaData(scope$$, newModules) {
     const oldModule = oldModulesByFile[newModules[id].file]
     if (oldModule) {
       rearrangedExports[id] = exports[oldModule.id]
+      newModules[id].__inited = true
     }
   })
 

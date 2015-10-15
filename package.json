@@ -1,6 +1,6 @@
 {
   "name": "livereactload",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Live code editing with Browserify and React",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
@@ -18,21 +18,23 @@
   "main": "index.js",
   "scripts": {
     "prepublish": "npm run dist",
-    "dist": "babel src --source-maps inline --blacklist strict src/requireOverride.js --out-dir lib",
+    "dist": "npm run compile && npm run remove-maps",
+    "compile": "babel src --out-dir lib --blacklist strict src/requireOverride.js",
+    "remove-maps": "find lib -type f -name '*.map' -delete",
     "test": "babel-tape-runner test/**/*Test.js ; EXIT_VALUE=$? ; killall node ; exit $EXIT_VALUE"
   },
   "dependencies": {
-    "cli-color": "1.0.0",
+    "cli-color": "1.1.0",
     "through2": "2.0.0",
     "ws": "0.8.0"
   },
   "devDependencies": {
     "babel": "5.8.23",
     "babel-tape-runner": "1.2.0",
-    "bluebird": "^2.10.1",
-    "chokidar": "^1.0.6",
-    "shelljs": "^0.5.3",
-    "tape": "4.2.0",
-    "zombie": "2.5.1"
+    "bluebird": "2.10.1",
+    "chokidar": "1.0.6",
+    "shelljs": "0.5.3",
+    "tape": "4.2.1",
+    "zombie": "4.1.0"
   }
 }

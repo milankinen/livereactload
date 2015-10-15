@@ -5,10 +5,12 @@
         "react-transform"
       ],
       "extra": {
-        "react-transform": [{
-          "target": "livereactload/babel-transform",
-          "imports": ["react"]
-        }]
+        "react-transform": {
+          "transforms": [{
+            "transform": "livereactload/babel-transform",
+            "imports": ["react"]
+          }]
+        }
       }
     }
   }

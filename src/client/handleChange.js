@@ -40,9 +40,8 @@ export default function handleChanges(scope$$, {modules: newModules, entryId: ne
 
         try {
           // ATTENTION: must use scope object because it has been mutated during "pathMetaData"
-          // first delete previous exports from the batched module
           delete scope$$.exports[id]
-          // the reload those exports
+          scope$$.modules[id].__inited = false
           __require.__byId(id, true)
         } catch (e) {
           console.error(e)

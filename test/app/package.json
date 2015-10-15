@@ -9,12 +9,13 @@
     "babel": "5.8.23",
     "babelify": "6.3.0",
     "express": "4.13.3",
-    "react": "0.13.3"
+    "react": "0.14.0",
+    "react-dom": "0.14.0"
   },
   "devDependencies": {
-    "babel-plugin-react-transform": "1.0.5",
+    "babel-plugin-react-transform": "1.1.1",
     "livereactload": "file:../..",
-    "react-proxy": "1.1.0",
+    "react-proxy": "1.1.1",
     "watchify": "3.4.0"
   }
 }
