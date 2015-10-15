@@ -71,9 +71,8 @@ export default function LiveReactloadPlugin(b, opts = {}) {
              // initialize Browserify compatibility
              Object.keys(modules).forEach(function(id) {
                modules[id][0] = (function(require, module, exports) {
-                 if (typeof allExports[id] !== "undefined") {
-                   module.exports = allExports[id].exports;
-                 } else {
+                 if (!modules[id].__inited) {
+                   modules[id].__inited = true
                    var __init = new Function("require", "module", "exports", modules[id].source);
                    var _require = (function() { return require.apply(require, Array.prototype.slice.call(arguments).concat(id)); });
                    __init(_require, module, exports, arguments[3], arguments[4], arguments[5], arguments[6]);
