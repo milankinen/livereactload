@@ -24,17 +24,17 @@
     "test": "babel-tape-runner test/**/*Test.js ; EXIT_VALUE=$? ; killall node ; exit $EXIT_VALUE"
   },
   "dependencies": {
-    "cli-color": "1.0.0",
+    "cli-color": "1.1.0",
     "through2": "2.0.0",
     "ws": "0.8.0"
   },
   "devDependencies": {
     "babel": "5.8.23",
     "babel-tape-runner": "1.2.0",
-    "bluebird": "^2.10.1",
-    "chokidar": "^1.0.6",
-    "shelljs": "^0.5.3",
-    "tape": "4.2.0",
-    "zombie": "2.5.1"
+    "bluebird": "2.10.1",
+    "chokidar": "1.0.6",
+    "shelljs": "0.5.3",
+    "tape": "4.2.1",
+    "zombie": "4.1.0"
   }
 }
