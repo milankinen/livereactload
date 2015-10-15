@@ -4,7 +4,7 @@ const test    = require("tape"),
 const {startServer, await, updateSources} = require("./utils")
 
 const server = startServer()
-const browser = Browser.create()
+const browser = new Browser()
 
 test("tsers", assert => {
   await(10000)
