@@ -127,7 +127,7 @@ export default function LiveReactloadPlugin(b, opts = {}) {
       function flush(next) {
         const bundleSrc =
           `(function(modules, entryId$$) {
-             ${modules[entryId].source};
+             ${modules[entryId].source}
            })(${JSON.stringify(modules, null, 2)}, ${JSON.stringify(entryId)});`
         this.push(new Buffer(bundleSrc, "utf8"))
         if (server) {
