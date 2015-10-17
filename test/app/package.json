@@ -10,7 +10,8 @@
     "babelify": "6.3.0",
     "express": "4.13.3",
     "react": "0.14.0",
-    "react-dom": "0.14.0"
+    "react-dom": "0.14.0",
+    "redux": "3.0.0"
   },
   "devDependencies": {
     "babel-plugin-react-transform": "1.1.1",
