@@ -11,7 +11,7 @@
   function __byId(id, isReload) {
     const oldRequire = typeof window.require === "function" ? window.require : null
     const scope$$ = window.__livereactload$$
-    const _module = scope$$.modules[id]
+    const _module = findModule(scope$$, id)
 
     if (_module) {
       scope$$.exports[_module.id] = scope$$.exports[_module.id] || {}
@@ -44,5 +44,24 @@
   function moduleKey({modules}, callerId, name) {
     const {deps = {}} = modules[callerId] || {}
     return deps[name]
+  }
+
+  // resolve module so that de-duplicated modules are skipped and the
+  // original module is returned
+  function findModule({modules}, id) {
+    const mod = modules[id]
+    if (mod) {
+      if (mod.dedupeIndex) {
+        let orig = null
+        Object.keys(modules).forEach(id => {
+          if (modules[id].index === mod.dedupeIndex) {
+            orig = findModule({modules}, id)
+          }
+        })
+        return orig
+      } else {
+        return mod
+      }
+    }
   }
 })()

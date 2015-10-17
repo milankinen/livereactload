@@ -100,12 +100,14 @@ export default function LiveReactloadPlugin(b, opts = {}) {
 
     b.pipeline.get("label").push(through.obj(
       function transform(row, enc, next) {
-        const {id, file, source, deps, entry} = row
+        const {id, index, dedupeIndex, file, source, deps, entry} = row
         if (entry) {
           entryId = id
         }
         modules[id] = {
           id,
+          index,
+          dedupeIndex,
           file,
           source,
           deps,
