@@ -38,18 +38,19 @@ export default function handleChanges(scope$$, {modules: newModules, entryId: ne
           console.log(" > Patch module    ::", file)
         }
 
+        let reloadedExports
         try {
           // ATTENTION: must use scope object because it has been mutated during "pathMetaData"
           delete scope$$.exports[id]
           scope$$.modules[id].__inited = false
-          __require.__byId(id, true)
+          reloadedExports = __require.__byId(id, true)
         } catch (e) {
           console.error(e)
           warn("Abort patching")
           throw {aborted: true}
         }
 
-        if (!isNew && isStoppable(scope$$.exports[id] || {})) {
+        if (!isNew && isStoppable(reloadedExports || {})) {
           preventPropagation(parents)
         }
       } else {
@@ -74,7 +75,7 @@ export default function handleChanges(scope$$, {modules: newModules, entryId: ne
   }
 }
 
-function isStoppable({exports}) {
+function isStoppable(exports) {
   if (isProxied(exports)) {
     return true
   } else if (isPlainObj(exports)) {
