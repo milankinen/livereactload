@@ -10,4 +10,19 @@ require("redux")
 
 const {render} = require("react-dom")
 
-render(<App />, document.getElementById("app"))
+console.log("Increment site.js reload counter...")
+window._siteReloadCounter = "_siteReloadCounter" in window ? window._siteReloadCounter + 1 : 0
+
+
+const MyApp = React.createClass({
+  render() {
+    return window._siteReloadCounter === 0 ? <App /> : (
+      <div>
+        This text should never occur because propagation guards should
+        stop reloading to app.js
+      </div>
+    )
+  }
+})
+
+render(<MyApp />, document.getElementById("app"))
