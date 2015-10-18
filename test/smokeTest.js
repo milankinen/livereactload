@@ -68,9 +68,41 @@ test("tsers", assert => {
     .then(() => {
       browser.assert.text(".counter-title", "Counter 'bar' value is 8")
     })
+    .then(() => {
+      assert.equals(browser.window._hooksReloadCount, 0)
+      assert.equals(browser.window._acceptReloaded, false)
+      assert.equals(browser.window._noAcceptReloaded, false)
+    })
+    .then(() => (
+      updateSources(browser, [
+        {
+          file: "hooks/noAccept.js",
+          find: "foo",
+          replace: "bar"
+        }
+      ])
+    ))
+    .then(() => {
+      assert.equals(browser.window._noAcceptReloaded, true)
+      assert.equals(browser.window._hooksReloadCount, 1)
+    })
+    .then(() => (
+      updateSources(browser, [
+        {
+          file: "hooks/accept.js",
+          find: "foo",
+          replace: "bar"
+        }
+      ])
+    ))
+    .then(() => {
+      assert.equals(browser.window._acceptReloaded, true)
+      assert.equals(browser.window._hooksReloadCount, 1)
+    })
+
     .then(() => assert.end() || process.exit(0))
     .finally(() => server.kill())
-    .timeout(30000)
+    .timeout(40000)
     .catch(e => console.error(e) || process.exit(1))
     .done()
 })
