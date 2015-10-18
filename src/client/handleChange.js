@@ -38,19 +38,24 @@ export default function handleChanges(scope$$, {modules: newModules, entryId: ne
           console.log(" > Patch module    ::", file)
         }
 
-        let reloadedExports
+        let reloadedExports, accepted = false
         try {
           // ATTENTION: must use scope object because it has been mutated during "pathMetaData"
           delete scope$$.exports[id]
           scope$$.modules[id].__inited = false
           reloadedExports = __require.__byId(id, true)
         } catch (e) {
-          console.error(e)
-          warn("Abort patching")
-          throw {aborted: true}
+          if (e.accepted) {
+            console.log(" > Manually accepted")
+            accepted = true
+          } else {
+            console.error(e)
+            warn("Abort patching")
+            throw {aborted: true}
+          }
         }
 
-        if (!isNew && isStoppable(reloadedExports || {})) {
+        if (!isNew && (accepted || isStoppable(reloadedExports || {}))) {
           preventPropagation(parents)
         }
       } else {
