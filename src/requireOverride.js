@@ -14,7 +14,7 @@
     const _module = findModule(scope$$, id)
 
     if (_module) {
-      scope$$.exports[_module.id] = scope$$.exports[_module.id] || {}
+      scope$$.exports[_module.id] = !isReload ? scope$$.exports[_module.id] || {} : {}
       const exports = scope$$.exports[_module.id]
       const mod = {
         exports,
@@ -24,12 +24,14 @@
       }
       // TODO: there should be still one argument to pass.. figure out which is it
       const oldReloader = scope$$.reloaders[_module.file]
-      delete scope$$.reloaders[_module.file]
       _module[0].apply(this, [require, mod, exports, _module[0], scope$$.modules, scope$$.exports])
       scope$$.exports[_module.id] = mod.exports
 
       if (isReload && typeof oldReloader === "function") {
-        oldReloader.call()
+        const accept = oldReloader.call()
+        if (accept === true) {
+          throw {accepted: true}
+        }
       }
       return mod.exports
     } else if (oldRequire) {

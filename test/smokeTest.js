@@ -6,21 +6,36 @@ const {startServer, await, updateSources} = require("./utils")
 const server = startServer()
 const browser = new Browser()
 
-test("tsers", assert => {
+test("smoke tests", assert => {
   await(10000)
     .then(() => (
       browser.visit("http://localhost:3077/")
         .then(() => await(500))
         .then(() => browser.pressButton("button.inc"))
     ))
-    .then(() => {
-      // test initial page contents
-      browser.assert.success()
-      browser.assert.text(".header", "Hello world")
-      browser.assert.text(".counter-title", "Counter 'foo' value is 11")
-    })
-    .then(() => (
-      // test that single file update triggers reloading
+    .then(testInitialConditions)
+    .then(testSingleFileUpdatingTriggersReload)
+    .then(testReloadPropagationToParentModule)
+    .then(testMultipleUpdatesAreAggregatedIntoOneReload)
+    .then(testOnReloadHook)
+    .then(() => assert.end() || process.exit(0))
+    .finally(() => server.kill())
+    .timeout(40000)
+    .catch(e => console.error(e) || process.exit(1))
+    .done()
+
+
+  function testInitialConditions() {
+    assert.comment("test that initial page contents are satified")
+    browser.assert.success()
+    browser.assert.text(".header", "Hello world")
+    browser.assert.text(".counter-title", "Counter 'foo' value is 11")
+  }
+
+
+  function testSingleFileUpdatingTriggersReload() {
+    assert.comment("test that single file updating triggers the reloading")
+    const updateSrcP =
       updateSources(browser, [
         {
           file: "app.js",
@@ -28,13 +43,16 @@ test("tsers", assert => {
           replace: "Tsers!"
         }
       ])
-    ))
-    .then(() => {
-      browser.assert.text(".header", "Tsers!")
-    })
-    .then(() => (
-      // test that change is propagated to the parent module if all exports
-      // are not proxied React components
+    return updateSrcP
+      .then(() => {
+        browser.assert.text(".header", "Tsers!")
+      })
+  }
+
+
+  function testReloadPropagationToParentModule() {
+    assert.comment("test that reloading propagates to parent modules if exports is not a React component")
+    const updateSrcP =
       updateSources(browser, [
         {
           file: "constants.js",
@@ -42,12 +60,16 @@ test("tsers", assert => {
           replace: "1337"
         }
       ])
-    ))
-    .then(() => {
-      browser.assert.text(".magic", "Magic number is 1337")
-    })
-    .then(() => (
-      // test that updating multiple files will reload modules correctly
+    return updateSrcP
+      .then(() => {
+        browser.assert.text(".magic", "Magic number is 1337")
+      })
+  }
+
+
+  function testMultipleUpdatesAreAggregatedIntoOneReload() {
+    assert.comment("test that multiple file updates are aggregated to single reload event")
+    const updateSrcP =
       updateSources(browser, [
         {
           file: "counter.js",
@@ -60,17 +82,56 @@ test("tsers", assert => {
           replace: "bar"
         }
       ])
-    ))
-    .then(() => (
-      // press increment button after increment function change => result = 11 - 3 = 8
-      browser.pressButton("button.inc")
-    ))
-    .then(() => {
-      browser.assert.text(".counter-title", "Counter 'bar' value is 8")
-    })
-    .then(() => assert.end() || process.exit(0))
-    .finally(() => server.kill())
-    .timeout(30000)
-    .catch(e => console.error(e) || process.exit(1))
-    .done()
+    return updateSrcP
+      .then(() => browser.pressButton("button.inc"))
+      .then(() => {
+        // result: 11 - 3 = 8, see counter.js
+        browser.assert.text(".counter-title", "Counter 'bar' value is 8")
+      })
+  }
+
+  function testOnReloadHook() {
+    assert.comment("test onReload hook initial conditions")
+    assert.equals(browser.window._hooksReloadCount, 0)
+    assert.equals(browser.window._acceptReloaded, false)
+    assert.equals(browser.window._noAcceptReloaded, false)
+
+    return testNoAcceptPropagatesReloadToParent().then(testAcceptDoesntPropagateReloadToParent)
+
+    function testNoAcceptPropagatesReloadToParent() {
+      assert.comment("test that if onReload hook does't return true, then reloading is propagated to the parent module")
+      const updateSrcP =
+        updateSources(browser, [
+          {
+            file: "hooks/noAccept.js",
+            find: "foo",
+            replace: "bar"
+          }
+        ])
+      return updateSrcP
+        .then(() => {
+          assert.equals(browser.window._noAcceptReloaded, true)
+          assert.equals(browser.window._hooksReloadCount, 1)
+        })
+    }
+
+    function testAcceptDoesntPropagateReloadToParent() {
+      assert.comment("test that if onReload hook returns true, then reloading doesn't propagate to the parent module")
+      const updateSrcP =
+        updateSources(browser, [
+          {
+            file: "hooks/accept.js",
+            find: "foo",
+            replace: "bar"
+          }
+        ])
+      return updateSrcP
+        .then(() => {
+          assert.equals(browser.window._acceptReloaded, true)
+          assert.equals(browser.window._hooksReloadCount, 1)
+        })
+    }
+  }
+
 })
+

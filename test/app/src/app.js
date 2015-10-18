@@ -2,6 +2,8 @@ const React   = require("react"),
       Counter = require("./counter"),
       {MAGIC} = require("./constants")
 
+require("./hooks")
+
 export default React.createClass({
   render() {
     return (
