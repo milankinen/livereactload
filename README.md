@@ -111,6 +111,10 @@ executed in the browser only when the module reload occurs:
 if (module.onReload) {
   module.onReload(() => {
     ... do something ...
+    // returning true indicates that this module was updated correctly and
+    // reloading should not propagate to the parent components (if non-true
+    // value is returned, then parent module gets reloaded too)
+    return true
   });
 }
 ```
