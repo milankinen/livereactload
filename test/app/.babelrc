@@ -1,6 +1,7 @@
 {
   "env": {
     "development": {
+      "optional": ["runtime"],
       "plugins": [
         "react-transform"
       ],

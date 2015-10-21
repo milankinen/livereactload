@@ -31,6 +31,36 @@ export default function LiveReactloadPlugin(b, opts = {}) {
     // object is thrown away
     const modules = {}
 
+    const bundleInitJs =
+      `var require = ${requireOverride};
+
+       window.__livereactload$$ = {
+         require: require,
+         modules: modules,
+         exports: {},
+         reloaders: {},
+         initModules: initModules
+       };
+
+       initModules();
+
+       function initModules() {
+         var allExports = window.__livereactload$$.exports;
+         var modules    = window.__livereactload$$.modules;
+         // initialize Browserify compatibility
+         Object.keys(modules).forEach(function(id) {
+           modules[id][0] = (function(require, module, exports) {
+             if (!modules[id].__inited) {
+               modules[id].__inited = true
+               var __init = new Function("require", "module", "exports", modules[id].source);
+               var _require = (function() { return require.apply(require, Array.prototype.slice.call(arguments).concat(id)); });
+               __init(_require, module, exports, arguments[3], arguments[4], arguments[5], arguments[6]);
+             }
+           })
+           modules[id][1] = modules[id].deps;
+         })
+       }`
+
     let originalEntry = ""
     let entryId = -1
 
@@ -52,38 +82,8 @@ export default function LiveReactloadPlugin(b, opts = {}) {
 
         const newEntryPath = resolve(origDirname, "___livereactload_entry.js")
         const newEntrySource =
-          `var require =
-            ${requireOverride};
-
-           window.__livereactload$$ = {
-             require: require,
-             modules: modules,
-             exports: {},
-             reloaders: {},
-             initModules: initModules
-           };
-
-           initModules();
-
-           function initModules() {
-             var allExports = window.__livereactload$$.exports;
-             var modules    = window.__livereactload$$.modules;
-             // initialize Browserify compatibility
-             Object.keys(modules).forEach(function(id) {
-               modules[id][0] = (function(require, module, exports) {
-                 if (!modules[id].__inited) {
-                   modules[id].__inited = true
-                   var __init = new Function("require", "module", "exports", modules[id].source);
-                   var _require = (function() { return require.apply(require, Array.prototype.slice.call(arguments).concat(id)); });
-                   __init(_require, module, exports, arguments[3], arguments[4], arguments[5], arguments[6]);
-                 }
-               })
-               modules[id][1] = modules[id].deps;
-             })
-           }
-
-           require("livereactload/client", entryId$$).call(null, ${JSON.stringify(clientOpts)});
-           require(${JSON.stringify("./" + origFilename)}, entryId$$);`
+          `require("livereactload/client", entryId$$).call(null, ${JSON.stringify(clientOpts)});` + "\n" +
+          `require(${JSON.stringify("./" + origFilename)}, entryId$$);`
 
         this.push({
           entry: true,
@@ -128,7 +128,10 @@ export default function LiveReactloadPlugin(b, opts = {}) {
       function flush(next) {
         const bundleSrc =
           `(function(modules, entryId$$) {
-             ${modules[entryId].source}
+             ${bundleInitJs}
+             (function() {
+               ${modules[entryId].source}
+             })();
            })(${JSON.stringify(modules, null, 2)}, ${JSON.stringify(entryId)});`
         this.push(new Buffer(bundleSrc, "utf8"))
         if (server) {
