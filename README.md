@@ -165,7 +165,7 @@ export default React.createClass({
 ## Configuration options
 
 You can configure the LiveReactload Browserify plugin by passing some options
-to it (`-p [ livereatload <options...> ]`, see Browserify docs for more information
+to it (`-p [ livereactload <options...> ]`, see Browserify docs for more information
 about config format).
 
 ### Available options
@@ -189,6 +189,33 @@ Configures the reload client to use the given hostname when connecting to the
 reload server. You may need this if you are running the bundle in an another device. 
 Default value is `localhost`
 
+#### `--no-client`
+
+Omits the reload client from the generated bundle.
+
+#### `--client <custom-client>`
+
+Overrides the default reload client implementation with your custom one. This can be
+either a global module or local module path *relative to the bundle's entry file*.
+
+Example usage:
+
+    -p [ livereactload --client './customClient' ]
+     
+And the custom client code:
+```javascript
+// customClient.js
+export default function client(scope, callbacks) {
+  const {change} = callbacks
+  const ws = new WebSocket("ws://my.custom.livereactload.server.path:port")
+  ws.onmessage = m => {
+    const msg = JSON.parse(m.data)
+    if (msg.type === "change") {
+      change(msg)
+    }
+  }
+}
+```
 
 ## License
 
