@@ -10,7 +10,8 @@ const {values} = require("../common")
 export default function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
-    host = "localhost"
+    host = "localhost",
+    client = true
     } = opts
 
   // server is alive as long as watchify is running
@@ -81,16 +82,25 @@ export default function LiveReactloadPlugin(b, opts = {}) {
               origDirname  = dirname(originalEntry)
 
         const newEntryPath = resolve(origDirname, "___livereactload_entry.js")
-        const newEntrySource =
-          `require("livereactload/client", entryId$$).call(null, ${JSON.stringify(clientOpts)});` + "\n" +
-          `require(${JSON.stringify("./" + origFilename)}, entryId$$);`
+        const newEntrySource = []
+
+        if (client !== false) {
+          const args = [`null`, JSON.stringify(clientOpts)]
+          if (client !== true) {
+            const customClient = `require(${JSON.stringify(client)}, entryId$$)`
+            args.push(customClient)
+          }
+          newEntrySource.push(`require("livereactload/client", entryId$$).call(${args.join()});`)
+        }
+
+        newEntrySource.push(`require(${JSON.stringify("./" + origFilename)}, entryId$$);`)
 
         this.push({
           entry: true,
           expose: false,
           file: newEntryPath,
           id: newEntryPath,
-          source: newEntrySource,
+          source: newEntrySource.join("\n"),
           nomap: true,
           order: 0
         })
