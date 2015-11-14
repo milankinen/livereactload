@@ -45,6 +45,12 @@ If you are a Webpack user, you probably want to check
 
 ## Usage
 
+### ATTENTION: Babel 6.x.x usage
+
+LiveReactload unfortunately doesn't support `babel@6.x.x` yet because 
+[babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform) lacks
+the support. Hopefully this'll get fixed soon!
+
 ### Pre-requirements
 
 LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x` in order to
