@@ -1,5 +1,5 @@
-import React from "react"
-import {blueish} from "./styles"
+const React     = require("react"),
+      {blueish} = require("./styles")
 
 
 export default class Counter extends React.Component {

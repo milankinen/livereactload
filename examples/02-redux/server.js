@@ -1,6 +1,7 @@
-const express = require("express"),
-      React   = require("react"),
-      app     = express()
+import express from "express"
+import React from "react"
+
+const app = express()
 
 app.get("/", (req, res) => {
   res.send(`<!DOCTYPE html>
