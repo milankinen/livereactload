@@ -14,7 +14,7 @@ export default function configureStore(initialState) {
   if (module.onReload) {
     module.onReload(() => {
       const nextReducer = require('../reducers');
-      store.replaceReducer(nextReducer);
+      store.replaceReducer(nextReducer.default || nextReducer);
 
       // return true to indicate that this module is accepted and
       // there is no need to reload its parent modules
