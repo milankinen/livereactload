@@ -1,7 +1,8 @@
-const express     = require("express"),
-      React       = require("react"),
-      Application = require("./src/app"),
-      app         = express()
+import express from "express"
+import React from "react"
+import Application from "./src/app"
+
+const app = express()
 
 app.get("/", (req, res) => {
   const model = {
