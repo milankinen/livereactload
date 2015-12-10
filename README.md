@@ -45,12 +45,6 @@ If you are a Webpack user, you probably want to check
 
 ## Usage
 
-### ATTENTION: Babel 6.x.x usage
-
-LiveReactload unfortunately doesn't support `babel@6.x.x` yet because 
-[babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform) lacks
-the support. Hopefully this'll get fixed soon!
-
 ### Pre-requirements
 
 LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x` in order to
@@ -58,17 +52,26 @@ work.
 
 ### Installation
 
+**ATTENTION:** these instructions are meant for **Babel 6.x**. If you are using
+Babel 5.x, please see the **[Babel 5.x example](examples/04-babel-5.x)**.
+
 Install pre-requirements (if not already exist)
 
 ```sh
 npm i --save react
-npm i --save-dev watchify babelify
+npm i --save-dev watchify
+```
+
+Install `babelify` and its dependencies
+
+```sh
+npm i --save babelify babel-preset-es2015 babel-preset-react
 ```
 
 Install React proxying components and LiveReactload
 
 ```sh
-npm i --save-dev livereactload react-proxy@1.x babel-plugin-react-transform
+npm i --save-dev livereactload react-proxy@1.x babel-plugin-react-transform@2.0.0-beta1
 ```
 
 Create `.babelrc` file into project's root directory (or add `react-transform` extra
@@ -77,19 +80,17 @@ can be found from [babel-plugin-react-transform](https://github.com/gaearon/babe
 
 ```javascript
 {
+  "presets": ["es2015", "react"],
   "env": {
     "development": {
       "plugins": [
-        "react-transform"
-      ],
-      "extra": {
-        "react-transform": {
+        ["react-transform", {
           "transforms": [{
             "transform": "livereactload/babel-transform",
             "imports": ["react"]
           }]
-        }
-      }
+        }]
+      ]
     }
   }
 }
