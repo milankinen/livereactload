@@ -1,5 +1,5 @@
-const React = require("react"),
-      App   = require("./src/app")
+import React from "react"
+import App from "./src/app"
 
 const initialModel = window.INITIAL_MODEL
 
