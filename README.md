@@ -42,6 +42,9 @@ LiveReactload in action:
 If you are a Webpack user, you probably want to check
 **[react-transform-boilerplate](https://github.com/gaearon/react-transform-boilerplate)**.
 
+If you want to stick with browserify, but use the Hot Module Reloading API (like webpack), you could use: **[browserify-hmr](https://github.com/AgentME/browserify-hmr)**, **[babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform)** and
+**[react-transform-hmr](https://github.com/gaearon/react-transform-hmr)**
+
 
 ## Usage
 
