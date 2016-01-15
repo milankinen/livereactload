@@ -64,12 +64,17 @@ export default function LiveReactloadPlugin(b, opts = {}) {
 
     let originalEntry = ""
     let entryId = -1
+    let standalone = ""
 
     // task of this hook is to override the default entry so that
     // the new entry
     b.pipeline.get("record").push(through.obj(
       function transform(row, enc, next) {
         const {entry, file} = row
+        if (row.options && row.options._flags && row.options._flags.standalone) {
+          standalone = row.options._flags.standalone
+        }
+
         if (entry) {
           originalEntry = file
           next(null)
@@ -91,6 +96,10 @@ export default function LiveReactloadPlugin(b, opts = {}) {
             args.push(customClient)
           }
           newEntrySource.push(`require("livereactload/client", entryId$$).call(${args.join()});`)
+        }
+
+        if (standalone) {
+          newEntrySource.push(`window["${standalone}"] = `)
         }
 
         newEntrySource.push(`require(${JSON.stringify("./" + origFilename)}, entryId$$);`)
