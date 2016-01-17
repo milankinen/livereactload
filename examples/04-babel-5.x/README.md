@@ -19,7 +19,7 @@ npm i --save-dev watchify babelify@6.x
 Install React proxying components and LiveReactload
 
 ```sh
-npm i --save-dev livereactload react-proxy@1.x babel-plugin-react-transform
+npm i --save-dev livereactload react-proxy@1.x babel-plugin-react-transform@1.1
 ```
 
 Create `.babelrc` file into project's root directory (or add `react-transform` extra
