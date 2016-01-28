@@ -1,9 +1,8 @@
-const Promise  = require("bluebird"),
-      chokidar = require("chokidar"),
-      fs       = require("fs")
-
-const {resolve} = require("path")
-const {exec} = require("shelljs")
+import Promise from "bluebird"
+import chokidar from "chokidar"
+import fs from "fs"
+import {resolve} from "path"
+import * as sh from "shelljs"
 
 export function startServer() {
   execInApp("mkdir -p .src && rm -rf .src/* && cp -R src/* .src")
@@ -14,10 +13,10 @@ export function startServer() {
 
 
 export function execInApp(cmd, opts) {
-  return exec(`cd ${resolve(__dirname, "app")} && ${cmd}`, opts)
+  return sh.exec(`cd ${resolve(__dirname, "app")} && ${cmd}`, opts)
 }
 
-export function await(time) {
+export function wait(time) {
   return new Promise(resolve => setTimeout(resolve, time))
 }
 
@@ -48,5 +47,5 @@ export function updateSources(browser, files) {
     })
   })
 
-  return p.then(() => await(1000)).then(() => browser.wait(100))
+  return p.then(() => wait(1000)).then(() => browser.wait(100))
 }

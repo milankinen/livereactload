@@ -1,13 +1,12 @@
-const through       = require("through2"),
-      {startServer} = require("./reloadServer"),
-      makeHash      = require("./makeHash")
+import through from "through2"
+import {startServer} from "./reloadServer"
+import makeHash from "./makeHash"
+import {readFileSync} from "fs"
+import {resolve, dirname, basename} from "path"
+import {values} from "../common"
 
-const {readFileSync} = require("fs")
-const {resolve, dirname, basename} = require("path")
-const {values} = require("../common")
 
-
-export default function LiveReactloadPlugin(b, opts = {}) {
+module.exports = function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
     host = "localhost",

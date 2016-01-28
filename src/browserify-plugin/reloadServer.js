@@ -1,7 +1,6 @@
-const {Server} = require("ws"),
-      {log}    = require("./console")
-
-const {pairs} = require("../common")
+import {Server} from "ws"
+import {log} from "./console"
+import {pairs} from "../common"
 
 export function startServer({port}) {
   const wss = new Server({port})

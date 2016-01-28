@@ -1,6 +1,6 @@
-const {diff, patchMetaData} = require("./reloadUtils")
-const {info, warn} = require("./console")
-const {isPlainObj, values, find} = require("../common")
+import {diff, patchMetaData} from "./reloadUtils"
+import {info, warn} from "./console"
+import {isPlainObj, values, find} from "../common"
 
 export default function handleChanges(scope$$, {modules: newModules, entryId: newEntryId}) {
   const {modules, require: __require} = scope$$

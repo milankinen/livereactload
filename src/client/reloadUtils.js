@@ -1,5 +1,4 @@
-
-const {keys, values, extend, sortBy, pairs} = require("../common")
+import {keys, values, extend, sortBy, pairs} from "../common"
 
 export function patchMetaData(scope$$, newModules) {
   const {modules, exports} = scope$$

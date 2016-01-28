@@ -1,6 +1,6 @@
-const {getForceUpdate, createProxy} = require("react-proxy")
+import {getForceUpdate, createProxy} from "react-proxy"
 
-export default function babelPluginLiveReactload({filename, components, imports, locals}) {
+module.exports = function babelPluginLiveReactload({filename, components, imports, locals}) {
   const [React] = imports
   const forceUpdate = getForceUpdate(React)
 
