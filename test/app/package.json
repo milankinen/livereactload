@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "start": "babel-node server.js & npm run watch & wait",
-    "watch": "watchify site.js -v -t babelify -p [ livereactload --port=4477 ] -o bundle.js"
+    "watch": "watchify site.js -v -t babelify -p [ livereactload --port=4477 ] --ig -o bundle.js"
   },
   "dependencies": {
     "babel": "5.8.23",

@@ -65,6 +65,7 @@ export default function LiveReactloadPlugin(b, opts = {}) {
     let originalEntry = ""
     let entryId = -1
     let standalone = ""
+    let entrySource = ""
 
     // task of this hook is to override the default entry so that
     // the new entry
@@ -103,13 +104,14 @@ export default function LiveReactloadPlugin(b, opts = {}) {
         }
 
         newEntrySource.push(`require(${JSON.stringify("./" + origFilename)}, entryId$$);`)
+        entrySource = newEntrySource.join("\n")
 
         this.push({
           entry: true,
           expose: false,
           file: newEntryPath,
           id: newEntryPath,
-          source: newEntrySource.join("\n"),
+          source: entrySource,
           nomap: true,
           order: 0
         })
@@ -119,9 +121,13 @@ export default function LiveReactloadPlugin(b, opts = {}) {
 
     b.pipeline.get("label").push(through.obj(
       function transform(row, enc, next) {
-        const {id, index, dedupeIndex, file, source, deps, entry} = row
+        let {id, index, dedupeIndex, file, source, deps, entry} = row
         if (entry) {
           entryId = id
+          // drop all unnecessary stuff like global requirements and transformations
+          // cause our entry module doesn't need them -- inserted global requirements
+          // just cause exceptions because modules are not initialized yet, see #87
+          source = entrySource
         }
         modules[id] = {
           id,
