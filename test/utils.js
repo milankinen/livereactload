@@ -5,7 +5,6 @@ const Promise  = require("bluebird"),
 const {resolve} = require("path")
 const {exec} = require("shelljs")
 
-console.log(resolve(__dirname, "app/src/*"))
 export function startServer() {
   execInApp("mkdir -p .src && rm -rf .src/* && cp -R src/* .src")
   execInApp("mkdir -p node_modules && rm -rf node_modules/livereactload")
