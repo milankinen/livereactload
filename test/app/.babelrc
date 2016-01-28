@@ -1,18 +1,16 @@
 {
+  "presets": ["es2015", "react"],
   "env": {
     "development": {
-      "optional": ["runtime"],
       "plugins": [
-        "react-transform"
-      ],
-      "extra": {
-        "react-transform": {
+        "transform-runtime",
+        ["react-transform", {
           "transforms": [{
             "transform": "livereactload/babel-transform",
             "imports": ["react"]
           }]
-        }
-      }
+        }]
+      ]
     }
   }
 }
