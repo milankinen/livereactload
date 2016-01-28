@@ -1,7 +1,7 @@
-const React   = require("react"),
-      Counter = require("./counter")
+import React from "react"
+import Counter from "./counter"
+import {reddish} from "./styles"
 
-const {reddish} = require("./styles")
 const {Component} = React
 
 export default class App extends Component {
@@ -16,7 +16,7 @@ export default class App extends Component {
           interval={150} />
         <Counter
           initialValue={counter2}
-          step={1000}
+          step={10}
           interval={100} />
         <Footer />
       </div>
@@ -28,7 +28,7 @@ export default class App extends Component {
 class Header extends Component {
   render() {
     return (
-      <h1 style={reddish}>Tsers!</h1>
+      <h1 style={reddish}>Tsers!!!</h1>
     )
   }
 }
