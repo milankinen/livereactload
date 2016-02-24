@@ -68,6 +68,10 @@ module.exports = function LiveReactloadPlugin(b, opts = {}) {
     let standalone = ""
     let entrySource = ""
 
+    if (server) {
+      b.pipeline.on("error", server.notifyBundleError)
+    }
+
     // task of this hook is to override the default entry so that
     // the new entry
     b.pipeline.get("record").push(through.obj(

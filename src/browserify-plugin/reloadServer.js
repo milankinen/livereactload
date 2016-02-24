@@ -18,6 +18,17 @@ export function startServer({port}) {
           data: metadata
         }))
       })
+    },
+    notifyBundleError(error) {
+      if (wss.clients.length) {
+        log("Notify clients about bundle error...")
+      }
+      wss.clients.forEach(client => {
+        client.send(JSON.stringify({
+          type: "bundle_error",
+          data: { error: error.toString() }
+        }))
+      })
     }
   }
 

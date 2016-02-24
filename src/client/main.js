@@ -1,6 +1,6 @@
 import startClient from "./startClient"
 import handleChange from "./handleChange"
-import {info} from "./console"
+import {info, error} from "./console"
 
 module.exports = function client(opts, start = startClient) {
   const scope$$ = window.__livereactload$$
@@ -10,7 +10,8 @@ module.exports = function client(opts, start = startClient) {
       info("Bundle changed")
       handleChange(scope$$, msg.data)
     },
-    patch(msg) {
+    bundle_error(msg) {
+      error(msg.data.error)
     }
   })
 }
