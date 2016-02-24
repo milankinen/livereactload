@@ -55,6 +55,8 @@ module.exports = function LiveReactloadPlugin(b, opts = {}) {
                var __init = new Function("require", "module", "exports", modules[id].source);
                var _require = (function() { return require.apply(require, Array.prototype.slice.call(arguments).concat(id)); });
                __init(_require, module, exports, arguments[3], arguments[4], arguments[5], arguments[6]);
+             } else if (allExports[id] && allExports[id] !== exports) {
+               Object.assign(exports, allExports[id])
              }
            })
            modules[id][1] = modules[id].deps;
