@@ -7,3 +7,7 @@ export function info(msg) {
 export function warn(msg) {
   console.warn("LiveReactload ::", msg)
 }
+
+export function error(msg) {
+  console.error("LiveReactload ::", msg)
+}

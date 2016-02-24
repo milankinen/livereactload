@@ -1,8 +1,8 @@
-const startClient  = require("./startClient"),
-      handleChange = require("./handleChange"),
-      {info}       = require("./console")
+import startClient from "./startClient"
+import handleChange from "./handleChange"
+import {info, error} from "./console"
 
-export default function client(opts, start = startClient) {
+module.exports = function client(opts, start = startClient) {
   const scope$$ = window.__livereactload$$
   scope$$.options = opts
   start(scope$$, {
@@ -10,7 +10,8 @@ export default function client(opts, start = startClient) {
       info("Bundle changed")
       handleChange(scope$$, msg.data)
     },
-    patch(msg) {
+    bundle_error(msg) {
+      error(msg.data.error)
     }
   })
 }

@@ -1,5 +1,6 @@
 import express from "express"
 import React from "react"
+import {renderToString} from "react-dom/server"
 import Application from "./src/app"
 
 const app = express()
@@ -15,9 +16,7 @@ app.get("/", (req, res) => {
       <title>2.x basic usage</title>
     </head>
     <body>
-      <div id="app">
-        ${React.renderToString(<Application {...model} />)}
-      </div>
+      <div id="app">${renderToString(<Application {...model} />)}</div>
       <script type="text/javascript">
         window.INITIAL_MODEL = ${JSON.stringify(model)};
       </script>

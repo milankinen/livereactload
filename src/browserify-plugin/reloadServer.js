@@ -1,7 +1,6 @@
-const {Server} = require("ws"),
-      {log}    = require("./console")
-
-const {pairs} = require("../common")
+import {Server} from "ws"
+import {log} from "./console"
+import {pairs} from "../common"
 
 export function startServer({port}) {
   const wss = new Server({port})
@@ -17,6 +16,17 @@ export function startServer({port}) {
         client.send(JSON.stringify({
           type: "change",
           data: metadata
+        }))
+      })
+    },
+    notifyBundleError(error) {
+      if (wss.clients.length) {
+        log("Notify clients about bundle error...")
+      }
+      wss.clients.forEach(client => {
+        client.send(JSON.stringify({
+          type: "bundle_error",
+          data: { error: error.toString() }
         }))
       })
     }

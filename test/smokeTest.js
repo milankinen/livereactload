@@ -1,16 +1,15 @@
-const test    = require("tape"),
-      Browser = require("zombie")
-
-const {startServer, await, updateSources} = require("./utils")
+import test from "tape"
+import Browser from "zombie"
+import {startServer, wait, updateSources} from "./utils"
 
 const server = startServer()
 const browser = new Browser()
 
 test("smoke tests", assert => {
-  await(10000)
+  wait(10000)
     .then(() => (
       browser.visit("http://localhost:3077/")
-        .then(() => await(500))
+        .then(() => wait(500))
         .then(() => browser.pressButton("button.inc"))
     ))
     .then(testInitialConditions)

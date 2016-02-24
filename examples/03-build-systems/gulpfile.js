@@ -1,30 +1,34 @@
 "use strict";
 
 var gulp       = require("gulp"),
-    gutil      = require("gulp-util"),
-    nodemon    = require("gulp-nodemon"),
-    source     = require("vinyl-source-stream"),
-    buffer     = require("vinyl-buffer"),
-    browserify = require("browserify"),
-    watchify   = require("watchify"),
-    babelify   = require("babelify"),
-    envify     = require("envify"),
-    lrload     = require("livereactload")
+  gutil      = require("gulp-util"),
+  nodemon    = require("gulp-nodemon"),
+  source     = require("vinyl-source-stream"),
+  buffer     = require("vinyl-buffer"),
+  browserify = require("browserify"),
+  watchify   = require("watchify"),
+  babelify   = require("babelify"),
+  envify     = require("envify"),
+  lrload     = require("livereactload")
 
 
 var isProd = process.env.NODE_ENV === "production"
 
-var bundler = browserify({
-  entries:      [ "./site.js" ],
-  transform:    [ [babelify, {}], [envify, {}] ],
-  plugin:       isProd ? [] : [ lrload ],    // no additional configuration is needed
-  debug:        !isProd,
-  cache:        {},
-  packageCache: {},
-  fullPaths:    !isProd                       // for watchify
-})
+
+function createBundler(useWatchify) {
+  return browserify({
+    entries:      [ "./site.js" ],
+    transform:    [ [babelify, {}], [envify, {}] ],
+    plugin:       isProd || !useWatchify ? [] : [ lrload ],    // no additional configuration is needed
+    debug:        !isProd,
+    cache:        {},
+    packageCache: {},
+    fullPaths:    !isProd                       // for watchify
+  })
+}
 
 gulp.task("bundle:js", function() {
+  var bundler = createBundler(false)
   bundler
     .bundle()
     .pipe(source("bundle.js"))
@@ -33,6 +37,7 @@ gulp.task("bundle:js", function() {
 
 gulp.task("watch:js", function() {
   // start JS file watching and rebundling with watchify
+  var bundler = createBundler(true)
   var watcher = watchify(bundler)
   rebundle()
   return watcher

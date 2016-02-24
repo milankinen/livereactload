@@ -1,6 +1,6 @@
 {
   "name": "livereactload",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Live code editing with Browserify and React",
   "author": "Matti Lankinen <m.lankinen@iki.fi> (https://github.com/milankinen)",
   "license": "MIT",
@@ -29,12 +29,12 @@
     "ws": "0.8.0"
   },
   "devDependencies": {
-    "babel": "5.8.23",
+    "babel": "^5.8.29",
     "babel-tape-runner": "1.2.0",
-    "bluebird": "2.10.1",
-    "chokidar": "1.0.6",
+    "bluebird": "3.1.5",
+    "chokidar": "1.4.2",
     "shelljs": "0.5.3",
-    "tape": "4.2.1",
-    "zombie": "4.1.0"
+    "tape": "4.4.0",
+    "zombie": "4.2.1"
   }
 }

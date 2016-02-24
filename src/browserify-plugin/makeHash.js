@@ -1,4 +1,4 @@
-const crypto = require("crypto")
+import crypto from "crypto"
 
 export default function calculateHash(sources) {
   const md5sum = crypto.createHash('md5')

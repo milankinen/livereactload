@@ -1,5 +1,5 @@
-const WebSocket = require("ws"),
-      {info}    = require("./console")
+import WebSocket from "ws"
+import {info} from "./console"
 
 
 const noop = () => {}

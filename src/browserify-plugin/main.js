@@ -1,13 +1,12 @@
-const through       = require("through2"),
-      {startServer} = require("./reloadServer"),
-      makeHash      = require("./makeHash")
+import through from "through2"
+import {startServer} from "./reloadServer"
+import makeHash from "./makeHash"
+import {readFileSync} from "fs"
+import {resolve, dirname, basename} from "path"
+import {values} from "../common"
 
-const {readFileSync} = require("fs")
-const {resolve, dirname, basename} = require("path")
-const {values} = require("../common")
 
-
-export default function LiveReactloadPlugin(b, opts = {}) {
+module.exports = function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
     host = "localhost",
@@ -56,6 +55,8 @@ export default function LiveReactloadPlugin(b, opts = {}) {
                var __init = new Function("require", "module", "exports", modules[id].source);
                var _require = (function() { return require.apply(require, Array.prototype.slice.call(arguments).concat(id)); });
                __init(_require, module, exports, arguments[3], arguments[4], arguments[5], arguments[6]);
+             } else if (allExports[id] && allExports[id] !== exports) {
+               Object.assign(exports, allExports[id])
              }
            })
            modules[id][1] = modules[id].deps;
@@ -65,6 +66,11 @@ export default function LiveReactloadPlugin(b, opts = {}) {
     let originalEntry = ""
     let entryId = -1
     let standalone = ""
+    let entrySource = ""
+
+    if (server) {
+      b.pipeline.on("error", server.notifyBundleError)
+    }
 
     // task of this hook is to override the default entry so that
     // the new entry
@@ -103,13 +109,14 @@ export default function LiveReactloadPlugin(b, opts = {}) {
         }
 
         newEntrySource.push(`require(${JSON.stringify("./" + origFilename)}, entryId$$);`)
+        entrySource = newEntrySource.join("\n")
 
         this.push({
           entry: true,
           expose: false,
           file: newEntryPath,
           id: newEntryPath,
-          source: newEntrySource.join("\n"),
+          source: entrySource,
           nomap: true,
           order: 0
         })
@@ -119,9 +126,13 @@ export default function LiveReactloadPlugin(b, opts = {}) {
 
     b.pipeline.get("label").push(through.obj(
       function transform(row, enc, next) {
-        const {id, index, dedupeIndex, file, source, deps, entry} = row
+        let {id, index, dedupeIndex, file, source, deps, entry} = row
         if (entry) {
           entryId = id
+          // drop all unnecessary stuff like global requirements and transformations
+          // cause our entry module doesn't need them -- inserted global requirements
+          // just cause exceptions because modules are not initialized yet, see #87
+          source = entrySource
         }
         modules[id] = {
           id,

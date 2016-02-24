@@ -1,6 +1,6 @@
-const React   = require("react"),
-      Counter = require("./counter"),
-      {MAGIC} = require("./constants")
+import React from "react"
+import Counter from "./counter"
+import {MAGIC} from "./constants"
 
 require("./hooks")
 
