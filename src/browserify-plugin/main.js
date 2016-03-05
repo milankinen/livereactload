@@ -9,7 +9,7 @@ import {values} from "../common"
 module.exports = function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
-    host = "localhost",
+    host = null,
     client = true
     } = opts
 
@@ -19,7 +19,7 @@ module.exports = function LiveReactloadPlugin(b, opts = {}) {
 
   const clientOpts = {
     port: Number(port),
-    host: host.toString()
+    host: host
   }
 
   b.on("reset", addHooks)
