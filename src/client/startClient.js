@@ -26,5 +26,5 @@ export default function startClient(scope$$, onMsg) {
 
 function makeHostUrl({options: {host, port}}) {
   const protocol = window.location.protocol === "https:" ? "wss" : "ws"
-  return `${protocol}://${host}:${port}`
+  return `${protocol}://${host || window.location.hostname}:${port}`
 }
