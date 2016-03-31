@@ -2,6 +2,12 @@ import {Server} from "ws"
 import {log} from "./console"
 import {pairs} from "../common"
 
+function logError(error) {
+  if (error) {
+    log(error)
+  }
+}
+
 export function startServer({port}) {
   const wss = new Server({port})
 
@@ -16,7 +22,7 @@ export function startServer({port}) {
         client.send(JSON.stringify({
           type: "change",
           data: metadata
-        }))
+        }), logError)
       })
     },
     notifyBundleError(error) {
@@ -27,7 +33,7 @@ export function startServer({port}) {
         client.send(JSON.stringify({
           type: "bundle_error",
           data: { error: error.toString() }
-        }))
+        }), logError)
       })
     }
   }
