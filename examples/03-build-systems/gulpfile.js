@@ -57,7 +57,7 @@ gulp.task("watch:js", function() {
 
 gulp.task("watch:server", function() {
   nodemon({ script: "server.js", ext: "js", ignore: ["gulpfile.js", "bundle.js", "node_modules/*"] })
-    .on("change", [])
+    .on("change", function () {})
     .on("restart", function () {
       console.log("Server restarted")
     })
