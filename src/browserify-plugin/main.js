@@ -1,8 +1,9 @@
 import through from "through2"
-import {startServer} from "./reloadServer"
-import makeHash from "./makeHash"
 import {readFileSync} from "fs"
 import {resolve, dirname, basename} from "path"
+import makeHash from "./makeHash"
+import {startServer} from "./reloadServer"
+import {log} from "./console"
 import {values} from "../common"
 
 
@@ -10,7 +11,8 @@ module.exports = function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
     host = null,
-    client = true
+    client = true,
+    dedupe = true
     } = opts
 
   // server is alive as long as watchify is running
@@ -70,6 +72,13 @@ module.exports = function LiveReactloadPlugin(b, opts = {}) {
 
     if (server) {
       b.pipeline.on("error", server.notifyBundleError)
+    }
+
+    if (!dedupe) {
+      b.pipeline.splice('dedupe', 1, through.obj())
+      if (b.pipeline.get('dedupe')) {
+        log("Other plugins have added de-duplicate transformations. --no-dedupe is not effective")
+      }
     }
 
     // task of this hook is to override the default entry so that
