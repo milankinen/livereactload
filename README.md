@@ -199,6 +199,12 @@ Configures the reload client to use the given hostname when connecting to the
 reload server. You may need this if you are running the bundle in an another device. 
 Default value is `localhost`
 
+#### `--no-dedupe` 
+
+Disables Browserify module de-duplication. By default, de-duplication is enabled.
+However, sometimes this de-duplication with may cause an invalid bundle with LiveReactload.
+You can disable this de-duplication by using this flag.
+
 #### `--no-client`
 
 Omits the reload client from the generated bundle.
