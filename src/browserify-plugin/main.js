@@ -135,7 +135,7 @@ module.exports = function LiveReactloadPlugin(b, opts = {}) {
 
     b.pipeline.get("label").push(through.obj(
       function transform(row, enc, next) {
-        let {id, index, dedupeIndex, file, source, deps, entry} = row
+        let {id, index, dedupeIndex, sameDeps, file, source, deps, entry} = row
         if (entry) {
           entryId = id
           // drop all unnecessary stuff like global requirements and transformations
@@ -147,6 +147,7 @@ module.exports = function LiveReactloadPlugin(b, opts = {}) {
           id,
           index,
           dedupeIndex,
+          sameDeps,
           file,
           source,
           deps,

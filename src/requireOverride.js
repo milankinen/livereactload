@@ -53,7 +53,7 @@
   function findModule({modules}, id) {
     const mod = modules[id]
     if (mod) {
-      if (mod.dedupeIndex) {
+      if (mod.dedupeIndex && mod.sameDeps) {
         let orig = null
         Object.keys(modules).forEach(id => {
           if (modules[id].index === mod.dedupeIndex) {
