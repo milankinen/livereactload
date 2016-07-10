@@ -31,14 +31,6 @@
  *    LiveReactLoad options passed from the CLI/plugin params
  */
 export default function loader(mappings, entryPoints, options) {
-  if (window.$$LiveReactLoad) {
-    throw new Error(
-      "Trying to use more than one LiveReactLoad bundle. " +
-      "Currently only one bundle is supported but if you can't " +
-      "live with it, please raise an issue: " +
-      "https://github.com/milankinen/livereactload/issues"
-    );
-  }
   // external require (if any)
   var _require = typeof require == "function" && require;
 
@@ -50,7 +42,7 @@ export default function loader(mappings, entryPoints, options) {
 
   var entryId = entryPoints[0];
 
-  var scope = window.$$LiveReactLoad = {
+  var scope = {
     mappings: mappings,
     cache: {},
     reloading: false
