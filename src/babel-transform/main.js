@@ -30,8 +30,7 @@ module.exports = function babelPluginLiveReactload({filename, components, import
 function getProxies() {
   try {
     if (typeof window !== "undefined") {
-      return window.__lrproxies$$ = window.__lrproxies$$ || {}
-    } else {
+      return (window.$$LiveReactLoadProxies = window.$$LiveReactLoadProxies || {})
     }
   } catch (ignore) {
   }
