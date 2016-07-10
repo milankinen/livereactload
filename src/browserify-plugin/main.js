@@ -2,7 +2,7 @@ import through from "through2"
 import {readFileSync} from "fs"
 import {resolve, dirname, basename} from "path"
 import makeHash from "./makeHash"
-import {startServer} from "./reloadServer"
+import {startServer} from "./server"
 import {log} from "./console"
 import {values} from "../common"
 
