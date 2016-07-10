@@ -210,7 +210,7 @@ function loader(mappings, entryPoints, options) {
       return isProxy(e) || (isPlainObj(e) && all(vals(e), isProxy));
 
       function isProxy(x) {
-        return x && !!x.__reactPatchProxy;
+        return x && !!x.__$$LiveReactLoadable;
       }
     }
 
