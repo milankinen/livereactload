@@ -1,5 +1,7 @@
 # LiveReactload 2.x
 
+`WIP: re-writing module reloading logic...`
+
 Live code editing with Browserify and React.
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
