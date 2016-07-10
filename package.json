@@ -19,14 +19,16 @@
   "scripts": {
     "prepublish": "npm run dist",
     "dist": "npm run compile && npm run remove-maps",
-    "compile": "babel src --out-dir lib --blacklist strict src/requireOverride.js",
+    "compile": "babel src --out-dir lib",
     "remove-maps": "find lib -type f -name '*.map' -delete",
     "test": "babel-tape-runner test/**/*Test.js ; EXIT_VALUE=$? ; killall node ; exit $EXIT_VALUE"
   },
   "dependencies": {
     "cli-color": "1.1.0",
-    "through2": "2.0.0",
-    "ws": "0.8.0"
+    "ws": "1.1.0",
+    "lodash": "4.13.1",
+    "md5": "2.1.0",
+    "through2": "2.0.1"
   },
   "devDependencies": {
     "babel": "^5.8.29",
