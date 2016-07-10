@@ -45,7 +45,8 @@ export default function loader(mappings, entryPoints, options) {
   var scope = {
     mappings: mappings,
     cache: {},
-    reloading: false
+    reloading: false,
+    reloadHooks: {}
   };
 
 
@@ -104,16 +105,12 @@ export default function loader(mappings, entryPoints, options) {
         throw error;
       }
 
+      var hook = scope.reloadHooks[id];
       var module = cache[id] = {
-        // normal browserify stuff
         exports: {},
-        // reloading stuff
-        __accepted: undefined,
-        onReload: function onReload(callback) {
-          if (scope.reloading) {
-            var accepted = !!callback();
-            this.__accepted = accepted;
-          }
+        __accepted: false,
+        onReload: function (hook) {
+          scope.reloadHooks[id] = hook;
         }
       };
 
@@ -121,6 +118,13 @@ export default function loader(mappings, entryPoints, options) {
         var targetId = mappings[id][1][path];
         return load(targetId ? targetId : path);
       }, module, module.exports, unknownUseCase, mappings, cache, entryPoints);
+
+      if (scope.reloading && typeof hook === "function") {
+        // it's important **not** to assign to module.__accepted because it would point
+        // to the old module object during the reload event!
+        cache[id].__accepted = hook()
+      }
+
     }
     return cache[id].exports;
   }
@@ -212,7 +216,7 @@ export default function loader(mappings, entryPoints, options) {
 
     function isAccepted(id) {
       var accepted = scope.cache[id].__accepted;
-      scope.cache[id].__accepted = undefined;
+      scope.cache[id].__accepted = false;
       if (accepted === true) {
         console.log(" > Manually accepted")
       }
