@@ -30,7 +30,7 @@
  * @param options
  *    LiveReactLoad options passed from the CLI/plugin params
  */
-export default function loader(mappings, entryPoints, options) {
+function loader(mappings, entryPoints, options) {
   // external require (if any)
   var _require = typeof require == "function" && require;
 
@@ -65,7 +65,7 @@ export default function loader(mappings, entryPoints, options) {
       info("WebSocket client listening for changes...");
     };
     ws.onmessage = function (m) {
-      const msg = JSON.parse(m.data);
+      var msg = JSON.parse(m.data);
       if (msg.type === "change") {
         handleBundleChange(msg.data);
       } else if (msg.type === "bundle_error") {
@@ -310,16 +310,19 @@ export default function loader(mappings, entryPoints, options) {
   }
 
   function info(msg) {
-    console.info("LiveReactload ::", msg)
+    console.info("LiveReactload ::", msg);
   }
 
   function warn(msg) {
-    console.warn("LiveReactload ::", msg)
+    console.warn("LiveReactload ::", msg);
   }
 
   function error(msg) {
-    console.error("LiveReactload ::", msg)
+    console.error("LiveReactload ::", msg);
   }
 }
 
+
+module.exports = loader;
+module.exports["default"] = loader;
 

@@ -1,6 +1,5 @@
 import {Server} from "ws"
 import {log} from "./console"
-import {pairs} from "../common"
 
 function logError(error) {
   if (error) {
