@@ -25,7 +25,7 @@ test("smoke tests", assert => {
 
 
   function testInitialConditions() {
-    assert.comment("test that initial page contents are satified")
+    assert.comment("test that initial page contents are satisfied")
     browser.assert.success()
     browser.assert.text(".header", "Hello world")
     browser.assert.text(".counter-title", "Counter 'foo' value is 11")
