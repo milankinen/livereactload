@@ -199,7 +199,7 @@ function loader(mappings, entryPoints, options) {
     } catch (e) {
       console.error(e);
       error("Error occurred while reloading changes. Restoring old implementation...");
-      debug("Module causing error the error", modToReload);
+      debug("Module causing the error", modToReload);
       try {
         restoring = true;
         modToReload = null;
@@ -209,7 +209,7 @@ function loader(mappings, entryPoints, options) {
       } catch (re) {
         console.error(re);
         error("Restore failed. You may need to refresh your browser... :-/");
-        debug("Module causing error the error", modToReload);
+        debug("Module causing the error", modToReload);
       }
     }
     scope.reloading = false;
@@ -217,7 +217,7 @@ function loader(mappings, entryPoints, options) {
     function evaluate(id) {
       evalLog("Evaluate module", id);
       var deps = vals(scope.mappings[id][1]).filter(isLocalModule);
-      evalLog("Dependencies for", id, "are", deps);
+      evalLog("Dependencies for", id, "-", deps);
 
       traceModule(id);
       var shouldStop = deps.map(evaluate)
