@@ -216,9 +216,13 @@ function loader(mappings, entryPoints, options) {
 
     function evaluate(id) {
       evalLog("Evaluate module", id);
+      if (!scope.mappings[id]) {
+        evalLog("Module", id, "has no mappings in this bundle. Treating it as external module");
+        return true;
+      }
+
       var deps = vals(scope.mappings[id][1]).filter(isLocalModule);
       evalLog("Dependencies for", id, "-", deps);
-
       traceModule(id);
       var shouldStop = deps.map(evaluate)
       traceModule(id);
