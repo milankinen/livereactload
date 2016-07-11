@@ -31,8 +31,6 @@
  *    LiveReactLoad options passed from the CLI/plugin params
  */
 function loader(mappings, entryPoints, options) {
-  // external require (if any)
-  var _require = typeof require == "function" && require;
 
   if (entryPoints.length > 1) {
     throw new Error(
@@ -100,8 +98,7 @@ function loader(mappings, entryPoints, options) {
     if (!cache[id]) {
       if (!mappings[id]) {
         var req = typeof require == "function" && require;
-        if (!recur && req) return req(id, true);
-        if (_require) return _require(id, true);
+        if (req) return req(id);
         var error = new Error("Cannot find module '" + id + "'");
         error.code = "MODULE_NOT_FOUND";
         throw error;
