@@ -22,7 +22,7 @@ function LiveReactloadPlugin(b, opts = {}) {
   const clientOpts = {
     // assuming that livereload package is in global mdule directory (node_modules)
     // and this file is in ./lib/babel-plugin folder
-    nodeModulesRoot: resolve(__dirname, '../../..'),
+    nodeModulesRoot: resolve(__dirname, "../../.."),
     port: Number(port),
     host: host,
     clientEnabled: client
@@ -35,23 +35,51 @@ function LiveReactloadPlugin(b, opts = {}) {
     // this cache object is preserved over single bundling
     // pipeline so when next bundling occurs, this cache
     // object is thrown away
-    const mappings = {}
+    const mappings = {}, pathById = {}, pathByIdx = {}
     const entries = []
+
+    const idToPath = id =>
+      pathById[id] || (_.isString(id) && id) || throws("Full path not found for id: " + id)
+
+    const idxToPath = idx =>
+      pathByIdx[idx] || (_.isString(idx) && idx) || throws("Full path not found for index: " + idx)
 
     if (server) {
       b.pipeline.on("error", server.notifyBundleError)
     }
 
+    b.pipeline.get("sort").push(through.obj(
+      function transform(row, enc, next) {
+        const {id, index, file} = row
+        pathById[id] = file
+        pathByIdx[index] = file
+        next(null, row)
+      }
+    ))
+
     if (!dedupe) {
-      b.pipeline.splice('dedupe', 1, through.obj())
-      if (b.pipeline.get('dedupe')) {
+      b.pipeline.splice("dedupe", 1, through.obj())
+      if (b.pipeline.get("dedupe")) {
         log("Other plugins have added de-duplicate transformations. --no-dedupe is not effective")
       }
+    } else {
+      b.pipeline.splice("dedupe", 0, through.obj(
+        function transform(row, enc, next) {
+          const cloned = _.extend({}, row)
+          if (row.dedupeIndex) {
+            cloned.dedupeIndex = idxToPath(row.dedupeIndex)
+          }
+          if (row.dedupe) {
+            cloned.dedupe = idToPath(row.dedupe)
+          }
+          next(null, cloned)
+        }
+      ))
     }
 
     b.pipeline.get("label").push(through.obj(
       function transform(row, enc, next) {
-        let {id, file, source, deps, entry} = row
+        const {id, file, source, deps, entry} = row
         if (entry) {
           entries.push(file)
         }
@@ -68,17 +96,13 @@ function LiveReactloadPlugin(b, opts = {}) {
         next(null)
       },
       function flush(next) {
-        const idToFile = _.fromPairs(_.toPairs(mappings).map(([file, [src, deps, {_id: id}]]) => [id, file]))
-        const toFile = id => {
-          if (idToFile[id]) {
-            return idToFile[id]
-          }
-          throw new Error("Full path not found for id: " + id)
-        }
+        const pathById = _.fromPairs(_.toPairs(mappings).map(([file, [s, d, {_id: id}]]) => [id, file]))
+        const idToPath = id =>
+          pathById[id] || (_.isString(id) && id) || throws("Full path not found for id: " + id)
 
         const withFixedDepsIds = _.mapValues(mappings, ([src, deps, meta]) => [
           src,
-          _.mapValues(deps, toFile),
+          _.mapValues(deps, idToPath),
           meta
         ])
         const args = [
@@ -96,6 +120,10 @@ function LiveReactloadPlugin(b, opts = {}) {
         next()
       }
     ))
+  }
+
+  function throws(msg) {
+    throw new Error(msg)
   }
 }
 
