@@ -77,8 +77,10 @@ function loader(mappings, entryPoints, options) {
   function compile(mapping) {
     var body = mapping[0];
     if (typeof body !== "function") {
+      debug("Compiling module", mapping[2])
       var compiled = new Function("require", "module", "exports", body);
       mapping[0] = compiled;
+      mapping[2].source = body;
     }
   }
 
@@ -172,28 +174,55 @@ function loader(mappings, entryPoints, options) {
       return c[0];
     })
 
+    var restoring = false;
+    var modToReload = null;
+    var traceModule = function (id) {
+      if (options.debug) {
+        modToReload = {
+          id: id,
+          deps: scope.mappings[id][1],
+          meta: scope.mappings[id][2]
+        };
+      }
+    };
+    var evalLog = function () {
+      !restoring && debug.apply(null, Array.prototype.slice.call(arguments));
+    };
+
     scope.reloading = true;
     try {
       info("Applying changes...");
+      debug("Changed modules", changedModules);
+      debug("New modules", newMods);
       evaluate(entryId);
       info("Reload complete!");
     } catch (e) {
       console.error(e);
       error("Error occurred while reloading changes. Restoring old implementation...");
+      debug("Module causing error the error", modToReload);
       try {
+        restoring = true;
+        modToReload = null;
         restore();
         evaluate(entryId);
+        info("Restored!");
       } catch (re) {
         console.error(re);
         error("Restore failed. You may need to refresh your browser... :-/");
+        debug("Module causing error the error", modToReload);
       }
     }
     scope.reloading = false;
 
-
     function evaluate(id) {
+      evalLog("Evaluate module", id);
       var deps = vals(scope.mappings[id][1]).filter(isLocalModule);
+      evalLog("Dependencies for", id, "are", deps);
+
+      traceModule(id);
       var shouldStop = deps.map(evaluate)
+      traceModule(id);
+
       if (all(shouldStop) && !contains(changedModules, id)) {
         return true;
       } else {
@@ -258,6 +287,10 @@ function loader(mappings, entryPoints, options) {
     load: load
   });
 
+  debug("Options:", options);
+  debug("Entries:", entryPoints, entryId);
+  debug("Mappings")
+
   startClient();
   load(entryId);
 
@@ -307,6 +340,12 @@ function loader(mappings, entryPoints, options) {
 
   function isPlainObj(x) {
     return typeof x == 'object' && x.constructor == Object;
+  }
+
+  function debug() {
+    if (options.debug) {
+      console.log.apply(console, [ "LiveReactload [DEBUG] ::" ].concat(Array.prototype.slice.call(arguments)));
+    }
   }
 
   function info(msg) {

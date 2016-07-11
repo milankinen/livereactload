@@ -13,7 +13,8 @@ function LiveReactloadPlugin(b, opts = {}) {
     port = 4474,
     host = null,
     client = true,
-    dedupe = true
+    dedupe = true,
+    debug = false
     } = opts
 
   // server is alive as long as watchify is running
@@ -25,7 +26,8 @@ function LiveReactloadPlugin(b, opts = {}) {
     nodeModulesRoot: resolve(__dirname, "../../.."),
     port: Number(port),
     host: host,
-    clientEnabled: client
+    clientEnabled: client,
+    debug: debug
   }
 
   b.on("reset", addHooks)
@@ -83,7 +85,7 @@ function LiveReactloadPlugin(b, opts = {}) {
         if (entry) {
           entries.push(file)
         }
-        mappings[file] = [source, deps, {hash: md5(source), _id: id}]
+        mappings[file] = [source, deps, {id: file, hash: md5(source), browserifyId: id}]
         next(null, row)
       },
       function flush(next) {
@@ -96,7 +98,7 @@ function LiveReactloadPlugin(b, opts = {}) {
         next(null)
       },
       function flush(next) {
-        const pathById = _.fromPairs(_.toPairs(mappings).map(([file, [s, d, {_id: id}]]) => [id, file]))
+        const pathById = _.fromPairs(_.toPairs(mappings).map(([file, [s, d, {browserifyId: id}]]) => [id, file]))
         const idToPath = id =>
           pathById[id] || (_.isString(id) && id) || throws("Full path not found for id: " + id)
 
