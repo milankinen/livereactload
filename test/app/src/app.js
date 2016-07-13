@@ -4,6 +4,8 @@ import {MAGIC} from "./constants"
 
 require("./hooks")
 
+const {Box} = window.Extra
+
 export default React.createClass({
   render() {
     return (
@@ -11,6 +13,7 @@ export default React.createClass({
         <h1 className="header">Hello world</h1>
         <p className="magic">Magic number is {MAGIC}</p>
         <Counter name="foo" />
+        <Box />
       </div>
     )
   }

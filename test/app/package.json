@@ -2,8 +2,10 @@
   "name": "livereactload-test-app",
   "version": "0.0.1",
   "scripts": {
-    "start": "babel-node server.js & npm run watch & wait",
-    "watch": "watchify site.js -v -t babelify -p [ livereactload --port=4477 ] --ig -o bundle.js"
+    "start": "babel-node server.js & npm run watch:app & npm run watch:extra & wait",
+    "bundle:vendor": "browserify -o bundle.vendor.js -v -t babelify -r react -r react-dom",
+    "watch:app": "watchify site.js -v -t babelify -p [ livereactload --port=4477 ] -x react -x react-dom --ig -o bundle.app.js",
+    "watch:extra": "watchify extra.js -v -s Extra -t babelify -p [ livereactload --port=4478 ] -x react -x react-dom -o bundle.extra.js"
   },
   "dependencies": {
     "babel": "^6.5.2",
@@ -19,9 +21,10 @@
     "redux": "^3.5.2"
   },
   "devDependencies": {
-    "babel-plugin-react-transform": "2.0.2",
+    "babel-plugin-react-transform": "^2.0.2",
+    "browserify": "^13.0.1",
     "livereactload": "file:../..",
-    "react-proxy": "1.1.8",
-    "watchify": "3.7.0"
+    "react-proxy": "^1.1.8",
+    "watchify": "^3.7.0"
   }
 }

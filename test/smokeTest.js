@@ -14,6 +14,7 @@ test("smoke tests", assert => {
     ))
     .then(testInitialConditions)
     .then(testSingleFileUpdatingTriggersReload)
+    .then(testStandaloneBundleReload)
     .then(testReloadPropagationToParentModule)
     .then(testMultipleUpdatesAreAggregatedIntoOneReload)
     .then(testOnReloadHook)
@@ -29,6 +30,7 @@ test("smoke tests", assert => {
     browser.assert.success()
     browser.assert.text(".header", "Hello world")
     browser.assert.text(".counter-title", "Counter 'foo' value is 11")
+    browser.assert.text(".extra-body", "Extra body!!")
   }
 
 
@@ -45,6 +47,22 @@ test("smoke tests", assert => {
     return updateSrcP
       .then(() => {
         browser.assert.text(".header", "Tsers!")
+      })
+  }
+
+  function testStandaloneBundleReload() {
+    assert.comment("test that changes from standalone bundle gets reloaded")
+    const updateSrcP =
+      updateSources(browser, [
+        {
+          file: "extra/body.js",
+          find: "Extra body",
+          replace: "Extra mod-body"
+        }
+      ])
+    return updateSrcP
+      .then(() => {
+        browser.assert.text(".extra-body", "Extra mod-body!!")
       })
   }
 
