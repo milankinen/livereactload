@@ -293,7 +293,8 @@ function loader(mappings, entryPoints, options) {
   debug("Mappings")
 
   startClient();
-  load(entryId);
+  // standalone bundles may need the exports from entry module
+  return load(entryId);
 
 
   // this function is stringified in browserify process and appended to the bundle

@@ -1,4 +1,5 @@
 import _ from "lodash"
+import umd from "umd"
 import through from "through2"
 import md5 from "md5"
 import {readFileSync} from "fs"
@@ -39,6 +40,7 @@ function LiveReactloadPlugin(b, opts = {}) {
     // object is thrown away
     const mappings = {}, pathById = {}, pathByIdx = {}
     const entries = []
+    let standalone = null
 
     const idToPath = id =>
       pathById[id] || (_.isString(id) && id) || throws("Full path not found for id: " + id)
@@ -49,6 +51,16 @@ function LiveReactloadPlugin(b, opts = {}) {
     if (server) {
       b.pipeline.on("error", server.notifyBundleError)
     }
+
+    b.pipeline.get("record").push(through.obj(
+      function transform(row, enc, next) {
+        const s = _.get(row, "options._flags.standalone")
+        if (s) {
+          standalone = s
+        }
+        next(null, row)
+      }
+    ))
 
     b.pipeline.get("sort").push(through.obj(
       function transform(row, enc, next) {
@@ -112,8 +124,11 @@ function LiveReactloadPlugin(b, opts = {}) {
           entries,
           clientOpts
         ]
-        const bundleSrc =
+        let bundleSrc =
           `(${loader.toString()})(${args.map(a => JSON.stringify(a, null, 2)).join(", ")});`
+        if (standalone) {
+          bundleSrc = umd(standalone, `return ${bundleSrc}`)
+        }
 
         this.push(new Buffer(bundleSrc, "utf8"))
         if (server) {
