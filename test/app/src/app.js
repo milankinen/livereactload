@@ -15,7 +15,7 @@ export default React.createClass({
         <p className="magic">Magic number is {MAGIC}</p>
         <Counter name="foo" />
         <Box />
-        <div style={{display: "none"}}>
+        <div className="circular">
           {lolbal()}
         </div>
       </div>

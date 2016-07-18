@@ -15,6 +15,7 @@ test("smoke tests", assert => {
     .then(testInitialConditions)
     .then(testSingleFileUpdatingTriggersReload)
     .then(testStandaloneBundleReload)
+    .then(testCircularDepsGetReloaded)
     .then(testReloadPropagationToParentModule)
     .then(testMultipleUpdatesAreAggregatedIntoOneReload)
     .then(testOnReloadHook)
@@ -31,6 +32,7 @@ test("smoke tests", assert => {
     browser.assert.text(".header", "Hello world")
     browser.assert.text(".counter-title", "Counter 'foo' value is 11")
     browser.assert.text(".extra-body", "Extra body!!")
+    browser.assert.text(".circular", "lolbal!!")
   }
 
 
@@ -50,6 +52,7 @@ test("smoke tests", assert => {
       })
   }
 
+
   function testStandaloneBundleReload() {
     assert.comment("test that changes from standalone bundle gets reloaded")
     const updateSrcP =
@@ -63,6 +66,23 @@ test("smoke tests", assert => {
     return updateSrcP
       .then(() => {
         browser.assert.text(".extra-body", "Extra mod-body!!")
+      })
+  }
+
+
+  function testCircularDepsGetReloaded() {
+    assert.comment("test that changes to circular dependencies get reloaded correctly")
+    const updateSrcP =
+      updateSources(browser, [
+        {
+          file: "circular/second.js",
+          find: "!!",
+          replace: "??"
+        }
+      ])
+    return updateSrcP
+      .then(() => {
+        browser.assert.text(".circular", "lolbal??")
       })
   }
 
