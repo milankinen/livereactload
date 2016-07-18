@@ -1,6 +1,7 @@
 import React from "react"
 import Counter from "./counter"
 import {MAGIC} from "./constants"
+import {lolbal} from "./circular/second"
 
 require("./hooks")
 
@@ -14,6 +15,9 @@ export default React.createClass({
         <p className="magic">Magic number is {MAGIC}</p>
         <Counter name="foo" />
         <Box />
+        <div style={{display: "none"}}>
+          {lolbal()}
+        </div>
       </div>
     )
   }
