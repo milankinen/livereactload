@@ -44,7 +44,15 @@ function loader(mappings, entryPoints, options) {
     mappings: mappings,
     cache: {},
     reloading: false,
-    reloadHooks: {}
+    reloadHooks: {},
+    reload: function (fn) {
+      scope.reloading = true;
+      try {
+        fn();
+      } finally {
+        scope.reloading = false;
+      }
+    }
   };
 
 
@@ -169,69 +177,86 @@ function loader(mappings, entryPoints, options) {
       return !c[1];
     }).map(function (c) {
       return c[0];
+    });
+
+    scope.reload(function () {
+      try {
+        info("Applying changes...");
+        debug("Changed modules", changedModules);
+        debug("New modules", newMods);
+        evaluate(entryId, {});
+        info("Reload complete!");
+      } catch (e) {
+        error("Error occurred while reloading changes. Restoring old implementation...");
+        console.error(e);
+        console.error(e.stack);
+        try {
+          restore();
+          evaluate(entryId, {});
+          info("Restored!");
+        } catch (re) {
+          error("Restore failed. You may need to refresh your browser... :-/");
+          console.error(re);
+          console.error(re.stack);
+        }
+      }
     })
 
-    var restoring = false;
-    var modToReload = null;
-    var traceModule = function (id) {
-      if (options.debug) {
-        modToReload = {
-          id: id,
-          deps: scope.mappings[id][1],
-          meta: scope.mappings[id][2]
-        };
+
+    function evaluate(id, changeCache) {
+      if (id in changeCache) {
+        debug("Circular dependency detected for module", id, "not traversing any further...");
+        return changeCache[id];
       }
-    };
-    var evalLog = function () {
-      !restoring && debug.apply(null, Array.prototype.slice.call(arguments));
-    };
-
-    scope.reloading = true;
-    try {
-      info("Applying changes...");
-      debug("Changed modules", changedModules);
-      debug("New modules", newMods);
-      evaluate(entryId);
-      info("Reload complete!");
-    } catch (e) {
-      console.error(e);
-      error("Error occurred while reloading changes. Restoring old implementation...");
-      debug("Module causing the error", modToReload);
-      try {
-        restoring = true;
-        modToReload = null;
-        restore();
-        evaluate(entryId);
-        info("Restored!");
-      } catch (re) {
-        console.error(re);
-        error("Restore failed. You may need to refresh your browser... :-/");
-        debug("Module causing the error", modToReload);
+      if (isExternalModule(id)) {
+        debug("Module", id, "is an external module. Do not reload");
+        return false;
       }
-    }
-    scope.reloading = false;
+      var module = getModule(id);
+      debug("Evaluate module details", module);
 
-    function evaluate(id) {
-      evalLog("Evaluate module", id);
-      if (!scope.mappings[id]) {
-        evalLog("Module", id, "has no mappings in this bundle. Treating it as external module");
-        return true;
-      }
-
-      var deps = vals(scope.mappings[id][1]).filter(isLocalModule);
-      evalLog("Dependencies for", id, "-", deps);
-      traceModule(id);
-      var shouldStop = deps.map(evaluate)
-      traceModule(id);
-
-      if (all(shouldStop) && !contains(changedModules, id)) {
-        return true;
-      } else {
-        var msg = contains(newMods, id) ? " > Add new module  ::" : " > Patch module    ::"
-        console.log(msg, id);
+      // initially mark change status to follow module's change status
+      // TODO: how to propagate change status from children to this without causing infinite recursion?
+      var meChanged = contains(changedModules, id);
+      changeCache[id] = meChanged;
+      if (id in scope.cache) {
         delete scope.cache[id];
-        load(id);
-        return allExportsProxies(id) || isAccepted(id);
+      }
+
+      var deps = module.deps.filter(isLocalModule);
+      var depsChanged = deps.map(function (dep) {
+        return evaluate(dep, changeCache);
+      });
+
+      // In the case of circular dependencies, the module evaluation stops because of the
+      // changeCache check above. Also module cache should be clear. However, if some circular
+      // dependency (or its descendant) gets reloaded, it (re)loads new version of this
+      // module back to cache. That's why we need to ensure that we're not
+      //    1) reloading module twice (so that we don't break cross-refs)
+      //    2) reload any new version if there is no need for reloading
+      //
+      // Hence the complex "scope.cache" stuff...
+      //
+      var isReloaded = module.cached !== undefined && id in scope.cache;
+      var depChanged = any(depsChanged);
+
+      if (isReloaded || depChanged || meChanged) {
+        debug("Module changed", id, isReloaded, depChanged, meChanged);
+        if (!isReloaded) {
+          var msg = contains(newMods, id) ? " > Add new module   ::" : " > Reload module    ::";
+          console.log(msg, id);
+          load(id);
+        } else {
+          console.log(" > Already reloaded ::", id);
+        }
+        changeCache[id] = !allExportsProxies(id) && !isAccepted(id);
+        return changeCache[id];
+      } else {
+        // restore old version of the module
+        if (module.cached !== undefined) {
+          scope.cache[id] = module.cached;
+        }
+        return false;
       }
     }
 
@@ -257,12 +282,22 @@ function loader(mappings, entryPoints, options) {
       changes.forEach(function (c) {
         var id = c[0], mapping = c[1];
         if (mapping) {
+          debug("Restore old mapping", id);
           scope.mappings[id] = mapping;
         } else {
+          debug("Delete new mapping", id);
           delete scope.mappings[id];
         }
       })
     }
+  }
+
+  function getModule(id) {
+    return {
+      deps: vals(scope.mappings[id][1]),
+      meta: scope.mappings[id][2],
+      cached: scope.cache[id]
+    };
   }
 
   function handleBundleChange(newMappings) {
@@ -290,7 +325,6 @@ function loader(mappings, entryPoints, options) {
 
   debug("Options:", options);
   debug("Entries:", entryPoints, entryId);
-  debug("Mappings")
 
   startClient();
   // standalone bundles may need the exports from entry module
@@ -303,6 +337,10 @@ function loader(mappings, entryPoints, options) {
 
   function isLocalModule(id) {
     return id.indexOf(options.nodeModulesRoot) === -1
+  }
+
+  function isExternalModule(id) {
+    return !(id in scope.mappings);
   }
 
   function keys(obj) {
@@ -324,12 +362,26 @@ function loader(mappings, entryPoints, options) {
 
   function all(col, f) {
     if (!f) {
-      f = function (x) { return x; };
+      f = function (x) {
+        return x;
+      };
     }
     for (var i = 0; i < col.length; i++) {
       if (!f(col[i])) return false;
     }
     return true;
+  }
+
+  function any(col, f) {
+    if (!f) {
+      f = function (x) {
+        return x;
+      };
+    }
+    for (var i = 0; i < col.length; i++) {
+      if (f(col[i])) return true;
+    }
+    return false;
   }
 
   function forEachValue(obj, fn) {
@@ -346,7 +398,7 @@ function loader(mappings, entryPoints, options) {
 
   function debug() {
     if (options.debug) {
-      console.log.apply(console, [ "LiveReactload [DEBUG] ::" ].concat(Array.prototype.slice.call(arguments)));
+      console.log.apply(console, ["LiveReactload [DEBUG] ::"].concat(Array.prototype.slice.call(arguments)));
     }
   }
 
