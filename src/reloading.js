@@ -318,6 +318,16 @@ function loader(mappings, entryPoints, options) {
 
   // prepare mappings before starting the app
   forEachValue(scope.mappings, compile);
+  if (isReactTransformEnabled(scope.mappings)) {
+    info("LiveReactLoad transform detected. Ready to rock!");
+  } else {
+    warn(
+      "Could not detect LiveReactLoad transform (livereactload/babel-transform). " +
+      "Please see instructions how to setup the transform:\n\n" +
+      "https://github.com/milankinen/livereactload#installation"
+    );
+  }
+
   Object.assign(scope, {
     compile: compile,
     load: load
@@ -334,6 +344,13 @@ function loader(mappings, entryPoints, options) {
   // this function is stringified in browserify process and appended to the bundle
   // so these helper functions must be inlined into this function, otherwise
   // the function is not working
+
+  function isReactTransformEnabled(mappings) {
+    return any(vals(mappings), function (mapping) {
+      var source = mapping[2].source;
+      return source && source.indexOf("__$$LiveReactLoadable") !== -1;
+    });
+  }
 
   function isLocalModule(id) {
     return id.indexOf(options.nodeModulesRoot) === -1
