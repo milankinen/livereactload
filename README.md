@@ -53,10 +53,7 @@ If you want to stick with browserify, but use the Hot Module Reloading API (like
 LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x` in order to
 work.
 
-### Installation
-
-**ATTENTION:** these instructions are meant for **Babel 6.x**. If you are using
-Babel 5.x, please see the **[Babel 5.x example](examples/04-babel-5.x)**.
+### Installation (Babel 6.x)
 
 Install pre-requirements (if not already exist)
 
