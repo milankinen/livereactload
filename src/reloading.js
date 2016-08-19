@@ -328,10 +328,8 @@ function loader(mappings, entryPoints, options) {
     );
   }
 
-  Object.assign(scope, {
-    compile: compile,
-    load: load
-  });
+  scope.compile = compile;
+  scope.load = load;
 
   debug("Options:", options);
   debug("Entries:", entryPoints, entryId);
