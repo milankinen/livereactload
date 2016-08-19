@@ -34,7 +34,7 @@ module.exports = function(grunt) {
           // use watchify instead of browserify
           watch: true,
           keepAlive: true,
-          transform: [[{}, 'babelify'], [{global: true}, 'envify']],
+          transform: [['babelify', {}], ['envify', {global: true}]],
           // enable livereactload for dev builds
           plugin: ['livereactload']
         }
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
         dest: './bundle.js',
         options: {
           watch: false,
-          transform: [[{}, 'babelify'], [{global: true}, 'envify']]
+          transform: [['babelify', {}], ['envify', {global: true}]]
         }
       }
     }

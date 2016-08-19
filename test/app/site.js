@@ -17,8 +17,8 @@ const MyApp = React.createClass({
   render() {
     return window._siteReloadCounter === 0 ? <App /> : (
       <div>
-        This text should never occur because propagation guards should
-        stop reloading to app.js
+        This text should never occur because LiveReactLoad should stop reload
+        propagation if module returns only React components (like src/app.js does).
       </div>
     )
   }

@@ -16,22 +16,33 @@ module.exports = function babelPluginLiveReactload({filename, components, import
     if (!proxies[id]) {
       const proxy = createProxy(Component)
       proxies[id] = proxy
-      return proxy.get()
+      return mark(proxy.get())
     } else {
       console.log(" > Patch component :: ", displayName || uniqueId)
       const proxy = proxies[id]
       const instances = proxy.update(Component)
       setTimeout(() => instances.forEach(forceUpdate), 0)
-      return proxy.get()
+      return mark(proxy.get())
     }
   }
+}
+
+function mark(Component) {
+  if (!Component.__$$LiveReactLoadable) {
+    Object.defineProperty(Component, '__$$LiveReactLoadable', {
+      configurable: false,
+      writable: false,
+      enumerable: false,
+      value: true
+    })
+  }
+  return Component
 }
 
 function getProxies() {
   try {
     if (typeof window !== "undefined") {
-      return window.__lrproxies$$ = window.__lrproxies$$ || {}
-    } else {
+      return (window.$$LiveReactLoadProxies = window.$$LiveReactLoadProxies || {})
     }
   } catch (ignore) {
   }
