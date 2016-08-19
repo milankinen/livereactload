@@ -11,9 +11,9 @@
   "keywords": [
     "react",
     "livereload",
-    "real-time",
     "browserify-plugin",
-    "development"
+    "hmr",
+    "browserify"
   ],
   "main": "index.js",
   "scripts": {
