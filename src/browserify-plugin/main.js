@@ -112,11 +112,20 @@ function LiveReactloadPlugin(b, opts = {}) {
       function flush(next) {
         const pathById = _.fromPairs(_.toPairs(mappings).map(([file, [s, d, {browserifyId: id}]]) => [id, file]))
         const idToPath = id =>
-          pathById[id] || (_.isString(id) && id) || throws("Full path not found for id: " + id)
+          pathById[id] || (_.isString(id) && id)
+
+        const depsToPaths = deps =>
+          _.reduce(deps, (m, v, k) => {
+            let id = idToPath(v);
+            if (id) {
+              m[k] = id;
+            }
+            return m;
+          }, {})
 
         const withFixedDepsIds = _.mapValues(mappings, ([src, deps, meta]) => [
           src,
-          _.mapValues(deps, idToPath),
+          depsToPaths(deps),
           meta
         ])
         const args = [
