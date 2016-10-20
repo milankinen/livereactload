@@ -206,6 +206,12 @@ You can disable this de-duplication by using this flag.
 
 Omits the reload client from the generated bundle.
 
+#### `--ssl-cert <certFilename>` and `--ssl-key <privateKeyFilename>`
+
+Adds your custom SSL certificate and key to the reload web-server. This is needed if you
+want to use LiveReactLoad in HTTPS site. Parameters are paths to the actual files.
+
+
 ## License
 
 MIT

@@ -15,11 +15,13 @@ function LiveReactloadPlugin(b, opts = {}) {
     host = null,
     client = true,
     dedupe = true,
-    debug = false
+    debug = false,
+    'ssl-cert': sslCert = null,
+    'ssl-key': sslKey = null,
     } = opts
 
   // server is alive as long as watchify is running
-  const server = opts.server !== false ? startServer({port: Number(port)}) : null
+  const server = opts.server !== false ? startServer({port: Number(port), sslCert, sslKey}) : null
 
   const clientOpts = {
     // assuming that livereload package is in global mdule directory (node_modules)
@@ -154,4 +156,3 @@ function LiveReactloadPlugin(b, opts = {}) {
 }
 
 module.exports = LiveReactloadPlugin
-
