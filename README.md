@@ -219,5 +219,5 @@ MIT
 
 ## Contributing
 
-Please create a [Github issue](/issues) if problems occur. Pull request are also welcome
+Please create a [Github issue](/../../issues) if problems occur. Pull request are also welcome
 and they can be created to the `development` branch.
