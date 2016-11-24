@@ -18,6 +18,7 @@ function LiveReactloadPlugin(b, opts = {}) {
     client = true,
     dedupe = true,
     debug = false,
+    basedir = process.cwd(),
     'ssl-cert': sslCert = null,
     'ssl-key': sslKey = null,
     } = opts
@@ -101,11 +102,15 @@ function LiveReactloadPlugin(b, opts = {}) {
         const converter = convertSourceMaps.fromSource(source)
         let sourceWithoutMaps = source
         let adjustedSourcemap = ''
+        let hash;
 
         if (converter) {
-          converter.setProperty('sources', [file])
           sourceWithoutMaps = convertSourceMaps.removeComments(source)
+          hash = md5(sourceWithoutMaps)
+          converter.setProperty('sources', [file.replace(basedir, hash)])
           adjustedSourcemap = convertSourceMaps.fromObject(offsetSourceMaps(converter.toObject(), 1)).toComment()
+        } else {
+          hash = md5(source)
         }
 
         if (entry) {
