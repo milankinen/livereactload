@@ -84,7 +84,7 @@ function loader(mappings, entryPoints, options) {
     var body = mapping[0];
     if (typeof body !== "function") {
       debug("Compiling module", mapping[2])
-      var compiled = loadAsModule(body, mapping[2].sourcemap);
+      var compiled = __livereactload_loadAsModule(body, mapping[2].sourcemap);
       mapping[0] = compiled;
       mapping[2].source = body;
     }
@@ -427,15 +427,6 @@ function loader(mappings, entryPoints, options) {
 
   function error(msg) {
     console.error("LiveReactload ::", msg);
-  }
-
-  function loadAsModule(__livereactload_source, __livereactload_sourcemap) {
-    return eval(
-      'function __livereactload_module(require, module, exports){\n' +
-      __livereactload_source +
-      '\n}; __livereactload_module;' +
-      (__livereactload_sourcemap || '')
-    );
   }
 
 }

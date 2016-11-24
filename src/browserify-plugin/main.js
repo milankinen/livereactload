@@ -153,7 +153,8 @@ function LiveReactloadPlugin(b, opts = {}) {
           clientOpts
         ]
         let bundleSrc =
-          `(${loader.toString()})(${args.map(a => JSON.stringify(a, null, 2)).join(", ")});`
+          `(${loader.toString()})(${args.map(a => JSON.stringify(a, null, 2)).join(", ")});
+            ${__livereactload_loadAsModule.toString()};`
         if (standalone) {
           bundleSrc = umd(standalone, `return ${bundleSrc}`)
         }
@@ -170,6 +171,15 @@ function LiveReactloadPlugin(b, opts = {}) {
   function throws(msg) {
     throw new Error(msg)
   }
+}
+
+function __livereactload_loadAsModule(__livereactload_source, __livereactload_sourcemap) {
+  return eval(
+    'function __livereactload_module(require, module, exports){\n' +
+    __livereactload_source +
+    '\n}; __livereactload_module;' +
+    (__livereactload_sourcemap || '')
+  );
 }
 
 module.exports = LiveReactloadPlugin
