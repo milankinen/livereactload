@@ -4,6 +4,8 @@ import through from "through2"
 import md5 from "md5"
 import {readFileSync} from "fs"
 import {resolve} from "path"
+import convertSourceMaps from 'convert-source-map'
+import offsetSourceMaps from 'offset-sourcemap-lines'
 import {startServer} from "./server"
 import {log} from "./console"
 import loader from "../reloading"
@@ -96,10 +98,20 @@ function LiveReactloadPlugin(b, opts = {}) {
     b.pipeline.get("label").push(through.obj(
       function transform(row, enc, next) {
         const {id, file, source, deps, entry} = row
+        const converter = convertSourceMaps.fromSource(source)
+        let sourceWithoutMaps = source
+        let adjustedSourcemap = ''
+
+        if (converter) {
+          converter.setProperty('sources', [file])
+          sourceWithoutMaps = convertSourceMaps.removeComments(source)
+          adjustedSourcemap = convertSourceMaps.fromObject(offsetSourceMaps(converter.toObject(), 1)).toComment()
+        }
+
         if (entry) {
           entries.push(file)
         }
-        mappings[file] = [source, deps, {id: file, hash: md5(source), browserifyId: id}]
+        mappings[file] = [sourceWithoutMaps, deps, {id: file, hash: md5(sourceWithoutMaps), browserifyId: id, sourcemap: adjustedSourcemap}]
         next(null, row)
       },
       function flush(next) {
