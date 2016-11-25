@@ -116,7 +116,7 @@ function LiveReactloadPlugin(b, opts = {}) {
         if (entry) {
           entries.push(file)
         }
-        mappings[file] = [sourceWithoutMaps, deps, {id: file, hash: md5(sourceWithoutMaps), browserifyId: id, sourcemap: adjustedSourcemap}]
+        mappings[file] = [sourceWithoutMaps, deps, {id: file, hash: hash, browserifyId: id, sourcemap: adjustedSourcemap}]
         next(null, row)
       },
       function flush(next) {
