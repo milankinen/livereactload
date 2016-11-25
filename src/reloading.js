@@ -84,10 +84,19 @@ function loader(mappings, entryPoints, options) {
     var body = mapping[0];
     if (typeof body !== "function") {
       debug("Compiling module", mapping[2])
-      var compiled = new Function("require", "module", "exports", body);
+      var compiled = compileModule(body, mapping[2].sourcemap);
       mapping[0] = compiled;
       mapping[2].source = body;
     }
+  }
+
+  function compileModule(source, sourcemap) {
+    return eval(
+      "function __livereactload_module(require, module, exports){\n" +
+      source +
+      "\n}; __livereactload_module;" +
+      (sourcemap || "")
+    );
   }
 
   function unknownUseCase() {
@@ -429,7 +438,6 @@ function loader(mappings, entryPoints, options) {
     console.error("LiveReactload ::", msg);
   }
 }
-
 
 module.exports = loader;
 module.exports["default"] = loader;
