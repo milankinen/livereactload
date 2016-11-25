@@ -84,7 +84,7 @@ function loader(mappings, entryPoints, options) {
     var body = mapping[0];
     if (typeof body !== "function") {
       debug("Compiling module", mapping[2])
-      var compiled = new Function("require", "module", "exports", body);
+      var compiled = __livereactload_loadAsModule(body, mapping[2].sourcemap);
       mapping[0] = compiled;
       mapping[2].source = body;
     }
@@ -428,8 +428,8 @@ function loader(mappings, entryPoints, options) {
   function error(msg) {
     console.error("LiveReactload ::", msg);
   }
-}
 
+}
 
 module.exports = loader;
 module.exports["default"] = loader;
