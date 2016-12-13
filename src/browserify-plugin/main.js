@@ -102,12 +102,19 @@ function LiveReactloadPlugin(b, opts = {}) {
         const converter = convertSourceMaps.fromSource(source)
         let sourceWithoutMaps = source
         let adjustedSourcemap = ''
+		let hashedSourceFiles = []
         let hash;
 
         if (converter) {
           sourceWithoutMaps = convertSourceMaps.removeComments(source)
           hash = md5(sourceWithoutMaps)
-          converter.setProperty('sources', [file.replace(basedir, hash)])
+
+          const sources = converter.getProperty('sources')
+          for (let i=0; i < sources.length; i++) {
+            hashedSourceFiles[i] = sources[i] + "?version=" + hash
+          }
+          converter.setProperty('sources', hashedSourceFiles)
+
           adjustedSourcemap = convertSourceMaps.fromObject(offsetSourceMaps(converter.toObject(), 1)).toComment()
         } else {
           hash = md5(source)
