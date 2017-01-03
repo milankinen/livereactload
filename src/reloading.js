@@ -349,14 +349,16 @@ function loader(mappings, entryPoints, options) {
 
   // prepare mappings before starting the app
   forEachValue(scope.mappings, compile);
-  if (isReactTransformEnabled(scope.mappings)) {
-    info("LiveReactLoad transform detected. Ready to rock!");
-  } else {
-    warn(
-      "Could not detect LiveReactLoad transform (livereactload/babel-transform). " +
-      "Please see instructions how to setup the transform:\n\n" +
-      "https://github.com/milankinen/livereactload#installation"
-    );
+  if (options.transform) {
+    if (isReactTransformEnabled(scope.mappings)) {
+        info("LiveReactLoad transform detected. Ready to rock!");
+    } else {
+      warn(
+        "Could not detect LiveReactLoad transform (livereactload/babel-transform). " +
+        "Please see instructions how to setup the transform:\n\n" +
+        "https://github.com/milankinen/livereactload#installation"
+      );
+    }
   }
 
   scope.compile = compile;
