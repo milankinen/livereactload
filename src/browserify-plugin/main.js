@@ -107,7 +107,6 @@ function LiveReactloadPlugin(b, opts = {}) {
         if (converter) {
           sourceWithoutMaps = convertSourceMaps.removeComments(source)
           hash = md5(sourceWithoutMaps)
-          converter.setProperty('sources', [file.replace(basedir, hash)])
           adjustedSourcemap = convertSourceMaps.fromObject(offsetSourceMaps(converter.toObject(), 1)).toComment()
         } else {
           hash = md5(source)

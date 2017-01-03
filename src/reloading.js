@@ -163,12 +163,33 @@ function loader(mappings, entryPoints, options) {
       var mapping = mappings[id];
       var meta = mapping[2];
       if (!old || old[2].hash !== meta.hash) {
+        if (old && meta.sourcemap) {
+          hashSourceMap(meta);
+        }
         compile(mapping);
         scope.mappings[id] = mapping;
         changes.push([id, old]);
       }
     });
     return changes;
+
+	// Updates the source map by adding a hash parameter to the filename.
+	// Without this new filename, browsers will ignore the updated source map.
+	function hashSourceMap(meta) {
+	  var comment = meta.sourcemap
+		.replace(/^\/\*/g, '//')
+		.replace(/\*\/$/g, '');
+	  // decode sourcemap comment and add hash param
+	  comment = comment.split(',').pop();
+	  var sourcemap = JSON.parse(atob(comment));
+	  for (var i=0; i < sourcemap.sources.length; i++) {
+		  sourcemap.sources[i] += "?update=" + meta.hash;
+	  }
+	  // re-encode to sourcemap comment
+	  comment = btoa(JSON.stringify(sourcemap));
+	  comment = '//# sourceMappingURL=data:application/json;base64,' + comment;
+	  meta.sourcemap = comment;
+	}
   }
 
   /**
