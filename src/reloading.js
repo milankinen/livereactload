@@ -42,6 +42,7 @@ function loader(mappings, entryPoints, options) {
 
   var scope = {
     mappings: mappings,
+    revNums: {},
     cache: {},
     reloading: false,
     reloadHooks: {},
@@ -80,10 +81,10 @@ function loader(mappings, entryPoints, options) {
     }
   }
 
-  function compile(mapping) {
+  function compile(mapping, revision) {
     var body = mapping[0];
     if (typeof body !== "function") {
-      debug("Compiling module", mapping[2])
+      debug("Compiling module", mapping[2], "[revision " + revision + " ]")
       var compiled = compileModule(body, mapping[2].sourcemap);
       mapping[0] = compiled;
       mapping[2].source = body;
@@ -91,12 +92,11 @@ function loader(mappings, entryPoints, options) {
   }
 
   function compileModule(source, sourcemap) {
-    return eval(
-      "function __livereactload_module(require, module, exports){\n" +
-      source +
-      "\n}; __livereactload_module;" +
-      (sourcemap || "")
+    var toModule = new Function(
+      "__livereactload_source", "__livereactload_sourcemap",
+      "return eval('function __livereactload_module(require, module, exports){\\n' + __livereactload_source + '\\n}; __livereactload_module;' + (__livereactload_sourcemap || ''));"
     );
+    return toModule(source, sourcemap)
   }
 
   function unknownUseCase() {
@@ -163,12 +163,34 @@ function loader(mappings, entryPoints, options) {
       var mapping = mappings[id];
       var meta = mapping[2];
       if (!old || old[2].hash !== meta.hash) {
-        compile(mapping);
+        var rev = scope.revNums[id] ? ++scope.revNums[id] : (scope.revNums[id] = 1);
+        if (old && meta.sourcemap) {
+          addVersionToSourceMap(meta, rev);
+        }
+        compile(mapping, rev);
         scope.mappings[id] = mapping;
         changes.push([id, old]);
       }
     });
     return changes;
+
+    // Updates the source map by adding a revision parameter to the filename.
+    // Without this new filename, browsers will ignore the updated source map.
+    function addVersionToSourceMap(meta, revision) {
+      var comment = meta.sourcemap
+        .replace(/^\/\*/g, '//')
+        .replace(/\*\/$/g, '');
+      // decode sourcemap comment and add hash param
+      comment = comment.split(',').pop();
+      var sourcemap = JSON.parse(atob(comment));
+      for (var i = 0; i < sourcemap.sources.length; i++) {
+        sourcemap.sources[i] += "?rev=" + revision;
+      }
+      // re-encode to sourcemap comment
+      comment = btoa(JSON.stringify(sourcemap));
+      comment = '//# sourceMappingURL=data:application/json;base64,' + comment;
+      meta.sourcemap = comment;
+    }
   }
 
   /**
