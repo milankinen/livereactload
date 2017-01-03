@@ -349,9 +349,10 @@ function loader(mappings, entryPoints, options) {
 
   // prepare mappings before starting the app
   forEachValue(scope.mappings, compile);
-  if (options.transform) {
+
+  if (options.babel) {
     if (isReactTransformEnabled(scope.mappings)) {
-        info("LiveReactLoad transform detected. Ready to rock!");
+        info("LiveReactLoad Babel transform detected. Ready to rock!");
     } else {
       warn(
         "Could not detect LiveReactLoad transform (livereactload/babel-transform). " +

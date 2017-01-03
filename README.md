@@ -211,9 +211,9 @@ Omits the reload client from the generated bundle.
 Adds your custom SSL certificate and key to the reload web-server. This is needed if you
 want to use LiveReactLoad in HTTPS site. Parameters are paths to the actual files.
 
-#### `--no-transform`
+#### `--no-babel`
 
-Disables a warning when livereactload's Babel transform is not being used. Only enable this option if another process transforms React syntax prior to bundling!
+If you use a tool other than Babel to transform React syntax, this disables the in-browser warning that would otherwise appear.
 
 ## License
 

@@ -15,10 +15,10 @@ function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
     host = null,
+	babel = true,
     client = true,
     dedupe = true,
     debug = false,
-	transform = true,
     basedir = process.cwd(),
     'ssl-cert': sslCert = null,
     'ssl-key': sslKey = null,
@@ -35,7 +35,7 @@ function LiveReactloadPlugin(b, opts = {}) {
     host: host,
     clientEnabled: client,
     debug: debug,
-	transform: transform
+	babel: babel
   }
 
   b.on("reset", addHooks)
