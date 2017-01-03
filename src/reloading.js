@@ -92,12 +92,11 @@ function loader(mappings, entryPoints, options) {
   }
 
   function compileModule(source, sourcemap) {
-    return eval(
-      "function __livereactload_module(require, module, exports){\n" +
-      source +
-      "\n}; __livereactload_module;" +
-      (sourcemap || "")
+    var toModule = new Function(
+      "__livereactload_source", "__livereactload_sourcemap",
+      "return eval('function __livereactload_module(require, module, exports){\\n' + __livereactload_source + '\\n}; __livereactload_module;' + (__livereactload_sourcemap || ''));"
     );
+    return toModule(source, sourcemap)
   }
 
   function unknownUseCase() {
