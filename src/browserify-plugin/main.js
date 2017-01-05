@@ -15,6 +15,7 @@ function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
     host = null,
+    babel = true,
     client = true,
     dedupe = true,
     debug = false,
@@ -33,7 +34,8 @@ function LiveReactloadPlugin(b, opts = {}) {
     port: Number(port),
     host: host,
     clientEnabled: client,
-    debug: debug
+    debug: debug,
+    babel: babel
   }
 
   b.on("reset", addHooks)
