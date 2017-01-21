@@ -15,6 +15,7 @@ function LiveReactloadPlugin(b, opts = {}) {
   const {
     port = 4474,
     host = null,
+    babel = true,
     client = true,
     dedupe = true,
     debug = false,
@@ -33,7 +34,8 @@ function LiveReactloadPlugin(b, opts = {}) {
     port: Number(port),
     host: host,
     clientEnabled: client,
-    debug: debug
+    debug: debug,
+    babel: babel
   }
 
   b.on("reset", addHooks)
@@ -107,7 +109,6 @@ function LiveReactloadPlugin(b, opts = {}) {
         if (converter) {
           sourceWithoutMaps = convertSourceMaps.removeComments(source)
           hash = md5(sourceWithoutMaps)
-          converter.setProperty('sources', [file.replace(basedir, hash)])
           adjustedSourcemap = convertSourceMaps.fromObject(offsetSourceMaps(converter.toObject(), 1)).toComment()
         } else {
           hash = md5(source)
