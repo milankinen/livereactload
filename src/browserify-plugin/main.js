@@ -1,11 +1,12 @@
 import _ from "lodash"
 import umd from "umd"
 import through from "through2"
-import md5 from "md5"
+import crc from "crc"
 import {readFileSync} from "fs"
 import {resolve} from "path"
 import convertSourceMaps from 'convert-source-map'
 import offsetSourceMaps from 'offset-sourcemap-lines'
+import leftPad from 'left-pad'
 import {startServer} from "./server"
 import {log} from "./console"
 import loader from "../reloading"
@@ -107,11 +108,13 @@ function LiveReactloadPlugin(b, opts = {}) {
         let hash;
 
         if (converter) {
+          const sources = converter.getProperty("sources") || [];
           sourceWithoutMaps = convertSourceMaps.removeComments(source)
-          hash = md5(sourceWithoutMaps)
+          hash = getHash(sourceWithoutMaps)
+          converter.setProperty("sources", sources.map(source => source += "?version=" + hash))
           adjustedSourcemap = convertSourceMaps.fromObject(offsetSourceMaps(converter.toObject(), 1)).toComment()
         } else {
-          hash = md5(source)
+          hash = getHash(source)
         }
 
         if (entry) {
@@ -170,6 +173,13 @@ function LiveReactloadPlugin(b, opts = {}) {
 
   function throws(msg) {
     throw new Error(msg)
+  }
+
+  function getHash(data) {
+    const crcHash = leftPad(crc.crc32(data).toString(16), 8, "0")
+    return new Buffer(crcHash, "hex")
+        .toString("base64")
+        .replace(/=/g,"")
   }
 }
 
