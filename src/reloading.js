@@ -66,7 +66,10 @@ function loader(mappings, entryPoints, options) {
       return;
     }
     var protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    var url = protocol + "://" + (options.host || window.location.hostname) + ":" + options.port;
+    var url = protocol + "://" + (options.host || window.location.hostname);
+    if (options.port != 80) {
+      url = url + ":" + options.port;
+    }
     var ws = new WebSocket(url);
     ws.onopen = function () {
       info("WebSocket client listening for changes...");
