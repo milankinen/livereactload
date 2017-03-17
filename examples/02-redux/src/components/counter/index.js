@@ -1,8 +1,16 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 
+/**
+ * Counter component. renders a counter with buttons
+ */
 class Counter extends Component {
+  /**
+   * renders the component
+   * @return {function}
+   */
   render() {
-    const { increment, incrementIfOdd, incrementAsync, decrement, counter } = this.props;
+    const {increment, incrementIfOdd, incrementAsync, decrement, counter} = this.props;
+    const handleIncrementAsync = () => incrementAsync();
     return (
       <p>
         Clicked: {counter} times
@@ -13,7 +21,7 @@ class Counter extends Component {
         {' '}
         <button onClick={incrementIfOdd}>Increment if odd</button>
         {' '}
-        <button onClick={() => incrementAsync()}>Increment async</button>
+        <button onClick={handleIncrementAsync}>Increment async</button>
       </p>
     );
   }

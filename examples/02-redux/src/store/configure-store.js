@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware } from 'redux';
+import {createStore, applyMiddleware} from 'redux';
 import thunk from 'redux-thunk';
 import reducer from '../reducers';
 
@@ -18,7 +18,7 @@ export default function configureStore(initialState) {
 
       // return true to indicate that this module is accepted and
       // there is no need to reload its parent modules
-      return true
+      return true;
     });
   }
 
