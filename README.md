@@ -109,14 +109,14 @@ node_modules/.bin/watchify site.js -t babelify -p livereactload -o static/bundle
 
 Ideally your client code should be completely unaware of the reloading. However,
 some libraries like `redux` require a little hack for hot-reloading. That's why
-LiveReactload provides `module.onReload(..)` hook.
+LiveReactload provides `module.hot.accept(...)` hook.
 
 By using this hook, you can add your own custom functionality that is
 executed in the browser only when the module reload occurs:
 
 ```javascript
-if (module.onReload) {
-  module.onReload(() => {
+if (module.hot.accept) {
+  module.hot.accept(() => {
     ... do something ...
     // returning true indicates that this module was updated correctly and
     // reloading should not propagate to the parent components (if non-true

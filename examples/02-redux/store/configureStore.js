@@ -10,9 +10,9 @@ export default function configureStore(initialState) {
   const store = createStoreWithMiddleware(reducer, initialState);
 
   // When using WebPack, module.hot.accept should be used. In LiveReactload,
-  // same result can be achieved by using "module.onReload" hook.
-  if (module.onReload) {
-    module.onReload(() => {
+  // same result can be achieved by using "module.hot.accept" hook.
+  if (module.hot) {
+    module.hot.accept(() => {
       const nextReducer = require('../reducers');
       store.replaceReducer(nextReducer.default || nextReducer);
 

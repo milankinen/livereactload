@@ -124,8 +124,14 @@ function loader(mappings, entryPoints, options) {
       var module = cache[id] = {
         exports: {},
         __accepted: false,
-        onReload: function (hook) {
-          scope.reloadHooks[id] = hook;
+        hot: {
+          accept: function (maybe, hook) {
+            let realHook = hook;
+            if (!realHook) {
+              realHook = maybe;
+            }
+            scope.reloadHooks[id] = realHook;
+          }
         }
       };
 
@@ -257,7 +263,7 @@ function loader(mappings, entryPoints, options) {
         } else {
           console.log(" > Already reloaded ::", id);
         }
-        changeCache[id] = !allExportsProxies(id) && !isAccepted(id);
+        changeCache[id] = !isAccepted(id);
         return changeCache[id];
       } else {
         // restore old version of the module
@@ -265,15 +271,6 @@ function loader(mappings, entryPoints, options) {
           scope.cache[id] = module.cached;
         }
         return false;
-      }
-    }
-
-    function allExportsProxies(id) {
-      var e = scope.cache[id].exports;
-      return isProxy(e) || (isPlainObj(e) && all(vals(e), isProxy));
-
-      function isProxy(x) {
-        return x && !!x.__$$LiveReactLoadable;
       }
     }
 
@@ -327,18 +324,6 @@ function loader(mappings, entryPoints, options) {
   // prepare mappings before starting the app
   forEachValue(scope.mappings, compile);
 
-  if (options.babel) {
-    if (isReactTransformEnabled(scope.mappings)) {
-        info("LiveReactLoad Babel transform detected. Ready to rock!");
-    } else {
-      warn(
-        "Could not detect LiveReactLoad transform (livereactload/babel-transform). " +
-        "Please see instructions how to setup the transform:\n\n" +
-        "https://github.com/milankinen/livereactload#installation"
-      );
-    }
-  }
-
   scope.compile = compile;
   scope.load = load;
 
@@ -348,18 +333,6 @@ function loader(mappings, entryPoints, options) {
   startClient();
   // standalone bundles may need the exports from entry module
   return load(entryId);
-
-
-  // this function is stringified in browserify process and appended to the bundle
-  // so these helper functions must be inlined into this function, otherwise
-  // the function is not working
-
-  function isReactTransformEnabled(mappings) {
-    return any(vals(mappings), function (mapping) {
-      var source = mapping[2].source;
-      return source && source.indexOf("__$$LiveReactLoadable") !== -1;
-    });
-  }
 
   function isLocalModule(id) {
     return id.indexOf(options.nodeModulesRoot) === -1
