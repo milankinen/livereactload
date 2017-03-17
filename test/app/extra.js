@@ -1,15 +1,27 @@
 import React from "react"
-import Header from "./.src/extra/header"
-import Body from "./.src/extra/body"
+
+import Root from "./.src/extra/root"
 
 class Box extends React.Component {
+  constructor(props) {
+    super(props);
+    this.Root = Root;
+    module.hot.accept(()=>{
+      if (this.Root) {
+          this.Root = require('./.src/extra/root').default;
+          this.forceUpdate();
+          return true;
+      } else {
+        return false;
+      }
+    })
+  }
+
+  componentWillUnmount() {
+    this.Root = false;
+  }
   render() {
-    return (
-      <div>
-        <Header />
-        <Body />
-      </div>
-    )
+    return <this.Root/>
   }
 }
 
