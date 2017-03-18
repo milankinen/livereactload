@@ -9,14 +9,14 @@ Live code editing with Browserify and React.
 ## Motivation
 
 Hot reloading is de facto in today's front-end scene but unfortunately
-there isn't any decent implementation for Browserify yet. This is shame because
+there isn't any decent implementation for Browserify yet. This is a shame because
 (in my opinion) Browserify is the best bundling tool at the moment.
 
-Hence the goal of this project is to bring the hot reloading functionality
+Hence the goal of this project is to bring hot reloading functionality
 to Browserify by honoring its principles: simplicity and modularity.
 
 
-## How it works?
+## How does it work?
 
 LiveReactload can be used as a normal Browserify plugin. When applied to the bundle,
 it modifies the Browserify bundling pipeline so that the created bundle becomes
@@ -27,10 +27,20 @@ it modifies the Browserify bundling pipeline so that the created bundle becomes
   * When the changes arrive to the browser, LiveReactload client (included automatically
   in the bundle) analyzes the changes and reloads the changed modules
 
-Starting from version `2.0.0` LiveReactload utilizes [Dan Abramov](https://github.com/gaearon)'s
-[babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform) and
-[react-proxy](https://github.com/gaearon/react-proxy), which means that hot-reloading
-capabilities are same as in Webpack.
+However, LiveReactload shines when combined with [Dan Abramov](https://github.com/gaearon/)'s
+[`react-hot-loader`](https://github.com/gaearon/react-hot-loader). Their docs assume you are using Webpack,
+so here's a breakdown of how it looks with Browserify:
+ 
+ * Wrap your outermost component in an `<AppContainer>` element from `react-hot-loader`. Same as Webpack.
+ * Include the `react-hot-loader/babel` plugin in your babel config. Same as webpack.
+ * You must include the patch file (`react-hot-loader/patch`) as the first piece of code in your bundle.
+ You can use any approach you want to do this, like concatenation during build, but the easiest way is
+ simply to add `require('react-hot-loader/patch')` to the `index.js` or whatever is the starting point of
+  your app.
+ * The react tree must be re-rendered when a module is changed. To do this you react to HMR events via the
+ `module.hot` interface. It's very similar to Webpack's and you can copy and paste the examples from the
+ `react-hot-loader` docs and they'll work, though there are some subtle differences if you are a power user.
+ 
 
 And because one photo tells more than a thousand words, see the following video to see
 LiveReactload in action:
@@ -50,72 +60,118 @@ If you want to stick with browserify, but use the Hot Module Reloading API (like
 
 ### Pre-requirements
 
-LiveReactload requires `watchify`, `babelify` and `react >= 0.13.x` in order to
+LiveReactload requires `watchify` and `react >= 15.x` in order to
 work.
 
-### Installation (Babel 6.x)
+### Example Installation (with `react-hot-loader` and Babel 6.x)
 
-Install pre-requirements (if not already exist)
-
-```sh
-npm i --save react
-npm i --save-dev watchify
-```
-
-Install `babelify` and its dependencies
+Install npm modules:
 
 ```sh
-npm i --save babelify babel-preset-es2015 babel-preset-react
+npm i --save react react-dom react-hot-loader@next babelify babel-preset-es2015 babel-preset-react
+npm i --save-dev watchify livereactload
 ```
 
-Install React proxying components and LiveReactload
-
-```sh
-npm i --save-dev livereactload react-proxy@1.x babel-plugin-react-transform
-```
-
-Create `.babelrc` file into project's root directory (or add `react-transform` extra
+Create a `.babelrc` file in the project's root directory (or add `react-hot-loader/babel` to the plugins section
 if the file already exists). More information about `.babelrc` format and options
-can be found from [babel-plugin-react-transform](https://github.com/gaearon/babel-plugin-react-transform).
+can be found from [babel-plugin-react-transform](https://github.com/gaearon/react-hot-loader).
 
 ```javascript
 {
   "presets": ["es2015", "react"],
-  "env": {
-    "development": {
-      "plugins": [
-        ["react-transform", {
-          "transforms": [{
-            "transform": "livereactload/babel-transform",
-            "imports": ["react"]
-          }]
-        }]
-      ]
-    }
-  }
+  "plugins": ["react-hot-loader/babel"]
 }
 ```
 
-And finally use LiveReactload as a Browserify plugin with `watchify`. For example:
+Use LiveReactload as a Browserify plugin with `watchify`. For example:
 
 ```bash
 node_modules/.bin/watchify site.js -t babelify -p livereactload -o static/bundle.js
 ```
 
+Finally, when you create your application, the file where you render the top of the tree
+should look something like this:
+
+```javascript
+// This should be the very first file you load in your app! You
+// can use a built tool to add it instead if you like.
+import patch from 'react-hot-loader/patch'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { AppContainer } from 'react-hot-loader'
+import MyComponent from './components/MyComponent'
+
+const render = Component => {
+  ReactDOM.render(
+    <AppContainer>
+      <Component />
+    </AppContainer>,
+    document.getElementById('app')
+  )
+}
+
+render(MyComponent)
+
+if (module && module.hot) {
+  module.hot.accept(() => {
+      const NewMyComponent = require('./components/MyComponent')
+      render(NewMyComponent)
+      return true
+  })
+}
+```
+
 **That's it!** Now just start (live) coding! For more detailed example, please see
 **[the basic usage example](examples/01-basic-usage)**.
 
+**NOTE:** If you don't mind keeping your index idempotent, you can completely skip the 
+`if (module && module.hot) { ... }` section entirely. If you do this, LiveReactload must
+be able to run your entire application again when any file is reloaded. Anything that
+keeps state (like `redux`) must be coded to understand this. A quick-and-dirty example:
+
+```javascript
+// index.js
+import patch from 'react-hot-loader/patch'
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { AppContainer } from 'react-hot-loader'
+import MyComponent from './components/MyComponent'
+import getStore from './getStore'
+
+ReactDOM.render(
+  <AppContainer>
+    <MyComponent />
+  </AppContainer>,
+  document.getElementById('app')
+)
+
+// getStore.js
+import { createStore } from 'redux'
+import reducers from './reducers'
+
+let store;
+
+export default function getStore() {
+  if (!store) {
+    store = createReduxStore(reducers);
+  }
+}
+```
+
 ### Reacting to reload events
 
-Ideally your client code should be completely unaware of the reloading. However,
-some libraries like `redux` require a little hack for hot-reloading. That's why
-LiveReactload provides `module.hot.accept(...)` hook.
+Ideally your client code should be completely unaware of the reloading. If your
+application is idempotent, then you don't need to use `module.hot` at all. Creating an
+idempotent application means if all the files (especially your entry point) can be run
+over and over without throwing exceptions, keeping state, or breaking. However,
+some libraries like `redux` cannot be idempotent because their purpose is to keep track
+of staate. That's why LiveReactload provides the `module.hot.accept(...)` hook.
 
 By using this hook, you can add your own custom functionality that is
 executed in the browser only when the module reload occurs:
 
 ```javascript
-if (module.hot.accept) {
+if (module && module.hot) {
   module.hot.accept(() => {
     ... do something ...
     // returning true indicates that this module was updated correctly and
@@ -137,7 +193,12 @@ all build systems having Browserify and Watchify support. Please see
 
 ## When does it not work?
 
-Well... if you hide your state inside the modules then the reloading will lose
+Generally, when we're talking about hot reloading not working, what we mean is that *we fail to keep state*.
+In all the cases described below, state is lost between changes, but LiveReactload's client/server will still
+cause your application to be re-rendered, so your new changes will be visible anyway.
+
+### Module state
+If you hide your state inside the modules then the reloading will lose
 the state. For example the following code will **not** work:
 
 ```javascript
@@ -168,6 +229,42 @@ export default React.createClass({
   }
 })
 ```
+
+This is considered a bad pattern anyway and you shouldn't use it.
+
+### Non-proxied component
+
+The magic behind hot reloading comes from `react-hot-loader`, which uses `react-proxy` to achieve a "saved state"
+between re-renders. In order to accomplish this, when a React Component is updated, it and *all other components*
+above it in the render tree must be proxied! This is what `react-hot-loader/babel` is doing in your babel config.
+This has [some limitations](https://github.com/gaearon/react-hot-loader/issues), but the most obvious one is that
+your ES6 classes must be exposed at the top level of the module (they don't need to be exported). For example, this
+will not work:
+
+```javascript
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+
+@connect(state => state)
+export default class MyComponent extends Component {
+    render() {
+        return <div>This component breaks keeping state for hot reloading!</div>
+    }
+}
+```
+Due to the way decorators work, the export actually ends up like this:
+
+```javascript
+export default connect(state => state)(class My Component extends Component { ... })
+```
+
+Since the class is not available at the top level, `react-proxy` proxies the HoC generated by `connect` but fails
+to proxy your class. This is not an issue with decorators like `autobind-decorator` because they transform
+your class directly and return it, whereas `connect` returns a new class which renders your class.
+
+### React Router 3.x
+
+Due to the way 3.x works, you must use 4.x instead.
 
 ## Configuration options
 
