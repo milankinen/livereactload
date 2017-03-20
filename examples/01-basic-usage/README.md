@@ -1,4 +1,4 @@
-# Basic LiveReactload 2.x usage
+# Basic LiveReactload 4.x usage
 
 This example demonstrates the minimal live reloading configuration.
 
@@ -14,4 +14,4 @@ You can run this example by typing
 After the server is started, you can edit source files from `src` and 
 changes should be reloaded as they occur. 
 
-And extra: **universal server side rendering** in `server.js` 
+And a bonus: **universal server side rendering** in `server.js`.

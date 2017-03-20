@@ -33,13 +33,11 @@ so here's a breakdown of how it looks with Browserify:
  
  * Wrap your outermost component in an `<AppContainer>` element from `react-hot-loader`. Same as Webpack.
  * Include the `react-hot-loader/babel` plugin in your babel config. Same as webpack.
- * You must include the patch file (`react-hot-loader/patch`) as the first piece of code in your bundle.
- You can use any approach you want to do this, like concatenation during build, but the easiest way is
- simply to add `require('react-hot-loader/patch')` to the `index.js` or whatever is the starting point of
-  your app.
- * The react tree must be re-rendered when a module is changed. To do this you react to HMR events via the
- `module.hot` interface. It's very similar to Webpack's and you can copy and paste the examples from the
- `react-hot-loader` docs and they'll work, though there are some subtle differences if you are a power user.
+ * The patch file (`react-hot-loader/patch`) is included in the bundle automatically when using LiveReactload.
+ * The react tree must be re-rendered when a module is changed. LiveReactload automates this. In many cases,
+  the default will work fine. However, if your application cannot be run over and over automatically without
+  issues, that means it is not idempotent and you need to handle the re-render manually. To do this you react
+  to HMR events via the `module.hot` interface. It's very similar to Webpack's. See examples below.
  
 
 And because one photo tells more than a thousand words, see the following video to see
@@ -73,8 +71,7 @@ npm i --save-dev watchify livereactload
 ```
 
 Create a `.babelrc` file in the project's root directory (or add `react-hot-loader/babel` to the plugins section
-if the file already exists). More information about `.babelrc` format and options
-can be found from [babel-plugin-react-transform](https://github.com/gaearon/react-hot-loader).
+if the file already exists).
 
 ```javascript
 {
@@ -93,45 +90,29 @@ Finally, when you create your application, the file where you render the top of 
 should look something like this:
 
 ```javascript
-// This should be the very first file you load in your app! You
-// can use a built tool to add it instead if you like.
-import patch from 'react-hot-loader/patch'
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { render } from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
-import MyComponent from './components/MyComponent'
+import Component from './components/Component'
 
-const render = Component => {
-  ReactDOM.render(
-    <AppContainer>
-      <Component />
-    </AppContainer>,
-    document.getElementById('app')
-  )
-}
-
-render(MyComponent)
-
-if (module && module.hot) {
-  module.hot.accept(() => {
-      const NewMyComponent = require('./components/MyComponent')
-      render(NewMyComponent)
-      return true
-  })
-}
+render(
+  <AppContainer>
+    <Component />
+  </AppContainer>,
+  document.getElementById('app')
+)
 ```
 
 **That's it!** Now just start (live) coding! For more detailed example, please see
 **[the basic usage example](examples/01-basic-usage)**.
 
-**NOTE:** If you don't mind keeping your index idempotent, you can completely skip the 
-`if (module && module.hot) { ... }` section entirely. If you do this, LiveReactload must
-be able to run your entire application again when any file is reloaded. Anything that
-keeps state (like `redux`) must be coded to understand this. A quick-and-dirty example:
+**NOTE:** The above snippet is idempotent, which means it can be run over and over without issue. Sometimes
+you may place code here (like `redux` or `react-tap-event-plugin`) which are stateful and cannot be run over
+and over. In this case, you must use `module.hot.accept` to indicate to LiveReactload what to do when a change
+is detected. See the []non-idempotent example](examples/04-non-idempotent).
 
 ```javascript
 // index.js
-import patch from 'react-hot-loader/patch'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
@@ -311,6 +292,30 @@ want to use LiveReactLoad in HTTPS site. Parameters are paths to the actual file
 #### `--no-babel`
 
 If you use a tool other than Babel to transform React syntax, this disables the in-browser warning that would otherwise appear.
+
+## Migration from LiveReactload 3.x
+
+Migration is easy:
+
+1. Remove `react-proxy` and `babel-plugin-react-transform` dependencies from `package.json` using
+`npm uninstall` or `yarn remove`
+2. Use `npm install` or `yarn add` to get the latest `livereactload` and `react-hot-loader` packages.
+3. Replace the `react-transform` section of your Babel config with `react-hot-loader/babel`. See installation
+instructions for how the config should look now. (It's must simpler.) 
+4. Add `import { AppContainer} from 'react-hot-loader'` to the file where you render your root component, and
+then wrap your root component in this container. `ReactDOM.render(<App/>, ...)` becomes
+`ReactDOM.render(<AppContainer><App></AppContainer>, ...)`.
+5. If you were using `module.onReload` it must be replaced with `module.hot.accept`. This isn't simply a rename,
+this hook works differently now. Despite this, if you were following the commonly used patterns for this hook in
+the LiveReactload examples, simply renaming it should work just fine.
+
+**You're all set!** Despite the easy migration, this is a rather large change under the hood so while reloading
+is improved in general, you may run into other issues. The biggest change to LiveReactload is that in the past,
+if only React components were updated, your application would not be re-run, and `react-proxy` would silently
+replace components. This was a bad approach as it circumvents the standard React approach of re-rendering to get
+changes. So now whenever you change a React component (or any file) your whole app will be re-run by default. If
+you have functionality that cannot be run multiple times on the same page load, you may need to use a
+`module.hot.accept` hook to have more control over this. See examples above!
 
 ## License
 
