@@ -302,6 +302,10 @@ function loader(mappings, entryPoints, options) {
   debug("Entries:", entryPoints, entryId);
 
   startClient();
+
+  if (options.clientRequires && options.clientRequires.length) {
+    options.clientRequires.forEach(load);
+  }
   // standalone bundles may need the exports from entry module
   return load(entryId);
 
