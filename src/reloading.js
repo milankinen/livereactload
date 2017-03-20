@@ -118,7 +118,7 @@ function loader(mappings, entryPoints, options) {
         exports: {},
         hot: {
           accept: function (maybe, hook) {
-            let realHook = hook;
+            var realHook = hook;
             if (!realHook) {
               realHook = maybe;
             } else {
