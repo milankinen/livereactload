@@ -22,7 +22,7 @@ window._siteReloadCounter = "_siteReloadCounter" in window ? window._siteReloadC
 
 render(<Root />, document.getElementById("app"))
 
-module.hot.accept(()=>{
+module.hot.onUpdate(()=>{
   const Component = require("./.src/root").default;
   render( <Component />, document.getElementById("app"))
   return true;

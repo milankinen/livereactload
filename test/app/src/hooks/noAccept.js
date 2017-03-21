@@ -3,8 +3,8 @@ export const MSG = "foo"
 
 window._noAcceptReloaded = false
 
-if (module.hot) {
-  module.hot.accept(() => {
+if (module && module.hot) {
+  module.hot.onUpdate(() => {
     window._noAcceptReloaded = true
     return false
   })

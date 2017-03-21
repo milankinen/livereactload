@@ -6,7 +6,7 @@ class Box extends React.Component {
   constructor(props) {
     super(props);
     this.Root = Root;
-    module.hot.accept(()=>{
+    module.hot.onUpdate(()=>{
       if (this.Root) {
           this.Root = require('./.src/extra/root').default;
           this.forceUpdate();

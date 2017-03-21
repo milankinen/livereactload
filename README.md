@@ -108,7 +108,7 @@ render(
 
 **NOTE:** The above snippet is idempotent, which means it can be run over and over without issue. Sometimes
 you may place code here (like `redux` or `react-tap-event-plugin`) which are stateful and cannot be run over
-and over. In this case, you must use `module.hot.accept` to indicate to LiveReactload what to do when a change
+and over. In this case, you must use `module.hot.onUpdate` to indicate to LiveReactload what to do when a change
 is detected. See the []non-idempotent example](examples/04-non-idempotent).
 
 ```javascript
@@ -146,14 +146,14 @@ application is idempotent, then you don't need to use `module.hot` at all. Creat
 idempotent application means if all the files (especially your entry point) can be run
 over and over without throwing exceptions, keeping state, or breaking. However,
 some libraries like `redux` cannot be idempotent because their purpose is to keep track
-of staate. That's why LiveReactload provides the `module.hot.accept(...)` hook.
+of staate. That's why LiveReactload provides the `module.hot.onUpdate(...)` hook.
 
 By using this hook, you can add your own custom functionality that is
 executed in the browser only when the module reload occurs:
 
 ```javascript
 if (module && module.hot) {
-  module.hot.accept(() => {
+  module.hot.onUpdate(() => {
     ... do something ...
     // returning true indicates that this module was updated correctly and
     // reloading should not propagate to the parent components (if non-true
@@ -305,7 +305,7 @@ instructions for how the config should look now. (It's must simpler.)
 4. Add `import { AppContainer} from 'react-hot-loader'` to the file where you render your root component, and
 then wrap your root component in this container. `ReactDOM.render(<App/>, ...)` becomes
 `ReactDOM.render(<AppContainer><App></AppContainer>, ...)`.
-5. If you were using `module.onReload` it must be replaced with `module.hot.accept`. This isn't simply a rename,
+5. If you were using `module.onReload` it must be replaced with `module.hot.onUpdate`. This isn't simply a rename,
 this hook works differently now. Despite this, if you were following the commonly used patterns for this hook in
 the LiveReactload examples, simply renaming it should work just fine.
 
@@ -315,7 +315,7 @@ if only React components were updated, your application would not be re-run, and
 replace components. This was a bad approach as it circumvents the standard React approach of re-rendering to get
 changes. So now whenever you change a React component (or any file) your whole app will be re-run by default. If
 you have functionality that cannot be run multiple times on the same page load, you may need to use a
-`module.hot.accept` hook to have more control over this. See examples above!
+`module.hot.onUpdate` hook to have more control over this. See examples above!
 
 ## License
 

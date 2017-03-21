@@ -117,12 +117,12 @@ function loader(mappings, entryPoints, options) {
       var module = cache[id] = {
         exports: {},
         hot: {
-          accept: function (maybe, hook) {
+          onUpdate: function (maybe, hook) {
             var realHook = hook;
             if (!realHook) {
               realHook = maybe;
             } else {
-              console.warn(`LiveReactload: You are providing two arguments to the module.hot.accept hook, and we are
+              console.warn(`LiveReactload: You are providing two arguments to the module.hot.onUpdate hook, and we are
                 ignoring the first argument. You may have copied and pasted a webpack hook. For compatibility, we are
                 accepting this, and it will probably work, but please remove the first argument to avoid confusion.`)
             }
