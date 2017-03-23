@@ -109,7 +109,7 @@ render(
 **NOTE:** The above snippet is idempotent, which means it can be run over and over without issue. Sometimes
 you may place code here (like `redux` or `react-tap-event-plugin`) which are stateful and cannot be run over
 and over. In this case, you must use `module.hot.onUpdate` to indicate to LiveReactload what to do when a change
-is detected. See the []non-idempotent example](examples/04-non-idempotent).
+is detected. For example:
 
 ```javascript
 // index.js
@@ -118,24 +118,32 @@ import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
 import MyComponent from './components/MyComponent'
 import getStore from './getStore'
-
+  
 ReactDOM.render(
   <AppContainer>
     <MyComponent />
   </AppContainer>,
   document.getElementById('app')
 )
+```
 
+```javascript
 // getStore.js
 import { createStore } from 'redux'
 import reducers from './reducers'
-
+  
 let store;
-
+  
 export default function getStore() {
   if (!store) {
     store = createReduxStore(reducers);
   }
+}
+  
+if (module && module.hot) {
+  module.hot.onUpdate(()=>{
+    store.replaceReducer(require('./reducers').default);
+  })
 }
 ```
 

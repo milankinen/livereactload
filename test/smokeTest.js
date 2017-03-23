@@ -147,7 +147,7 @@ test("smoke tests", assert => {
         ])
       return updateSrcP
         .then(() => {
-          assert.equals(browser.window._noAcceptReloaded, false)
+          assert.equals(browser.window._noAcceptReloaded, true)
           assert.equals(browser.window._hooksReloadCount, 1)
         })
     }

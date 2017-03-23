@@ -1,4 +1,3 @@
-import patch from "react-hot-loader/patch"
 import React from "react"
 import { render } from "react-dom"
 import Root from "./.src/root"
