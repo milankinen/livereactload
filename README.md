@@ -1,4 +1,4 @@
-# LiveReactload
+# LiveReactload 4.x BETA
 
 Live code editing with Browserify and React.
 
