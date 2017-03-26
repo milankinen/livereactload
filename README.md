@@ -4,7 +4,7 @@ Live code editing with Browserify and React.
 
 :exclamation: :exclamation: :exclamation:
 
-**ATTENTION! The upcoming 4.x version will be using the new [`react-hot-loader`](https://github.com/gaearon/react-hot-loader).
+**ATTENTION! The upcoming 4.x version will be using the new [`react-hot-loader`](https://github.com/gaearon/react-hot-loader)
 and it is already available in npm as a beta tag. If you want to test it, check out the migration guide and
 installation instructions [here](https://github.com/milankinen/livereactload/tree/4.x)!**
 
