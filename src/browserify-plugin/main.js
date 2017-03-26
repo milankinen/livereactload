@@ -28,6 +28,13 @@ function LiveReactloadPlugin(b, opts = {}) {
   // server is alive as long as watchify is running
   const server = opts.server !== false ? startServer({port: Number(port), sslCert, sslKey}) : null
 
+  let clientRequires = [];
+  try {
+    const RHLPatchModule = 'react-hot-loader/patch';
+    require.resolve(RHLPatchModule)
+    clientRequires.push(RHLPatchModule)
+  } catch (e) {}
+
   const clientOpts = {
     // assuming that livereload package is in global mdule directory (node_modules)
     // and this file is in ./lib/babel-plugin folder
@@ -36,8 +43,11 @@ function LiveReactloadPlugin(b, opts = {}) {
     host: host,
     clientEnabled: client,
     debug: debug,
-    babel: babel
+    babel: babel,
+    clientRequires: clientRequires
   }
+
+  clientRequires.forEach(file => b.require(file, opts))
 
   b.on("reset", addHooks)
   addHooks()

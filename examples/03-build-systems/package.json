@@ -17,7 +17,6 @@
     "react-dom": "^15.2.1"
   },
   "devDependencies": {
-    "babel-plugin-react-transform": "^2.0.2",
     "grunt": "^1.0.1",
     "grunt-browserify": "^5.0.0",
     "grunt-concurrent": "^2.3.0",
@@ -27,7 +26,7 @@
     "gulp-util": "^3.0.7",
     "livereactload": "latest",
     "nodemon": "^1.9.2",
-    "react-proxy": "^1.1.8",
+    "react-hot-loader": "next",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"

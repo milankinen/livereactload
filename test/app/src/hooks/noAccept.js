@@ -1,11 +1,14 @@
 
 export const MSG = "foo"
 
-window._noAcceptReloaded = false
-
-if (module.onReload) {
-  module.onReload(() => {
+if (window._noAcceptReloaded === false) {
     window._noAcceptReloaded = true
+} else {
+    window._noAcceptReloaded = false
+}
+
+if (module && module.hot) {
+  module.hot.onUpdate(() => {
     return false
   })
 }

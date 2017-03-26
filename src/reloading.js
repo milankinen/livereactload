@@ -43,16 +43,7 @@ function loader(mappings, entryPoints, options) {
   var scope = {
     mappings: mappings,
     cache: {},
-    reloading: false,
-    reloadHooks: {},
-    reload: function (fn) {
-      scope.reloading = true;
-      try {
-        fn();
-      } finally {
-        scope.reloading = false;
-      }
-    }
+    reloadHooks: {}
   };
 
 
@@ -123,12 +114,20 @@ function loader(mappings, entryPoints, options) {
         throw error;
       }
 
-      var hook = scope.reloadHooks[id];
       var module = cache[id] = {
         exports: {},
-        __accepted: false,
-        onReload: function (hook) {
-          scope.reloadHooks[id] = hook;
+        hot: {
+          onUpdate: function (maybe, hook) {
+            var realHook = hook;
+            if (!realHook) {
+              realHook = maybe;
+            } else {
+              console.warn(`LiveReactload: You are providing two arguments to the module.hot.onUpdate hook, and we are
+                ignoring the first argument. You may have copied and pasted a webpack hook. For compatibility, we are
+                accepting this, and it will probably work, but please remove the first argument to avoid confusion.`)
+            }
+            scope.reloadHooks[id] = realHook;
+          }
         }
       };
 
@@ -136,12 +135,6 @@ function loader(mappings, entryPoints, options) {
         var targetId = mappings[id][1][path];
         return load(targetId ? targetId : path);
       }, module, module.exports, unknownUseCase, mappings, cache, entryPoints);
-
-      if (scope.reloading && typeof hook === "function") {
-        // it's important **not** to assign to module.__accepted because it would point
-        // to the old module object during the reload event!
-        cache[id].__accepted = hook()
-      }
 
     }
     return cache[id].exports;
@@ -157,7 +150,6 @@ function loader(mappings, entryPoints, options) {
    *    List of changes
    */
   function patch(mappings) {
-    var compile = scope.compile;
     var changes = [];
 
     keys(mappings).forEach(function (id) {
@@ -190,28 +182,26 @@ function loader(mappings, entryPoints, options) {
       return c[0];
     });
 
-    scope.reload(function () {
+    try {
+      info("Applying changes...");
+      debug("Changed modules", changedModules);
+      debug("New modules", newMods);
+      evaluate(entryId, {});
+      info("Reload complete!");
+    } catch (e) {
+      error("Error occurred while reloading changes. Restoring old implementation...");
+      console.error(e);
+      console.error(e.stack);
       try {
-        info("Applying changes...");
-        debug("Changed modules", changedModules);
-        debug("New modules", newMods);
+        restore();
         evaluate(entryId, {});
-        info("Reload complete!");
-      } catch (e) {
-        error("Error occurred while reloading changes. Restoring old implementation...");
-        console.error(e);
-        console.error(e.stack);
-        try {
-          restore();
-          evaluate(entryId, {});
-          info("Restored!");
-        } catch (re) {
-          error("Restore failed. You may need to refresh your browser... :-/");
-          console.error(re);
-          console.error(re.stack);
-        }
+        info("Restored!");
+      } catch (re) {
+        error("Restore failed. You may need to refresh your browser... :-/");
+        console.error(re);
+        console.error(re.stack);
       }
-    })
+    }
 
 
     function evaluate(id, changeCache) {
@@ -223,18 +213,18 @@ function loader(mappings, entryPoints, options) {
         debug("Module", id, "is an external module. Do not reload");
         return false;
       }
-      var module = getModule(id);
-      debug("Evaluate module details", module);
 
       // initially mark change status to follow module's change status
       // TODO: how to propagate change status from children to this without causing infinite recursion?
       var meChanged = contains(changedModules, id);
       changeCache[id] = meChanged;
+
+      var originalCache = scope.cache[id];
       if (id in scope.cache) {
         delete scope.cache[id];
       }
 
-      var deps = module.deps.filter(isLocalModule);
+      var deps = vals(scope.mappings[id][1]).filter(isLocalModule);
       var depsChanged = deps.map(function (dep) {
         return evaluate(dep, changeCache);
       });
@@ -248,45 +238,35 @@ function loader(mappings, entryPoints, options) {
       //
       // Hence the complex "scope.cache" stuff...
       //
-      var isReloaded = module.cached !== undefined && id in scope.cache;
+      var isReloaded = originalCache !== undefined && id in scope.cache;
       var depChanged = any(depsChanged);
 
       if (isReloaded || depChanged || meChanged) {
         debug("Module changed", id, isReloaded, depChanged, meChanged);
         if (!isReloaded) {
-          var msg = contains(newMods, id) ? " > Add new module   ::" : " > Reload module    ::";
-          console.log(msg, id);
-          load(id);
+          var hook = scope.reloadHooks[id];
+          if (typeof hook === "function" && hook()) {
+            console.log(" > Manually accepted", id);
+            scope.cache[id] = originalCache;
+            changeCache[id] = false;
+          } else {
+            var msg = contains(newMods, id) ? " > Add new module   ::" : " > Reload module    ::";
+            console.log(msg, id);
+            load(id);
+            changeCache[id] = true;
+          }
         } else {
           console.log(" > Already reloaded ::", id);
         }
-        changeCache[id] = !allExportsProxies(id) && !isAccepted(id);
+
         return changeCache[id];
       } else {
         // restore old version of the module
-        if (module.cached !== undefined) {
-          scope.cache[id] = module.cached;
+        if (originalCache !== undefined) {
+          scope.cache[id] = originalCache;
         }
         return false;
       }
-    }
-
-    function allExportsProxies(id) {
-      var e = scope.cache[id].exports;
-      return isProxy(e) || (isPlainObj(e) && all(vals(e), isProxy));
-
-      function isProxy(x) {
-        return x && !!x.__$$LiveReactLoadable;
-      }
-    }
-
-    function isAccepted(id) {
-      var accepted = scope.cache[id].__accepted;
-      scope.cache[id].__accepted = false;
-      if (accepted === true) {
-        console.log(" > Manually accepted")
-      }
-      return accepted === true;
     }
 
     function restore() {
@@ -301,14 +281,6 @@ function loader(mappings, entryPoints, options) {
         }
       })
     }
-  }
-
-  function getModule(id) {
-    return {
-      deps: vals(scope.mappings[id][1]),
-      meta: scope.mappings[id][2],
-      cached: scope.cache[id]
-    };
   }
 
   function handleBundleChange(newMappings) {
@@ -330,39 +302,16 @@ function loader(mappings, entryPoints, options) {
   // prepare mappings before starting the app
   forEachValue(scope.mappings, compile);
 
-  if (options.babel) {
-    if (isReactTransformEnabled(scope.mappings)) {
-        info("LiveReactLoad Babel transform detected. Ready to rock!");
-    } else {
-      warn(
-        "Could not detect LiveReactLoad transform (livereactload/babel-transform). " +
-        "Please see instructions how to setup the transform:\n\n" +
-        "https://github.com/milankinen/livereactload#installation"
-      );
-    }
-  }
-
-  scope.compile = compile;
-  scope.load = load;
-
   debug("Options:", options);
   debug("Entries:", entryPoints, entryId);
 
   startClient();
+
+  if (options.clientRequires && options.clientRequires.length) {
+    options.clientRequires.forEach(load);
+  }
   // standalone bundles may need the exports from entry module
   return load(entryId);
-
-
-  // this function is stringified in browserify process and appended to the bundle
-  // so these helper functions must be inlined into this function, otherwise
-  // the function is not working
-
-  function isReactTransformEnabled(mappings) {
-    return any(vals(mappings), function (mapping) {
-      var source = mapping[2].source;
-      return source && source.indexOf("__$$LiveReactLoadable") !== -1;
-    });
-  }
 
   function isLocalModule(id) {
     return id.indexOf(options.nodeModulesRoot) === -1
@@ -419,10 +368,6 @@ function loader(mappings, entryPoints, options) {
         fn(obj[key]);
       }
     });
-  }
-
-  function isPlainObj(x) {
-    return typeof x == 'object' && x.constructor == Object;
   }
 
   function debug() {

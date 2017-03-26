@@ -23,10 +23,9 @@
     "uglifyify": "^3.0.2"
   },
   "devDependencies": {
-    "babel-plugin-react-transform": "^2.0.2",
     "livereactload": "latest",
     "nodemon": "^1.9.2",
-    "react-proxy": "^1.1.8",
+    "react-hot-loader": "next",
     "watchify": "^3.7.0"
   }
 }

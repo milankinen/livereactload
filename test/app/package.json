@@ -18,14 +18,13 @@
     "express": "^4.14.0",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
+    "react-hot-loader": "next",
     "redux": "^3.5.2"
   },
   "devDependencies": {
-    "babel-plugin-react-transform": "^2.0.2",
     "browserify": "^13.0.1",
     "clockmaker": "^2.0.0",
     "livereactload": "file:../..",
-    "react-proxy": "^1.1.8",
     "watchify": "^3.7.0"
   }
 }

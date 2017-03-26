@@ -128,7 +128,7 @@ test("smoke tests", assert => {
   }
 
   function testOnReloadHook() {
-    assert.comment("test onReload hook initial conditions")
+    assert.comment("test reload hook initial conditions")
     assert.equals(browser.window._hooksReloadCount, 0)
     assert.equals(browser.window._acceptReloaded, false)
     assert.equals(browser.window._noAcceptReloaded, false)
@@ -136,7 +136,7 @@ test("smoke tests", assert => {
     return testNoAcceptPropagatesReloadToParent().then(testAcceptDoesntPropagateReloadToParent)
 
     function testNoAcceptPropagatesReloadToParent() {
-      assert.comment("test that if onReload hook does't return true, then reloading is propagated to the parent module")
+      assert.comment("test that if reload hook does't return true, then reloading is propagated to the parent module")
       const updateSrcP =
         updateSources(browser, [
           {
@@ -153,7 +153,7 @@ test("smoke tests", assert => {
     }
 
     function testAcceptDoesntPropagateReloadToParent() {
-      assert.comment("test that if onReload hook returns true, then reloading doesn't propagate to the parent module")
+      assert.comment("test that if reload hook returns true, then reloading doesn't propagate to the parent module")
       const updateSrcP =
         updateSources(browser, [
           {

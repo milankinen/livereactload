@@ -1,6 +1,6 @@
 import React from "react"
 import { render } from "react-dom"
-import App from "./.src/app"
+import Root from "./.src/root"
 
 try {
   window._clockMaker = require('clockmaker');
@@ -19,16 +19,10 @@ require("redux")
 console.log("Increment site.js reload counter...")
 window._siteReloadCounter = "_siteReloadCounter" in window ? window._siteReloadCounter + 1 : 0
 
+render(<Root />, document.getElementById("app"))
 
-const MyApp = React.createClass({
-  render() {
-    return window._siteReloadCounter === 0 ? <App /> : (
-      <div>
-        This text should never occur because LiveReactLoad should stop reload
-        propagation if module returns only React components (like src/app.js does).
-      </div>
-    )
-  }
+module.hot.onUpdate(()=>{
+  const Component = require("./.src/root").default;
+  render( <Component />, document.getElementById("app"))
+  return true;
 })
-
-render(<MyApp />, document.getElementById("app"))

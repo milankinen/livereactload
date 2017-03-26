@@ -4,12 +4,7 @@
     "development": {
       "plugins": [
         "transform-runtime",
-        ["react-transform", {
-          "transforms": [{
-            "transform": "livereactload/babel-transform",
-            "imports": ["react"]
-          }]
-        }]
+        "react-hot-loader/babel"
       ]
     }
   }
