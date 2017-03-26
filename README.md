@@ -67,7 +67,7 @@ Install npm modules:
 
 ```sh
 npm i --save react react-dom react-hot-loader@next babelify babel-preset-es2015 babel-preset-react
-npm i --save-dev watchify livereactload
+npm i --save-dev watchify livereactload@next
 ```
 
 Create a `.babelrc` file in the project's root directory (or add `react-hot-loader/babel` to the plugins section
