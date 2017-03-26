@@ -23,7 +23,7 @@
     "uglifyify": "^3.0.2"
   },
   "devDependencies": {
-    "livereactload": "latest",
+    "livereactload": "next",
     "nodemon": "^1.9.2",
     "react-hot-loader": "next",
     "watchify": "^3.7.0"

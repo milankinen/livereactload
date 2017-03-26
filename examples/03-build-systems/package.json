@@ -24,7 +24,7 @@
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.1.0",
     "gulp-util": "^3.0.7",
-    "livereactload": "latest",
+    "livereactload": "next",
     "nodemon": "^1.9.2",
     "react-hot-loader": "next",
     "vinyl-buffer": "^1.0.0",
