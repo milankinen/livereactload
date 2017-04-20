@@ -122,9 +122,9 @@ function loader(mappings, entryPoints, options) {
             if (!realHook) {
               realHook = maybe;
             } else {
-              console.warn(`LiveReactload: You are providing two arguments to the module.hot.onUpdate hook, and we are
-                ignoring the first argument. You may have copied and pasted a webpack hook. For compatibility, we are
-                accepting this, and it will probably work, but please remove the first argument to avoid confusion.`)
+              console.warn("LiveReactload: You are providing two arguments to the module.hot.onUpdate hook, and we are" +
+                "ignoring the first argument. You may have copied and pasted a webpack hook. For compatibility, we are" +
+                "accepting this, and it will probably work, but please remove the first argument to avoid confusion.")
             }
             scope.reloadHooks[id] = realHook;
           }
