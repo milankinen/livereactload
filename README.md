@@ -41,10 +41,8 @@ Starting from version `2.0.0` LiveReactload utilizes [Dan Abramov](https://githu
 [react-proxy](https://github.com/gaearon/react-proxy), which means that hot-reloading
 capabilities are same as in Webpack.
 
-And because one photo tells more than a thousand words, see the following video to see
-LiveReactload in action:
-
-[![Demo](https://dl.dropbox.com/s/gcnhv4rzvhq5kaw/livereactload-preview.png)](https://vimeo.com/123513496)
+And because one photo tells more than a thousand words, watch [this video](https://vimeo.com/123513496) to see
+LiveReactload in action.
 
 ### Other implementations
 
