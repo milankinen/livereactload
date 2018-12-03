@@ -35,7 +35,7 @@
     "offset-sourcemap-lines": "1.0.0",
     "through2": "2.0.3",
     "umd": "3.0.1",
-    "ws": "1.1.1"
+    "ws": "6.1.x"
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",
