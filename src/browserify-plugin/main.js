@@ -20,10 +20,10 @@ function LiveReactloadPlugin(b, opts = {}) {
     client = true,
     dedupe = true,
     debug = false,
-    basedir = process.cwd(),
-    'ssl-cert': sslCert = null,
-    'ssl-key': sslKey = null,
-    } = opts
+    moduledir = null,
+    "ssl-cert": sslCert = null,
+    "ssl-key": sslKey = null
+  } = opts;
 
   // server is alive as long as watchify is running
   const server = opts.server !== false ? startServer({port: Number(port), sslCert, sslKey}) : null
@@ -31,7 +31,7 @@ function LiveReactloadPlugin(b, opts = {}) {
   const clientOpts = {
     // assuming that livereload package is in global mdule directory (node_modules)
     // and this file is in ./lib/babel-plugin folder
-    nodeModulesRoot: resolve(__dirname, "../../.."),
+    nodeModulesRoot: moduledir || resolve(__dirname, "../../.."),
     port: Number(port),
     host: host,
     clientEnabled: client,

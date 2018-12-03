@@ -9,7 +9,7 @@ and it is already available in npm as a beta tag. If you want to test it, check 
 installation instructions [here](https://github.com/milankinen/livereactload/tree/4.x)!**
 
 :exclamation: :exclamation: :exclamation:
- 
+
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/milankinen/livereactload)
 [![npm version](https://badge.fury.io/js/livereactload.svg)](http://badge.fury.io/js/livereactload)
@@ -186,24 +186,24 @@ about config format).
 
 LiveReactload supports the following configuration options
 
-#### `--no-server` 
+#### `--no-server`
 
-Prevents reload server startup. If you are using LiveReactload plugin with Browserify 
+Prevents reload server startup. If you are using LiveReactload plugin with Browserify
 (instead of watchify), you may want to enable this so that the process won't hang after
 bundling. This is not set by default.
 
-#### `--port <number>` 
+#### `--port <number>`
 
-Starts reload server to the given port and configures the bundle's client to 
+Starts reload server to the given port and configures the bundle's client to
 connect to the server using this port. Default value is `4474`
 
 #### `--host <hostname>`
 
 Configures the reload client to use the given hostname when connecting to the
-reload server. You may need this if you are running the bundle in an another device. 
+reload server. You may need this if you are running the bundle in an another device.
 Default value is `localhost`
 
-#### `--no-dedupe` 
+#### `--no-dedupe`
 
 Disables Browserify module de-duplication. By default, de-duplication is enabled.
 However, sometimes this de-duplication with may cause an invalid bundle with LiveReactload.
@@ -221,6 +221,10 @@ want to use LiveReactLoad in HTTPS site. Parameters are paths to the actual file
 #### `--no-babel`
 
 If you use a tool other than Babel to transform React syntax, this disables the in-browser warning that would otherwise appear.
+
+#### `--moduledir <node_modules>`
+
+Directory pointing node modules where `livereactload` is installed. By default points to `<root-dir>/node_modules`.
 
 ## License
 
