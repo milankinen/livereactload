@@ -15,7 +15,7 @@ installation instructions [here](https://github.com/milankinen/livereactload/tre
 [![npm version](https://badge.fury.io/js/livereactload.svg)](http://badge.fury.io/js/livereactload)
 [![Build Status](https://travis-ci.org/milankinen/livereactload.svg)](https://travis-ci.org/milankinen/livereactload)
 
-## Motivation
+## Motivation By VIVEK 
 
 Hot reloading is de facto in today's front-end scene but unfortunately
 there isn't any decent implementation for Browserify yet. This is shame because
